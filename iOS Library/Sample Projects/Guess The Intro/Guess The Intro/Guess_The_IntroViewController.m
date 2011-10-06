@@ -75,64 +75,6 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 	return [formatter stringFromNumber:[NSNumber numberWithInteger:aScore]];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ([keyPath hasPrefix:@"firstSuggestion"]) {
-		[self.track1Button setImage:self.firstSuggestion.album.cover.image 
-						   forState:UIControlStateNormal];
-		self.track1ArtistLabel.text = [[self.firstSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
-		self.track1TitleLabel.text = self.firstSuggestion.name;
-		
-	} else if ([keyPath hasPrefix:@"secondSuggestion"]) {
-		[self.track2Button setImage:self.secondSuggestion.album.cover.image 
-						   forState:UIControlStateNormal];
-		self.track2ArtistLabel.text = [[self.secondSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
-		self.track2TitleLabel.text = self.secondSuggestion.name;
-
-	} else if ([keyPath hasPrefix:@"thirdSuggestion"]) {
-		[self.track3Button setImage:self.thirdSuggestion.album.cover.image 
-						   forState:UIControlStateNormal];
-		self.track3ArtistLabel.text = [[self.thirdSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
-		self.track3TitleLabel.text = self.thirdSuggestion.name;
-		
-	} else if ([keyPath hasPrefix:@"fourthSuggestion"]) {
-		[self.track4Button setImage:self.fourthSuggestion.album.cover.image 
-						   forState:UIControlStateNormal];
-		self.track4ArtistLabel.text = [[self.fourthSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
-		self.track4TitleLabel.text = self.fourthSuggestion.name;
-		
-	} else if ([keyPath hasPrefix:@"canPush"]) {
-		self.track1Button.enabled = self.canPushOne;
-		self.track2Button.enabled = self.canPushTwo;
-		self.track3Button.enabled = self.canPushThree;
-		self.track4Button.enabled = self.canPushFour;
-	
-	} else if ([keyPath isEqualToString:@"currentRoundScore"]) {
-		self.currentRoundScoreLabel.text = [self stringFromScore:self.currentRoundScore];
-	
-	} else if ([keyPath isEqualToString:@"roundTimeRemaining"]) {
-		self.roundProgressIndicator.progress = self.roundTimeRemaining / kRoundDuration;
-
-	} else if ([keyPath isEqualToString:@"score"]) {
-		self.currentScoreLabel.text = [self stringFromScore:self.score];
-	
-	} else if ([keyPath isEqualToString:@"multiplier"]) {
-		self.multiplierLabel.text = [NSString stringWithFormat:@"%@x (Highest: %@x)", [NSNumber numberWithUnsignedInteger:self.multiplier], [[NSUserDefaults standardUserDefaults] valueForKey:@"highMultiplier"]];
-		
-	} else if ([keyPath isEqualToString:@"gameTimeRemaining"]) {
-	
-		if (![self hideCountdown] && self.countdownLabel.hidden)
-			self.countdownLabel.hidden = NO;
-		else if ([self hideCountdown] && !self.countdownLabel.hidden)
-			self.countdownLabel.hidden = YES;
-		
-		if (!self.countdownLabel.hidden)
-			self.countdownLabel.text = [NSString stringWithFormat:@"%1.0f", self.gameTimeRemaining];
-    
-	} else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
-
 #pragma mark - View lifecycle
 
 
@@ -249,6 +191,64 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 {
     // Return YES for supported orientations
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([keyPath hasPrefix:@"firstSuggestion"]) {
+		[self.track1Button setImage:self.firstSuggestion.album.cover.image 
+						   forState:UIControlStateNormal];
+		self.track1ArtistLabel.text = [[self.firstSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
+		self.track1TitleLabel.text = self.firstSuggestion.name;
+		
+	} else if ([keyPath hasPrefix:@"secondSuggestion"]) {
+		[self.track2Button setImage:self.secondSuggestion.album.cover.image 
+						   forState:UIControlStateNormal];
+		self.track2ArtistLabel.text = [[self.secondSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
+		self.track2TitleLabel.text = self.secondSuggestion.name;
+		
+	} else if ([keyPath hasPrefix:@"thirdSuggestion"]) {
+		[self.track3Button setImage:self.thirdSuggestion.album.cover.image 
+						   forState:UIControlStateNormal];
+		self.track3ArtistLabel.text = [[self.thirdSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
+		self.track3TitleLabel.text = self.thirdSuggestion.name;
+		
+	} else if ([keyPath hasPrefix:@"fourthSuggestion"]) {
+		[self.track4Button setImage:self.fourthSuggestion.album.cover.image 
+						   forState:UIControlStateNormal];
+		self.track4ArtistLabel.text = [[self.fourthSuggestion.artists valueForKey:@"name"] componentsJoinedByString:@", "];
+		self.track4TitleLabel.text = self.fourthSuggestion.name;
+		
+	} else if ([keyPath hasPrefix:@"canPush"]) {
+		self.track1Button.enabled = self.canPushOne;
+		self.track2Button.enabled = self.canPushTwo;
+		self.track3Button.enabled = self.canPushThree;
+		self.track4Button.enabled = self.canPushFour;
+		
+	} else if ([keyPath isEqualToString:@"currentRoundScore"]) {
+		self.currentRoundScoreLabel.text = [self stringFromScore:self.currentRoundScore];
+		
+	} else if ([keyPath isEqualToString:@"roundTimeRemaining"]) {
+		self.roundProgressIndicator.progress = self.roundTimeRemaining / kRoundDuration;
+		
+	} else if ([keyPath isEqualToString:@"score"]) {
+		self.currentScoreLabel.text = [self stringFromScore:self.score];
+		
+	} else if ([keyPath isEqualToString:@"multiplier"]) {
+		self.multiplierLabel.text = [NSString stringWithFormat:@"%@x (Highest: %@x)", [NSNumber numberWithUnsignedInteger:self.multiplier], [[NSUserDefaults standardUserDefaults] valueForKey:@"highMultiplier"]];
+		
+	} else if ([keyPath isEqualToString:@"gameTimeRemaining"]) {
+		
+		if (![self hideCountdown] && self.countdownLabel.hidden)
+			self.countdownLabel.hidden = NO;
+		else if ([self hideCountdown] && !self.countdownLabel.hidden)
+			self.countdownLabel.hidden = YES;
+		
+		if (!self.countdownLabel.hidden)
+			self.countdownLabel.text = [NSString stringWithFormat:@"%1.0f", self.gameTimeRemaining];
+		
+	} else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 #pragma mark -

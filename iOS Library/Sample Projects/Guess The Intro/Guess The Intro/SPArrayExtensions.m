@@ -34,6 +34,10 @@
 
 @implementation NSArray (SPArrayExtensions)
 
++(void)initialize {
+    srandom((unsigned int)time(NULL));
+}
+
 -(id)randomObject {
 	
 	if ([self count] == 0)

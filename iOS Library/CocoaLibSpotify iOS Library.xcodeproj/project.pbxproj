@@ -384,7 +384,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = include;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = armv6;
 			};
 			name = Debug;
 		};
@@ -404,7 +403,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = include;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = armv6;
 			};
 			name = Release;
 		};
