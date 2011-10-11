@@ -105,7 +105,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 		for (int currentArtist =  0; currentArtist < relatedArtistCount; currentArtist++) {
 			sp_artist *artist = sp_artistbrowse_similar_artist(result, currentArtist);
 			if (artist != NULL) {
-				[relatedArtists addObject:[SPArtist artistWithArtistStruct:artist]];
+				[relatedArtists addObject:[SPArtist artistWithArtistStruct:artist inSession:artistBrowse.session]];
 			}
 		}
 		
@@ -136,7 +136,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 }
 
 +(SPArtistBrowse *)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
-	return [[[SPArtistBrowse alloc] initWithArtist:[SPArtist artistWithArtistURL:artistURL] 
+	return [[[SPArtistBrowse alloc] initWithArtist:[SPArtist artistWithArtistURL:artistURL inSession:aSession] 
 										 inSession:aSession
 											  type:browseMode] autorelease];
 }

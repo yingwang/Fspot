@@ -32,10 +32,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "SPArtist.h"
 #import "SPURLExtensions.h"
+#import "SPSession.h"
 
 @interface SPArtist ()
 
--(void)checkLoaded;
+-(BOOL)checkLoaded;
 @property (nonatomic, copy, readwrite) NSString *name;
 @property (nonatomic, copy, readwrite) NSURL *spotifyURL;
 
@@ -45,7 +46,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static NSMutableDictionary *artistCache;
 
-+(SPArtist *)artistWithArtistStruct:(sp_artist *)anArtist {
++(SPArtist *)artistWithArtistStruct:(sp_artist *)anArtist inSession:(SPSession *)aSession {
     
     if (artistCache == nil) {
         artistCache = [[NSMutableDictionary alloc] init];
@@ -58,20 +59,20 @@ static NSMutableDictionary *artistCache;
         return cachedArtist;
     }
     
-    cachedArtist = [[SPArtist alloc] initWithArtistStruct:anArtist];
+    cachedArtist = [[SPArtist alloc] initWithArtistStruct:anArtist inSession:aSession];
     
     [artistCache setObject:cachedArtist forKey:ptrValue];
     return [cachedArtist autorelease];
 }
 
-+(SPArtist *)artistWithArtistURL:(NSURL *)aURL {
++(SPArtist *)artistWithArtistURL:(NSURL *)aURL inSession:(SPSession *)aSession {
 	
 	if ([aURL spotifyLinkType] == SP_LINKTYPE_ARTIST) {
 		sp_link *link = [aURL createSpotifyLink];
 		if (link != NULL) {
 			sp_artist *artist = sp_link_as_artist(link);
 			sp_artist_add_ref(artist);
-			SPArtist *spArtist = [self artistWithArtistStruct:artist];
+			SPArtist *spArtist = [self artistWithArtistStruct:artist inSession:aSession];
 			sp_artist_release(artist);
 			sp_link_release(link);
 			return spArtist;
@@ -82,7 +83,7 @@ static NSMutableDictionary *artistCache;
 
 #pragma mark -
 
--(id)initWithArtistStruct:(sp_artist *)anArtist {
+-(id)initWithArtistStruct:(sp_artist *)anArtist inSession:(SPSession *)aSession {
     if ((self = [super init])) {
         artist = anArtist;
         sp_artist_add_ref(artist);
@@ -92,19 +93,16 @@ static NSMutableDictionary *artistCache;
             sp_link_release(link);
         }
 
-        [self checkLoaded];
+        if (![self checkLoaded]) {
+            [aSession addLoadingObject:self];
+        }
     }
     return self;
 }
 
--(void)checkLoaded {
+-(BOOL)checkLoaded {
     BOOL loaded = sp_artist_is_loaded(artist);
-    if (!loaded) {
-        [self performSelector:_cmd
-                   withObject:nil
-                   afterDelay:.25];
-    } else {
-        
+    if (loaded) {
         const char *nameCharArray = sp_artist_name(artist);
 		if (nameCharArray != NULL) {
 			NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
@@ -113,6 +111,7 @@ static NSMutableDictionary *artistCache;
 			self.name = nil;
 		}
     }
+	return loaded;
 }
 
 -(NSString *)description {

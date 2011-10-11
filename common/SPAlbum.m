@@ -49,7 +49,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite) sp_albumtype type;
 @property (nonatomic, readwrite) NSUInteger year;
 
--(void)checkLoaded;
+-(BOOL)checkLoaded;
 -(void)loadAlbumData;
 
 @end
@@ -105,21 +105,22 @@ static NSMutableDictionary *albumCache;
             self.spotifyURL = [NSURL urlWithSpotifyLink:link];
             sp_link_release(link);
         }
-		
-        [self checkLoaded];
+        
+        if (!sp_album_is_loaded(album)) {
+            [aSession addLoadingObject:self];
+        } else {
+            [self loadAlbumData];
+        }
     }
     return self;
 }
 
--(void)checkLoaded {
+-(BOOL)checkLoaded {
     BOOL isLoaded = sp_album_is_loaded(album);
-    if (!isLoaded) {
-        [self performSelector:_cmd
-                   withObject:nil
-                   afterDelay:.25];
-    } else {
+    if (isLoaded) {
         [self loadAlbumData];
     }
+	return isLoaded;
 }
 
 -(void)loadAlbumData {
@@ -132,7 +133,7 @@ static NSMutableDictionary *albumCache;
     
     sp_artist *spArtist = sp_album_artist(album);
     if (spArtist != NULL) {
-        [self setArtist:[SPArtist artistWithArtistStruct:spArtist]];
+        [self setArtist:[SPArtist artistWithArtistStruct:spArtist inSession:self.session]];
     }
     
 	const char *nameCharArray = sp_album_name(album);

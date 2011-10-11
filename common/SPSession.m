@@ -50,6 +50,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPPlaylistItem.h"
 #import "SPUnknownPlaylist.h"
 
+@interface NSObject (SPLoadedObject)
+-(BOOL)checkLoaded;
+@end
+
 @interface SPSession ()
 
 @property (nonatomic, readwrite, retain) SPUser *user;
@@ -69,6 +73,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSDictionary *offlineStatistics;
 
 @property (nonatomic, copy, readwrite) NSString *userAgent;
+
+-(void)checkLoadingObjects;
 
 @end
 
@@ -214,6 +220,8 @@ static void log_message(sp_session *session, const char *data) {
  */
 static void metadata_updated(sp_session *session) {
 	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	
+	[sess checkLoadingObjects];
 	
     SEL selector = @selector(sessionDidChangeMetadata:);
     
@@ -472,6 +480,7 @@ static SPSession *sharedSession;
         trackCache = [[NSMutableDictionary alloc] init];
         userCache = [[NSMutableDictionary alloc] init];
 		playlistCache = [[NSMutableDictionary alloc] init];
+		loadingObjects = [[NSMutableSet alloc] init];
 		
 		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
 		
@@ -868,7 +877,7 @@ static SPSession *sharedSession;
 }
 
 -(SPArtist *)artistForURL:(NSURL *)url {
-	return [SPArtist artistWithArtistURL:url];
+	return [SPArtist artistWithArtistURL:url inSession:self];
 }
 
 -(SPImage *)imageForURL:(NSURL *)url {
@@ -894,7 +903,7 @@ static SPSession *sharedSession;
 			return [self albumForURL:aSpotifyUrlOfSomeKind];
 			break;
 		case SP_LINKTYPE_ARTIST:
-			return [SPArtist artistWithArtistURL:aSpotifyUrlOfSomeKind];
+			return [SPArtist artistWithArtistURL:aSpotifyUrlOfSomeKind inSession:self];
 			break;
 		case SP_LINKTYPE_SEARCH:
 			return [self searchForURL:aSpotifyUrlOfSomeKind];
@@ -928,6 +937,25 @@ static SPSession *sharedSession;
                                                               message:aFriendlyMessage
                                                             inSession:self
                                                              delegate:operationDelegate] autorelease];	
+}
+
+-(void)addLoadingObject:(id)object;
+{
+	@synchronized(loadingObjects){
+		[loadingObjects addObject:object];
+	}
+}
+
+-(void)checkLoadingObjects{
+	//Let objects that got new metadata fire their KVO's
+	@synchronized(loadingObjects){
+		NSMutableSet *objects = [loadingObjects copy];
+		for(id object in objects){
+			if([object checkLoaded]){
+				[loadingObjects removeObject:object];
+			}
+		}
+	}
 }
 
 #pragma mark Properties
@@ -1066,6 +1094,7 @@ static SPSession *sharedSession;
     [trackCache release];
     [userCache release];
 	[playlistCache release];
+	[loadingObjects release];
     
     [super dealloc];
 }

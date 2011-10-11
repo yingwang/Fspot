@@ -111,7 +111,7 @@ void toplistbrowse_artists_complete(sp_toplistbrowse *result, void *userdata) {
 		for (int currentArtist =  0; currentArtist < artistCount; currentArtist++) {
 			sp_artist *artist = sp_toplistbrowse_artist(result, currentArtist);
 			if (artist != NULL) {
-				[artists addObject:[SPArtist artistWithArtistStruct:artist]];
+				[artists addObject:[SPArtist artistWithArtistStruct:artist inSession:toplist.session]];
 			}
 		}
 		
