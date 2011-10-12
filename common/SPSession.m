@@ -619,6 +619,7 @@ static SPSession *sharedSession;
 				localeId[2] = 0;
 				NSString *localeString = [NSString stringWithUTF8String:(const char *)&localeId];
 				self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:localeString] autorelease];
+
 			}
             
             if ([self connectionState] == SP_CONNECTION_STATE_LOGGED_OUT) {
