@@ -39,10 +39,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(void)loadUserData;
 
 @property (readwrite, copy) NSURL *spotifyURL;
-@property (readwrite, copy) NSURL *imageURL;
 @property (readwrite, copy) NSString *canonicalName;
 @property (readwrite, copy) NSString *displayName;
-@property (readwrite, copy) NSString *fullName;
 @property (readwrite, getter=isLoaded) BOOL loaded;
 
 @end
@@ -109,39 +107,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         if (display != NULL) {
             NSString *displayString = [NSString stringWithUTF8String:display];
             [self setDisplayName:[displayString length] > 0 ? displayString : nil];
-        }
-        
-        const char *full = sp_user_full_name(user);
-        if (full != NULL) {
-            NSString *fullString = [NSString stringWithUTF8String:full];
-            [self setFullName:[fullString length] > 0 ? fullString : nil];
-        }
-        
-        const char *url = sp_user_picture(user);
-        if (url != NULL) {
-            NSString *urlString = [NSString stringWithUTF8String:full];
-            [self setImageURL:[urlString length] > 0 ? [NSURL URLWithString:urlString] : nil];
-        }
+		}
     }
 }
 
 @synthesize spotifyURL;
-@synthesize imageURL;
 @synthesize canonicalName;
 @synthesize displayName;
-@synthesize fullName;
 @synthesize loaded;
 @synthesize user;
 
--(sp_relation_type)relationshipWithUser:(SPUser *)friendOrFoe {
-    return sp_user_relation_type([session session], [friendOrFoe user]);
-}
-
 -(void)dealloc {
-    [self setImageURL:nil];
     [self setCanonicalName:nil];
     [self setDisplayName:nil];
-    [self setFullName:nil];
     
     session = nil;
     sp_user_release(user);

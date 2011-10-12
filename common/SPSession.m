@@ -620,19 +620,7 @@ static SPSession *sharedSession;
 				NSString *localeString = [NSString stringWithUTF8String:(const char *)&localeId];
 				self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:localeString] autorelease];
 				
-                NSUInteger friendCount = sp_session_num_friends(session);
-                if (friendCount > 0) {
-                    NSMutableArray *newFriends = [NSMutableArray arrayWithCapacity:friendCount];
-                    NSUInteger currentFriend = 0;
-                    for (currentFriend = 0; currentFriend < friendCount; currentFriend++) {
-                        sp_user *friend = sp_session_friend(session, (int)currentFriend);
-                        if (friend != NULL) {
-                            [newFriends addObject:[SPUser userWithUserStruct:friend inSession:self]];
-                        }
-                    }
-                    [self setFriends:[NSArray arrayWithArray:newFriends]];
-                }
-            }
+			}
             
             if ([self connectionState] == SP_CONNECTION_STATE_LOGGED_OUT) {
 				
@@ -640,7 +628,6 @@ static SPSession *sharedSession;
 				self.starredPlaylist = nil;
 				self.userPlaylists = nil;
 				self.user = nil;
-				self.friends = nil;
 				self.locale = nil;
             }
             return;

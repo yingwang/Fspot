@@ -75,7 +75,6 @@ Playback
     __weak id <SPSessionDelegate> delegate;
     __weak id <SPSessionPlaybackDelegate> playbackDelegate;
     SPUser *user;
-    NSArray *friends;
 	NSLocale *locale;
 }
 
@@ -257,9 +256,6 @@ Playback
 ///----------------------------
 /// @name User Content
 ///----------------------------
-
-/** Returns the logged in user's friends, as an array of SPUser objects. */
-@property (readonly, retain) NSArray *friends;
 
 /** Returns the logged in user's inbox playlist.
  
