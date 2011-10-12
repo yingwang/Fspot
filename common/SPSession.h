@@ -406,6 +406,13 @@ Playback
 /// @name Audio Playback
 ///----------------------------
 
+/** Returns `YES` if the session is employing volume normalization (that is, attempts to keep the 
+ sound level of each track the same), otherwise `NO`.
+ 
+ @warning *Important:* This property currently has no effect on iOS platforms.
+ */
+@property (readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization;
+
 /** Returns `YES` if the session is currently playing a track, otherwise `NO`. */
 @property (readwrite, getter=isPlaying) BOOL playing;
 

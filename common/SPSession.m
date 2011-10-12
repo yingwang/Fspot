@@ -967,6 +967,14 @@ static SPSession *sharedSession;
 	return playing && (session != NULL);
 }
 
+-(void)setUsingVolumeNormalization:(BOOL)usingVolumeNormalization {
+	sp_session_set_volume_normalization(self.session, usingVolumeNormalization);
+}
+
+-(BOOL)isUsingVolumeNormalization {
+	return sp_session_get_volume_normalization(self.session);
+}
+
 -(void)unloadPlayback {
 	self.playing = NO;
     if (session)
