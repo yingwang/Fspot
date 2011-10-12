@@ -116,6 +116,22 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Returns `YES` if the track is in the logged-in user's starred list. */
 @property (readwrite) BOOL starred;
 
+/** 
+ Returns an `sp_track_offline_status` containing the offline status of the track.
+ 
+ Possible values:
+ 
+`SP_TRACK_OFFLINE_NO`: Not marked for offline
+`SP_TRACK_OFFLINE_WAITING`: Waiting for download
+`SP_TRACK_OFFLINE_DOWNLOADING`: Currently downloading
+`SP_TRACK_OFFLINE_DONE`: Downloaded OK and can be played
+`SP_TRACK_OFFLINE_ERROR`: Error during download
+`SP_TRACK_OFFLINE_DONE_EXPIRED`: Downloaded OK but not playable due to expiery
+`SP_TRACK_OFFLINE_RATE_EXCEEDED`: Waiting because download rate limit is exceeded
+`SP_TRACK_OFFLINE_DONE_RESYNC`: Downloaded OK and available but scheduled for re-download
+ */
+@property (readonly) sp_track_offline_status offlineStatus;
+
 ///----------------------------
 /// @name Metadata
 ///----------------------------

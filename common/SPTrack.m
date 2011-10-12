@@ -207,6 +207,10 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
     sp_track_set_starred([session session], (sp_track *const *)&track, 1, starred);
 }
 
+-(sp_track_offline_status)offlineStatus {
+	return sp_track_offline_get_status(self.track);
+}
+
 @synthesize spotifyURL;
 @synthesize track;
 
