@@ -129,16 +129,19 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 
 @implementation SPArtistBrowse
 
-+(SPArtistBrowse *)browseArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession {
-	return [[[SPArtistBrowse alloc] initWithArtist:anArtist inSession:aSession] autorelease];
++(SPArtistBrowse *)browseArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
+	return [[[SPArtistBrowse alloc] initWithArtist:anArtist
+										 inSession:aSession
+											  type:browseMode] autorelease];
 }
 
-+(SPArtistBrowse *)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession {
++(SPArtistBrowse *)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
 	return [[[SPArtistBrowse alloc] initWithArtist:[SPArtist artistWithArtistURL:artistURL] 
-										 inSession:aSession] autorelease];
+										 inSession:aSession
+											  type:browseMode] autorelease];
 }
 
--(id)initWithArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession {
+-(id)initWithArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
 	
 	if (anArtist == nil || aSession == nil) {
 		[self release];
@@ -151,6 +154,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 		
 		sp_artistbrowse *artistBrowse = sp_artistbrowse_create(self.session.session,
 															   self.artist.artist,
+															   browseMode,
 															   &artistbrowse_complete,
 															   self);
 		if (artistBrowse != NULL) {
