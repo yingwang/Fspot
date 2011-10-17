@@ -615,7 +615,7 @@ static SPSession *sharedSession;
                     NSMutableArray *newFriends = [NSMutableArray arrayWithCapacity:friendCount];
                     NSUInteger currentFriend = 0;
                     for (currentFriend = 0; currentFriend < friendCount; currentFriend++) {
-                        sp_user *friend = sp_session_friend(session, (int)friendCount);
+                        sp_user *friend = sp_session_friend(session, (int)currentFriend);
                         if (friend != NULL) {
                             [newFriends addObject:[SPUser userWithUserStruct:friend inSession:self]];
                         }
