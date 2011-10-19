@@ -233,21 +233,21 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 		trackBrowseOperation = sp_toplistbrowse_create(self.session.session,
 													   SP_TOPLIST_TYPE_TRACKS,
 													   region, 
-													   NULL,
+													   [self.username UTF8String],
 													   &toplistbrowse_tracks_complete, 
 													   self);
 		
 		artistBrowseOperation = sp_toplistbrowse_create(self.session.session,
 														SP_TOPLIST_TYPE_ARTISTS,
 														region, 
-														NULL,
+														[self.username UTF8String],
 														&toplistbrowse_artists_complete, 
 														self);
 		
 		albumBrowseOperation = sp_toplistbrowse_create(self.session.session,
 													   SP_TOPLIST_TYPE_ALBUMS,
 													   region, 
-													   NULL,
+													   [self.username UTF8String],
 													   &toplistbrowse_albums_complete, 
 													   self);
 		
