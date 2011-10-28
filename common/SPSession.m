@@ -488,6 +488,8 @@ static SPSession *sharedSession;
 		
 		sp_session_config config;
 		
+		memset(&config, 0, sizeof(config));
+
 		config.api_version = SPOTIFY_API_VERSION;
 		config.application_key = [appKey bytes];
 		config.application_key_size = [appKey length];
