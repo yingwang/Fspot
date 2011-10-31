@@ -53,6 +53,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readwrite, retain) NSLocale *locale;
 
 @property (readonly, retain) NSMutableDictionary *playlistCache;
+@property (readwrite, retain) NSError *offlineSyncError;
 
 @property (readwrite, retain) SPPlaylist *inboxPlaylist;
 @property (readwrite, retain) SPPlaylist *starredPlaylist;
@@ -364,6 +365,13 @@ static void offline_status_updated(sp_session *session) {
 	[pool drain];
 }
 
+// Called when an error occurs during offline syncing.
+static void offline_error(sp_session *session, sp_error error) {
+	
+	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	sess.offlineSyncError = [NSError spotifyErrorWithCode:error];
+}
+
 static sp_session_callbacks _callbacks = {
 	&logged_in,
 	&logged_out,
@@ -380,7 +388,8 @@ static sp_session_callbacks _callbacks = {
 	NULL, //start_playback
 	NULL, //stop_playback
 	NULL, //get_audio_buffer_stats
-	&offline_status_updated
+	&offline_status_updated,
+	&offline_error
 };
 
 #pragma mark -
@@ -668,6 +677,7 @@ static SPSession *sharedSession;
 @synthesize user;
 @synthesize friends;
 @synthesize locale;
+@synthesize offlineSyncError;
 
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     
@@ -1018,6 +1028,7 @@ static SPSession *sharedSession;
 	self.user = nil;
 	self.friends = nil;
 	self.locale = nil;
+	self.offlineSyncError = nil;
     
     [trackCache release];
     [userCache release];

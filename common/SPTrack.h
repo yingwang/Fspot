@@ -96,8 +96,23 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// @name Properties
 ///----------------------------
 
-/** Returns `YES` if the track is available for playback. */
-@property (readonly) BOOL availableForPlayback;
+/** Returns availability for this  track. 
+ 
+ Possible return values:
+ 
+ SP_TRACK_AVAILABILITY_UNAVAILABLE
+ Track is not available
+ 
+ SP_TRACK_AVAILABILITY_AVAILABLE 
+ Track is available and can be played
+ 
+ SP_TRACK_AVAILABILITY_NOT_STREAMABLE
+ Track can not be streamed using this account
+ 
+ SP_TRACK_AVAILABILITY_BANNED_BY_ARTIST
+ Track not available on artist's reqeust
+ */
+@property (readonly) sp_track_availability availability;
 
 /** Returns `YES` if the track has finished loading and all data is available. */ 
 @property (readonly, getter=isLoaded) BOOL loaded;

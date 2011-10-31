@@ -191,8 +191,8 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
     }
 }
 
--(BOOL)availableForPlayback {
-    return sp_track_is_available([session session], track);
+-(sp_track_availability)availability {
+    return sp_track_get_availability([session session], track);
 }
 
 -(BOOL)isLoaded {

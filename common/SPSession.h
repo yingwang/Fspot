@@ -253,6 +253,9 @@ Playback
 /** Returns the time until the user needs to reconnect to Spotify to renew offline syncing keys. */
 @property (readonly) NSTimeInterval offlineKeyTimeRemaining;
 
+/** Returns the last error encountered during offline syncing, or `nil` if there is no problem. */
+@property (readonly, retain) NSError *offlineSyncError;
+
 ///----------------------------
 /// @name User Content
 ///----------------------------
