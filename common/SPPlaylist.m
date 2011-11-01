@@ -576,7 +576,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	return [itemWrapper count];
 }
 
--(SPPlaylistItem *)msAtIndex:(NSInteger)anIndex {
+-(SPPlaylistItem *)objectInItemsAtIndex:(NSInteger)anIndex {
 	return [itemWrapper objectAtIndex:anIndex];
 }
 
