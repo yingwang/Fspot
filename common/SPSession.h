@@ -76,6 +76,7 @@ Playback
     __weak id <SPSessionPlaybackDelegate> playbackDelegate;
     SPUser *user;
 	NSLocale *locale;
+	NSError *offlineSyncError;
 }
 
 /** Returns a shared SPSession object. 

@@ -49,7 +49,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @interface SPSession ()
 
 @property (readwrite, retain) SPUser *user;
-@property (readwrite, retain) NSArray *friends;
 @property (readwrite, retain) NSLocale *locale;
 
 @property (readonly, retain) NSMutableDictionary *playlistCache;
@@ -662,7 +661,6 @@ static SPSession *sharedSession;
 	self.starredPlaylist = nil;
 	self.userPlaylists = nil;
 	self.user = nil;
-	self.friends = nil;
 	self.locale = nil;
 	
 	if (session != NULL) {
@@ -675,7 +673,6 @@ static SPSession *sharedSession;
 @synthesize starredPlaylist;
 @synthesize userPlaylists;
 @synthesize user;
-@synthesize friends;
 @synthesize locale;
 @synthesize offlineSyncError;
 
@@ -1026,7 +1023,6 @@ static SPSession *sharedSession;
 	self.starredPlaylist = nil;
 	self.userPlaylists = nil;
 	self.user = nil;
-	self.friends = nil;
 	self.locale = nil;
 	self.offlineSyncError = nil;
     
