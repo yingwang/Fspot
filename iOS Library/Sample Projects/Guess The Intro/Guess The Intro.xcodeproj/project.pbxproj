@@ -384,7 +384,6 @@
 		50A0D846143AF62200458686 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv6;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Guess The Intro/Guess The Intro-Prefix.pch";
 				HEADER_SEARCH_PATHS = $CONFIGURATION_BUILD_DIR/include;
@@ -394,7 +393,6 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = armv6;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -402,7 +400,6 @@
 		50A0D847143AF62200458686 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv6;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Guess The Intro/Guess The Intro-Prefix.pch";
 				HEADER_SEARCH_PATHS = $CONFIGURATION_BUILD_DIR/include;
@@ -412,7 +409,6 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = armv6;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
