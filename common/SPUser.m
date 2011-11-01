@@ -56,6 +56,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(id)initWithUserStruct:(sp_user *)aUser inSession:(SPSession *)aSession {
+	
+	if (aUser == NULL) {
+		[self release];
+		return nil;
+	}
+	
     if ((self = [super init])) {
         user = aUser;
         sp_user_add_ref(user);

@@ -1,8 +1,3 @@
-//
-//  CocoaLibSpotify.h
-//  CocoaLibSpotify
-//
-//  Created by Daniel Kennett on 8/25/11.
 /*
  Copyright (c) 2011, Spotify AB
  All rights reserved.
@@ -31,17 +26,12 @@
  */
 
 /* 
- This file allows us to keep the main CocoaLibSpotify as platform-agnostic as possible.
-*/
+ This file contains protocols and other things needed throughout the library.
+ */
 
-#if TARGET_OS_IPHONE
-#import "api.h"
-#import <UIKit/UIKit.h>
-#import "SPCommon.h"
-#define SPPlatformNativeImage UIImage
-#else
-#import <Cocoa/Cocoa.h>
-#import <libspotify/api.h>
-#import <CocoaLibSpotify/SPCommon.h>
-#define SPPlatformNativeImage NSImage
-#endif
+@protocol SPPlaylistableItem <NSObject>
+
+-(NSString *)name;
+-(NSURL *)spotifyURL;
+
+@end

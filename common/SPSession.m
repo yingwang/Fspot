@@ -438,7 +438,7 @@ static SPSession *sharedSession;
                   context:kSPSessionKVOContext];
 		
 		[self addObserver:self
-			   forKeyPath:@"starredPlaylist.tracks"
+			   forKeyPath:@"starredPlaylist.items"
 				  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
 				  context:kSPSessionKVOContext];
 		
@@ -576,7 +576,7 @@ static SPSession *sharedSession;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == kSPSessionKVOContext) {
 		
-		if ([keyPath isEqualToString:@"starredPlaylist.tracks"]) {
+		if ([keyPath isEqualToString:@"starredPlaylist.items"]) {
 			// Bit of a hack to KVO the starred-ness of tracks.
 			
 			NSArray *oldStarredTracks = [change valueForKey:NSKeyValueChangeOldKey];
@@ -702,7 +702,10 @@ static SPSession *sharedSession;
     
     cachedUser = [[SPUser alloc] initWithUserStruct:spUser
                                           inSession:self];
-    [userCache setObject:cachedUser forKey:ptrValue];
+	
+	if (cachedUser != nil)
+		[userCache setObject:cachedUser forKey:ptrValue];
+	
     return [cachedUser autorelease];
 }
 
@@ -1012,7 +1015,7 @@ static SPSession *sharedSession;
 -(void)dealloc {
     
     [self removeObserver:self forKeyPath:@"connectionState"];
-	[self removeObserver:self forKeyPath:@"starredPlaylist.tracks"];
+	[self removeObserver:self forKeyPath:@"starredPlaylist.items"];
     
 	if (session != NULL) {
 		[self unloadPlayback];

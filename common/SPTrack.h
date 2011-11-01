@@ -41,7 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPAlbum;
 @class SPSession;
 
-@interface SPTrack : NSObject {
+@interface SPTrack : NSObject <SPPlaylistableItem> {
     @private
     sp_track *track;
     __weak SPSession *session;

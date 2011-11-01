@@ -1,8 +1,3 @@
-//
-//  CocoaLibSpotify.h
-//  CocoaLibSpotify
-//
-//  Created by Daniel Kennett on 8/25/11.
 /*
  Copyright (c) 2011, Spotify AB
  All rights reserved.
@@ -30,18 +25,42 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
- This file allows us to keep the main CocoaLibSpotify as platform-agnostic as possible.
-*/
+#import <Foundation/Foundation.h>
+#import "CocoaLibSpotifyPlatformImports.h"
 
-#if TARGET_OS_IPHONE
-#import "api.h"
-#import <UIKit/UIKit.h>
-#import "SPCommon.h"
-#define SPPlatformNativeImage UIImage
-#else
-#import <Cocoa/Cocoa.h>
-#import <libspotify/api.h>
-#import <CocoaLibSpotify/SPCommon.h>
-#define SPPlatformNativeImage NSImage
-#endif
+@class SPPlaylist;
+@class SPUser;
+
+@interface SPPlaylistItem : NSObject {
+	id item;
+	__weak SPPlaylist *playlist;
+	int itemIndex;
+	NSDate *dateAdded;
+	SPUser *creator;
+	NSString *message;
+}
+
+-(id)initWithPlaceholderTrack:(sp_track *)track atIndex:(int)itemIndex inPlaylist:(SPPlaylist *)aPlaylist;
+
+@property (readonly) NSURL *itemURL;
+@property (readonly) sp_linktype itemURLType;
+
+@property (readonly, retain) id <SPPlaylistableItem> item;
+@property (readonly) Class itemClass;
+
+@property (readwrite, getter = isUnread) BOOL unread;
+@property (readonly, copy) NSDate *dateAdded;
+@property (readonly, retain) SPUser *creator;
+@property (readonly, copy) NSString *message;
+
+@property (readonly) int itemIndex;
+
+// --
+
+-(void)setDateCreatedFromLibSpotify:(NSDate *)date;
+-(void)setCreatorFromLibSpotify:(SPUser *)user;
+-(void)setUnreadFromLibSpotify:(BOOL)unread;
+-(void)setMessageFromLibSpotify:(NSString *)msg;
+-(void)setItemIndexFromLibSpotify:(int)newIndex;
+
+@end
