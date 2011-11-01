@@ -65,10 +65,13 @@ static NSMutableDictionary *artistCache;
 +(SPArtist *)artistWithArtistURL:(NSURL *)aURL {
 	
 	if ([aURL spotifyLinkType] == SP_LINKTYPE_ARTIST) {
-		sp_artist *artist = sp_link_as_artist([aURL createSpotifyLink]);
-		if (artist != NULL) {
+		sp_link *link = [aURL createSpotifyLink];
+		if (link != NULL) {
+			sp_artist *artist = sp_link_as_artist(link);
+			sp_artist_add_ref(artist);
 			SPArtist *spArtist = [self artistWithArtistStruct:artist];
 			sp_artist_release(artist);
+			sp_link_release(link);
 			return spArtist;
 		}
 	}

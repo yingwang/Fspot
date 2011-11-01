@@ -76,9 +76,12 @@ static NSMutableDictionary *albumCache;
 +(SPAlbum *)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession {
 	
 	if ([aURL spotifyLinkType] == SP_LINKTYPE_ALBUM) {
-		sp_album *album = sp_link_as_album([aURL createSpotifyLink]);
-		if (album != NULL) {
+		sp_link *link = [aURL createSpotifyLink];
+		if (link != NULL) {
+			sp_album *album = sp_link_as_album(link);
+			sp_album_add_ref(album);
 			SPAlbum *spAlbum = [self albumWithAlbumStruct:album inSession:aSession];
+			sp_link_release(link);
 			sp_album_release(album);
 			return spAlbum;
 		}

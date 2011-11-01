@@ -747,8 +747,11 @@ static SPSession *sharedSession;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_track *track = sp_link_as_track(link);
+			sp_track_add_ref(track);
+			SPTrack *trackObj = [self trackForTrackStruct:track];
+			sp_track_release(track);
 			sp_link_release(link);
-			return [self trackForTrackStruct:track];
+			return trackObj;
 		}
 	}
 	
@@ -761,8 +764,11 @@ static SPSession *sharedSession;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_user *aUser = sp_link_as_user(link);
+			sp_user_add_ref(aUser);
+			SPUser *userObj = [self userForUserStruct:aUser];
 			sp_link_release(link);
-			return [self userForUserStruct:aUser];
+			sp_user_release(aUser);
+			return userObj;
 		}
 	}
 	
