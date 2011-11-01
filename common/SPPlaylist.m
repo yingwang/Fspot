@@ -331,7 +331,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 }
 
 -(NSString *)description {
-    
     return [NSString stringWithFormat:@"%@: %@ (%d items)", [super description], [self name], [[self valueForKey:@"items"] count]];
 }
 
@@ -577,22 +576,27 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	return [itemWrapper count];
 }
 
--(SPPlaylistItem *)objectInItemsAtIndex:(NSInteger)anIndex {
+-(SPPlaylistItem *)msAtIndex:(NSInteger)anIndex {
 	return [itemWrapper objectAtIndex:anIndex];
 }
 
--(void)insertObject:(SPPlaylistItem *)anItem inItemsAtIndex:(NSInteger)anIndex {
+-(void)insertObject:(id)anItem inItemsAtIndex:(NSInteger)anIndex {
 	if (anItem != nil) {
 		if (self.trackChangesAreFromLibSpotifyCallback) {
 			[itemWrapper insertObject:anItem atIndex:anIndex];
 			[self resetItemIndexes];
-		} else if ([anItem.itemClass isKindOfClass:[SPTrack class]]) {
 			
-			sp_track *const track = [(SPTrack *)anItem.item track];
+		} else if (([anItem isKindOfClass:[SPTrack class]]) || ([anItem isKindOfClass:[SPPlaylistItem class]] && [((SPPlaylistItem *)anItem).itemClass isKindOfClass:[SPTrack class]])) {
+			
+			sp_track *track;
+			
+			if ([anItem isKindOfClass:[SPTrack class]])
+				track = [anItem track];
+			else
+				track = [(SPTrack *)((SPPlaylistItem *)anItem).item track];
+			
 			sp_track *const *trackPointer = &track;
 			sp_playlist_add_tracks(playlist, trackPointer, 1, (int)anIndex, [session session]);
-		} else {
-			//TODO: Throw an exception?
 		}
 	}
 }

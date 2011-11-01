@@ -185,6 +185,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  This array is KVO compliant, and any changes made will be reflected in the user's account.
  
+ @warning *Important:* You can add both `SPTrack` and `SPPlaylistItem` objects to this array.
+ `SPTrack` objects will automatically be wrapped inside an `SPPlaylistItem`.
+ 
  @warning *Important:* If you need to move an item from one location in this list to another, please
  use `-moveItemsAtIndexes:toIndex:error:` for performance reasons.
  
