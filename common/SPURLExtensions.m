@@ -75,8 +75,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	sp_link *link = [self createSpotifyLink];
 	if (link != NULL) {
-		return sp_link_type(link);
+		sp_linktype linkType = sp_link_type(link);
 		sp_link_release(link);
+		return linkType;
 	}
 	return SP_LINKTYPE_INVALID;
 }
