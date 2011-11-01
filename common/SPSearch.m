@@ -58,16 +58,31 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readwrite) sp_search *activeSearch;
 
 -(id)initWithSession:(SPSession *)aSession; // Designated initialiser.
--(void)searchDidComplete:(sp_search *)search;
+-(void)searchDidComplete:(sp_search *)search wasSearchingForTracks:(BOOL)searchTracks artists:(BOOL)searchArtists albums:(BOOL)searchAlbums;
 
 @end
+
+static NSString * const kSPSearchCallbackSearchObjectKey = @"session";
+static NSString * const kSPSearchCallbackSearchingTracksKey = @"tracks";
+static NSString * const kSPSearchCallbackSearchingArtistsKey = @"artists";
+static NSString * const kSPSearchCallbackSearchingAlbumsKey = @"albums";
+
 
 #pragma mark C Callbacks
 
 void search_complete(sp_search *result, void *userdata);
 void search_complete(sp_search *result, void *userdata) {
-	SPSearch *search = userdata;
-	[search searchDidComplete:result];
+	
+	NSDictionary *properties = userdata;
+	SPSearch *search = [properties valueForKey:kSPSearchCallbackSearchObjectKey];
+	
+	[search searchDidComplete:result 
+		wasSearchingForTracks:[[properties valueForKey:kSPSearchCallbackSearchingTracksKey] boolValue]
+					  artists:[[properties valueForKey:kSPSearchCallbackSearchingArtistsKey] boolValue]
+					   albums:[[properties valueForKey:kSPSearchCallbackSearchingAlbumsKey] boolValue]];
+	
+	[properties release];
+	// ^ Was retained when the search was created.
 }
 
 #pragma mark -
@@ -195,7 +210,7 @@ void search_complete(sp_search *result, void *userdata) {
 
 #pragma mark -
 
--(void)searchDidComplete:(sp_search *)search {
+-(void)searchDidComplete:(sp_search *)search wasSearchingForTracks:(BOOL)searchTracks artists:(BOOL)searchArtists albums:(BOOL)searchAlbums {
 
 	[self willChangeValueForKey:@"searchInProgress"];
 	
@@ -213,65 +228,74 @@ void search_complete(sp_search *result, void *userdata) {
 		
 	//Albums 
 	
-	int albumCount = sp_search_num_albums(search);
-	
-	if (albumCount > 0) {
-		NSMutableArray *newAlbums = [NSMutableArray array];
+	if (searchAlbums) {
 		
-		for (int currentAlbum = 0; currentAlbum < albumCount; currentAlbum++) {
-			SPAlbum *album = [SPAlbum albumWithAlbumStruct:sp_search_album(search, currentAlbum)
-															   inSession:self.session];
-			if (album != nil) {
-				[newAlbums addObject:album];
+		int albumCount = sp_search_num_albums(search);
+		
+		if (albumCount > 0) {
+			NSMutableArray *newAlbums = [NSMutableArray array];
+			
+			for (int currentAlbum = 0; currentAlbum < albumCount; currentAlbum++) {
+				SPAlbum *album = [SPAlbum albumWithAlbumStruct:sp_search_album(search, currentAlbum)
+													 inSession:self.session];
+				if (album != nil) {
+					[newAlbums addObject:album];
+				}
 			}
+			albumCount = (int)[newAlbums count];
+			self.albums = [self.albums arrayByAddingObjectsFromArray:newAlbums];
 		}
-		albumCount = (int)[newAlbums count];
-		self.albums = [self.albums arrayByAddingObjectsFromArray:newAlbums];
+		
+		self.hasExhaustedAlbumResults = (albumCount < pageSize);
+		requestedAlbumResults += albumCount;
 	}
 	
-	self.hasExhaustedAlbumResults = (albumCount < pageSize);
-	requestedAlbumResults += albumCount;
+	//Artists
 	
-	//Artists 
-	
-	int artistCount = sp_search_num_artists(search);
-	
-	if (artistCount > 0) {
-		NSMutableArray *newArtists = [NSMutableArray array];
+	if (searchArtists) {
 		
-		for (int currentArtist = 0; currentArtist < artistCount; currentArtist++) {
-			SPArtist *artist = [SPArtist artistWithArtistStruct:sp_search_artist(search, currentArtist)];			
-			if (artist != nil) {
-				[newArtists addObject:artist];
+		int artistCount = sp_search_num_artists(search);
+		
+		if (artistCount > 0) {
+			NSMutableArray *newArtists = [NSMutableArray array];
+			
+			for (int currentArtist = 0; currentArtist < artistCount; currentArtist++) {
+				SPArtist *artist = [SPArtist artistWithArtistStruct:sp_search_artist(search, currentArtist)];			
+				if (artist != nil) {
+					[newArtists addObject:artist];
+				}
 			}
+			artistCount = (int)[newArtists count];
+			self.artists = [self.artists arrayByAddingObjectsFromArray:newArtists];
 		}
-		artistCount = (int)[newArtists count];
-		self.artists = [self.artists arrayByAddingObjectsFromArray:newArtists];
+		
+		self.hasExhaustedArtistResults = (artistCount < pageSize);
+		requestedArtistResults += artistCount;
 	}
-	
-	self.hasExhaustedArtistResults = (artistCount < pageSize);
-	requestedArtistResults += artistCount;
 	
 	//Tracks 
 	
-	int trackCount = sp_search_num_tracks(search);
-	
-	if (trackCount > 0) {
-		NSMutableArray *newTracks = [NSMutableArray array];
+	if (searchTracks) {
 		
-		for (int currentTrack = 0; currentTrack < trackCount; currentTrack++) {
-			SPTrack *track = [SPTrack trackForTrackStruct:sp_search_track(search, currentTrack)
-															  inSession:self.session];			
-			if (track != nil) {
-				[newTracks addObject:track];
+		int trackCount = sp_search_num_tracks(search);
+		
+		if (trackCount > 0) {
+			NSMutableArray *newTracks = [NSMutableArray array];
+			
+			for (int currentTrack = 0; currentTrack < trackCount; currentTrack++) {
+				SPTrack *track = [SPTrack trackForTrackStruct:sp_search_track(search, currentTrack)
+													inSession:self.session];			
+				if (track != nil) {
+					[newTracks addObject:track];
+				}
 			}
+			trackCount = (int)[newTracks count];
+			self.tracks = [self.tracks arrayByAddingObjectsFromArray:newTracks];
 		}
-		trackCount = (int)[newTracks count];
-		self.tracks = [self.tracks arrayByAddingObjectsFromArray:newTracks];
+		
+		self.hasExhaustedTrackResults = (trackCount < pageSize);
+		requestedTrackResults += trackCount;
 	}
-	
-	self.hasExhaustedTrackResults = (trackCount < pageSize);
-	requestedTrackResults += trackCount;
 	
 	[self didChangeValueForKey:@"searchInProgress"];
 }
@@ -313,6 +337,14 @@ void search_complete(sp_search *result, void *userdata) {
 		
 		if (artistCount > 0 || albumCount > 0 || trackCount > 0) {
 			
+			NSMutableDictionary *userData = [[NSMutableDictionary alloc] initWithCapacity:4];
+			// ^ Don't release userData, it needs to survive through a search operation. The complete callback releases it.
+			
+			[userData setValue:self forKey:kSPSearchCallbackSearchObjectKey];
+			[userData setValue:[NSNumber numberWithBool:searchArtist] forKey:kSPSearchCallbackSearchingArtistsKey];
+			[userData setValue:[NSNumber numberWithBool:searchAlbum] forKey:kSPSearchCallbackSearchingAlbumsKey];
+			[userData setValue:[NSNumber numberWithBool:searchTrack] forKey:kSPSearchCallbackSearchingTracksKey];
+			
 			sp_search *newSearch = sp_search_create(self.session.session, 
 													[self.searchQuery UTF8String], //query 
 													trackOffset, // track_offset 
@@ -322,7 +354,7 @@ void search_complete(sp_search *result, void *userdata) {
 													artistOffset, //artist_offset 
 													artistCount, //artist_count 
 													&search_complete, //callback
-													self); // userdata
+													userData); // userdata
 			if (newSearch != NULL) {
 				self.activeSearch = newSearch;
 				sp_search_release(newSearch);
