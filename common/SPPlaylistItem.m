@@ -34,7 +34,7 @@
 
 @interface SPPlaylistItem ()
 
-@property (readwrite, retain) id item;
+@property (readwrite, retain) id <SPPlaylistableItem> item;
 @property (readwrite, copy) NSDate *dateAdded;
 @property (readwrite, retain) SPUser *creator;
 @property (readwrite, copy) NSString *message;
