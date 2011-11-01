@@ -221,6 +221,7 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 	return nil;
 	
 }
+
 -(id)initUserToplistWithUsername:(NSString *)user inSession:(SPSession *)aSession {
 
 	if (aSession != nil && (self = [super init])) {
@@ -256,6 +257,13 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 	
 	[self release];
 	return nil;
+}
+
+-(NSString *)description {
+	if (self.locale == nil)
+		return [NSString stringWithFormat:@"%@: User toplist browse for %@", [super description], self.username];
+	else
+		return [NSString stringWithFormat:@"%@: Locale toplist browse for %@", [super description], self.locale];
 }
 
 @synthesize tracks;

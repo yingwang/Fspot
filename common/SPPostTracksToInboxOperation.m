@@ -122,6 +122,10 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 	return self;
 }
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: Sending to %@: %@", [super description], self.destinationUser, self.tracks];
+}
+
 @synthesize session;
 @synthesize destinationUser;
 @synthesize tracks;

@@ -165,6 +165,10 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 	return self;
 }
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: %@", [super description], self.artist];
+}
+
 @synthesize loaded;
 @synthesize loadError;
 @synthesize artist;

@@ -265,6 +265,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     return self;
 }
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: %@ %@", [super description], self.name, [self valueForKey:@"playlists"]];
+}
+
 -(NSRange)containerPlaylistRange {
 	return containerPlaylistRange;
 }

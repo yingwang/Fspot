@@ -80,6 +80,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     return self;
 }
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: %@", [super description], self.canonicalName];
+}
+
 -(void)checkLoaded {
     BOOL userLoaded = sp_user_is_loaded(user);
     if (!userLoaded) {

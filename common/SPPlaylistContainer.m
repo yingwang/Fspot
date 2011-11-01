@@ -86,6 +86,10 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 
 @implementation SPPlaylistContainer
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: %@", [super description], [self playlists]];
+}
+
 @synthesize owner;
 @synthesize session;
 @synthesize container;

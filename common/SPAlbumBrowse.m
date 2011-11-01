@@ -134,6 +134,10 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 	return self;
 }
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: %@", [super description], self.album];
+}
+
 @synthesize loaded;
 @synthesize loadError;
 @synthesize session;

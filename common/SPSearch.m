@@ -150,6 +150,10 @@ void search_complete(sp_search *result, void *userdata) {
 	}
 }
 
+-(NSString *)description {
+	return [NSString stringWithFormat:@"%@: %@", [super description], self.searchQuery];
+}
+
 @synthesize tracks;
 @synthesize artists;
 @synthesize albums;
