@@ -273,16 +273,16 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 		}
 	}
 	
-	NSMutableArray *potentialTrackPool = [NSMutableArray arrayWithArray:[playlistPool valueForKeyPath:@"@unionOfArrays.tracks"]];
-	[potentialTrackPool addObjectsFromArray:starred.tracks];
-	[potentialTrackPool addObjectsFromArray:inbox.tracks];
+	NSMutableArray *potentialTrackPool = [NSMutableArray arrayWithArray:[self tracksFromPlaylistItems:[playlistPool valueForKeyPath:@"@unionOfArrays.items"]]];
+	[potentialTrackPool addObjectsFromArray:[self tracksFromPlaylistItems:starred.items]];
+	[potentialTrackPool addObjectsFromArray:[self tracksFromPlaylistItems:inbox.items]];
 	[potentialTrackPool addObjectsFromArray:self.regionTopList.tracks];
 	[potentialTrackPool addObjectsFromArray:self.userTopList.tracks];
 	
 	NSMutableArray *theTrackPool = [NSMutableArray arrayWithCapacity:[potentialTrackPool count]];
 	
 	for (SPTrack *aTrack in potentialTrackPool) {
-		if (aTrack.availableForPlayback && [aTrack.name length] > 0)
+		if (aTrack.availability == SP_TRACK_AVAILABILITY_AVAILABLE && [aTrack.name length] > 0)
 			[theTrackPool addObject:aTrack];
 	}
 	
@@ -311,10 +311,23 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 	return [NSArray arrayWithArray:playlists];
 }
 
+-(NSArray *)tracksFromPlaylistItems:(NSArray *)items {
+	
+	NSMutableArray *tracks = [NSMutableArray arrayWithCapacity:items.count];
+	
+	for (SPPlaylistItem *anItem in items) {
+		if (anItem.itemClass == [SPTrack class]) {
+			[tracks addObject:anItem.item];
+		}
+	}
+	
+	return [NSArray arrayWithArray:tracks];
+}
+
 -(SPTrack *)trackForUserToGuessWithAlternativeOne:(SPTrack **)alternative two:(SPTrack **)anotherAlternative three:(SPTrack **)aThirdAlternative {
 	
 	SPTrack *theOne = nil;
-	while (![theOne availableForPlayback] && [theOne duration] < kRoundDuration) {
+	while ((!theOne.availability == SP_TRACK_AVAILABILITY_AVAILABLE) && theOne.duration < kRoundDuration) {
 		theOne = [self.trackPool randomObject];
 		[self.trackPool removeObject:theOne];
 		
@@ -440,7 +453,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 -(void)startNewRound {
 	
 	if (self.playbackManager.currentTrack != nil)
-		[self.playlist.tracks addObject:self.playbackManager.currentTrack];
+		[self.playlist.items addObject:self.playbackManager.currentTrack];
 	
 	// Starting a new round means resetting, selecting tracks then starting the timer again 
 	// when the audio starts playing.

@@ -346,7 +346,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"../../libspotify-9.1.32-Darwin-universal",
+					$CONFIGURATION_BUILD_DIR/CocoaLibSpotify.framework/Versions/Frameworks,
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -368,7 +368,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"../../libspotify-9.1.32-Darwin-universal",
+					$CONFIGURATION_BUILD_DIR/CocoaLibSpotify.framework/Versions/Frameworks,
 				);
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

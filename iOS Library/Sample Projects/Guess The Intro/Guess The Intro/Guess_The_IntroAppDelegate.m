@@ -10,7 +10,7 @@
 #import "Guess_The_IntroViewController.h"
 #import "SPLoginViewController.h"
 
-//#error Please get an appkey.c file from developer.spotify.com and remove this error before building.
+#error Please get an appkey.c file from developer.spotify.com and remove this error before building.
 #include "appkey.c"
 
 @implementation Guess_The_IntroAppDelegate

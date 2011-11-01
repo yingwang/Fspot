@@ -124,7 +124,7 @@
 
 -(void)waitAndFillTrackPool;
 -(NSArray *)playlistsInFolder:(SPPlaylistFolder *)aFolder;
-
+-(NSArray *)tracksFromPlaylistItems:(NSArray *)items;
 
 // Getting tracks
 
