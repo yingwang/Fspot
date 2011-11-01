@@ -59,16 +59,16 @@
 	
 	<option value="class_methods">Class Methods</option>
 	
-	<option value="//api/name/browseArtist:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;+ browseArtist:inSession:</option>
+	<option value="//api/name/browseArtist:inSession:type:">&nbsp;&nbsp;&nbsp;&nbsp;+ browseArtist:inSession:type:</option>
 	
-	<option value="//api/name/browseArtistAtURL:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;+ browseArtistAtURL:inSession:</option>
+	<option value="//api/name/browseArtistAtURL:inSession:type:">&nbsp;&nbsp;&nbsp;&nbsp;+ browseArtistAtURL:inSession:type:</option>
 	
 	
 	
 	
 	<option value="instance_methods">Instance Methods</option>
 	
-	<option value="//api/name/initWithArtist:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithArtist:inSession:</option>
+	<option value="//api/name/initWithArtist:inSession:type:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithArtist:inSession:type:</option>
 	
 	
 	
@@ -126,9 +126,9 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#class_methods">Class Methods</a></span><ul>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/browseArtist:inSession:">browseArtist:inSession:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/browseArtist:inSession:type:">browseArtist:inSession:type:</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/browseArtistAtURL:inSession:">browseArtistAtURL:inSession:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/browseArtistAtURL:inSession:type:">browseArtistAtURL:inSession:type:</a></span></li>
 	
 </ul></li>
 
@@ -136,7 +136,7 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithArtist:inSession:">initWithArtist:inSession:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithArtist:inSession:type:">initWithArtist:inSession:type:</a></span></li>
 	
 </ul></li>
 
@@ -200,21 +200,21 @@ see the <a href="../Classes/SPTrack.html">SPTrack</a> documentation for details.
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
-		<code><a href="#//api/name/browseArtist:inSession:">+&nbsp;browseArtist:inSession:</a></code>
+		<code><a href="#//api/name/browseArtist:inSession:type:">+&nbsp;browseArtist:inSession:type:</a></code>
 		<span class="tooltip"><p>Creates an <a href="SPArtistBrowse.html">SPArtistBrowse</a> from the given <a href="../Classes/SPArtist.html">SPArtist</a>.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/browseArtistAtURL:inSession:">+&nbsp;browseArtistAtURL:inSession:</a></code>
+		<code><a href="#//api/name/browseArtistAtURL:inSession:type:">+&nbsp;browseArtistAtURL:inSession:type:</a></code>
 		<span class="tooltip"><p>Creates an <a href="SPArtistBrowse.html">SPArtistBrowse</a> from the given <a href="#//api/name/artist">artist</a> URL.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/initWithArtist:inSession:">&ndash;&nbsp;initWithArtist:inSession:</a></code>
+		<code><a href="#//api/name/initWithArtist:inSession:type:">&ndash;&nbsp;initWithArtist:inSession:type:</a></code>
 		<span class="tooltip"><p>Initializes a new <a href="SPArtistBrowse.html">SPArtistBrowse</a> from the given <a href="../Classes/SPArtist.html">SPArtist</a>.</p></span>
 	</span>
 	
@@ -647,8 +647,8 @@ see the <a href="../Classes/SPTrack.html">SPTrack</a> documentation for details.
 						<h2 class="subtitle subtitle-methods">Class Methods</h2>
 						
 						<div class="section-method">
-	<a name="//api/name/browseArtist:inSession:" title="browseArtist:inSession:"></a>
-	<h3 class="subsubtitle method-title">browseArtist:inSession:</h3>
+	<a name="//api/name/browseArtist:inSession:type:" title="browseArtist:inSession:type:"></a>
+	<h3 class="subsubtitle method-title">browseArtist:inSession:type:</h3>
 	
 	
 	
@@ -657,7 +657,7 @@ see the <a href="../Classes/SPTrack.html">SPTrack</a> documentation for details.
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>+ (SPArtistBrowse *)browseArtist:(SPArtist *)<em>anArtist</em> inSession:(SPSession *)<em>aSession</em></code></div>
+	<div class="method-subsection method-declaration"><code>+ (SPArtistBrowse *)browseArtist:(SPArtist *)<em>anArtist</em> inSession:(SPSession *)<em>aSession</em> type:(sp_artistbrowse_type)<em>browseMode</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -671,6 +671,11 @@ see the <a href="../Classes/SPTrack.html">SPTrack</a> documentation for details.
 		<dl class="argument-def parameter-def">
 			<dt><em>aSession</em></dt>
 			<dd><p>The <a href="../Classes/SPSession.html">SPSession</a> the browse should exist in.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>browseMode</em></dt>
+			<dd><p>The type of <a href="#//api/name/artist">artist</a> browse to perform.</p></dd>
 		</dl>
 		
 	</div>
@@ -687,7 +692,12 @@ see the <a href="../Classes/SPTrack.html">SPTrack</a> documentation for details.
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This convenience method is simply returns a new, autoreleased <a href="SPArtistBrowse.html">SPArtistBrowse</a>
-object. No caching is performed.</p>
+object. No caching is performed.</p><div class="warning"><p><strong>Important:</strong> It is strongly recommended that you don&rsquo;t use <code>SP_ARTISTBROWSE_FULL</code>
+as the browse type, as this will download metadata for every single album and track from the given
+<a href="#//api/name/artist">artist</a>, which is both a lengthy and memory-intensive operation. Please use
+<code>SP_ARTISTBROWSE_NO_TRACKS</code> (which only downloads <a href="#//api/name/artist">artist</a> information and their <a href="#//api/name/albums">albums</a>) or
+<code>SP_ARTISTBROWSE_NO_ALBUMS</code> (which only downloads <a href="#//api/name/artist">artist</a> information) instead.</p></div><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/artist">artist</a> URL (i.e., any URL not
+starting <code>spotify:artist:</code>, this method will return <code>nil</code>.</p></div>
 	</div>
 	
 	
@@ -705,8 +715,8 @@ object. No caching is performed.</p>
 </div>
 						
 						<div class="section-method">
-	<a name="//api/name/browseArtistAtURL:inSession:" title="browseArtistAtURL:inSession:"></a>
-	<h3 class="subsubtitle method-title">browseArtistAtURL:inSession:</h3>
+	<a name="//api/name/browseArtistAtURL:inSession:type:" title="browseArtistAtURL:inSession:type:"></a>
+	<h3 class="subsubtitle method-title">browseArtistAtURL:inSession:type:</h3>
 	
 	
 	
@@ -715,7 +725,7 @@ object. No caching is performed.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>+ (SPArtistBrowse *)browseArtistAtURL:(NSURL *)<em>artistURL</em> inSession:(SPSession *)<em>aSession</em></code></div>
+	<div class="method-subsection method-declaration"><code>+ (SPArtistBrowse *)browseArtistAtURL:(NSURL *)<em>artistURL</em> inSession:(SPSession *)<em>aSession</em> type:(sp_artistbrowse_type)<em>browseMode</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -729,6 +739,11 @@ object. No caching is performed.</p>
 		<dl class="argument-def parameter-def">
 			<dt><em>aSession</em></dt>
 			<dd><p>The <a href="../Classes/SPSession.html">SPSession</a> the browse should exist in.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>browseMode</em></dt>
+			<dd><p>The type of <a href="#//api/name/artist">artist</a> browse to perform.</p></dd>
 		</dl>
 		
 	</div>
@@ -745,7 +760,11 @@ object. No caching is performed.</p>
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This convenience method is simply returns a new, autoreleased <a href="SPArtistBrowse.html">SPArtistBrowse</a>
-object. No caching is performed.</p><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/artist">artist</a> URL (i.e., any URL not
+object. No caching is performed.</p><div class="warning"><p><strong>Important:</strong> It is strongly recommended that you don&rsquo;t use <code>SP_ARTISTBROWSE_FULL</code>
+as the browse type, as this will download metadata for every single album and track from the given
+<a href="#//api/name/artist">artist</a>, which is both a lengthy and memory-intensive operation. Please use
+<code>SP_ARTISTBROWSE_NO_TRACKS</code> (which only downloads <a href="#//api/name/artist">artist</a> information and their <a href="#//api/name/albums">albums</a>) or
+<code>SP_ARTISTBROWSE_NO_ALBUMS</code> (which only downloads <a href="#//api/name/artist">artist</a> information) instead.</p></div><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/artist">artist</a> URL (i.e., any URL not
 starting <code>spotify:artist:</code>, this method will return <code>nil</code>.</p></div>
 	</div>
 	
@@ -772,8 +791,8 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
 						
 						<div class="section-method">
-	<a name="//api/name/initWithArtist:inSession:" title="initWithArtist:inSession:"></a>
-	<h3 class="subsubtitle method-title">initWithArtist:inSession:</h3>
+	<a name="//api/name/initWithArtist:inSession:type:" title="initWithArtist:inSession:type:"></a>
+	<h3 class="subsubtitle method-title">initWithArtist:inSession:type:</h3>
 	
 	
 	
@@ -782,7 +801,7 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>- (id)initWithArtist:(SPArtist *)<em>anArtist</em> inSession:(SPSession *)<em>aSession</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (id)initWithArtist:(SPArtist *)<em>anArtist</em> inSession:(SPSession *)<em>aSession</em> type:(sp_artistbrowse_type)<em>browseMode</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -798,6 +817,11 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 			<dd><p>The <a href="../Classes/SPSession.html">SPSession</a> the browse should exist in.</p></dd>
 		</dl>
 		
+		<dl class="argument-def parameter-def">
+			<dt><em>browseMode</em></dt>
+			<dd><p>The type of <a href="#//api/name/artist">artist</a> browse to perform.</p></dd>
+		</dl>
+		
 	</div>
 	
 	
@@ -808,6 +832,16 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 	</div>
 	
 	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="warning"><p><strong>Important:</strong> It is strongly recommended that you don&rsquo;t use <code>SP_ARTISTBROWSE_FULL</code>
+as the browse type, as this will download metadata for every single album and track from the given
+<a href="#//api/name/artist">artist</a>, which is both a lengthy and memory-intensive operation. Please use
+<code>SP_ARTISTBROWSE_NO_TRACKS</code> (which only downloads <a href="#//api/name/artist">artist</a> information and their <a href="#//api/name/albums">albums</a>) or
+<code>SP_ARTISTBROWSE_NO_ALBUMS</code> (which only downloads <a href="#//api/name/artist">artist</a> information) instead.</p></div><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/artist">artist</a> URL (i.e., any URL not
+starting <code>spotify:artist:</code>, this method will return <code>nil</code>.</p></div>
+	</div>
 	
 	
 	
@@ -836,7 +870,7 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-10-03)</span><br />
+						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
 						

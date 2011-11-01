@@ -38,8 +38,6 @@
 	
 	<option value="//api/name/delegate">&nbsp;&nbsp;&nbsp;&nbsp;delegate</option>
 	
-	<option value="//api/name/friends">&nbsp;&nbsp;&nbsp;&nbsp;friends</option>
-	
 	<option value="//api/name/inboxPlaylist">&nbsp;&nbsp;&nbsp;&nbsp;inboxPlaylist</option>
 	
 	<option value="//api/name/locale">&nbsp;&nbsp;&nbsp;&nbsp;locale</option>
@@ -49,6 +47,8 @@
 	<option value="//api/name/offlinePlaylistsRemaining">&nbsp;&nbsp;&nbsp;&nbsp;offlinePlaylistsRemaining</option>
 	
 	<option value="//api/name/offlineStatistics">&nbsp;&nbsp;&nbsp;&nbsp;offlineStatistics</option>
+	
+	<option value="//api/name/offlineSyncError">&nbsp;&nbsp;&nbsp;&nbsp;offlineSyncError</option>
 	
 	<option value="//api/name/offlineSyncing">&nbsp;&nbsp;&nbsp;&nbsp;offlineSyncing</option>
 	
@@ -65,6 +65,8 @@
 	<option value="//api/name/user">&nbsp;&nbsp;&nbsp;&nbsp;user</option>
 	
 	<option value="//api/name/userPlaylists">&nbsp;&nbsp;&nbsp;&nbsp;userPlaylists</option>
+	
+	<option value="//api/name/usingVolumeNormalization">&nbsp;&nbsp;&nbsp;&nbsp;usingVolumeNormalization</option>
 	
 	
 	
@@ -174,8 +176,6 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/delegate">delegate</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/friends">friends</a></span></li>
-	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/inboxPlaylist">inboxPlaylist</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/locale">locale</a></span></li>
@@ -185,6 +185,8 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/offlinePlaylistsRemaining">offlinePlaylistsRemaining</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/offlineStatistics">offlineStatistics</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/offlineSyncError">offlineSyncError</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/offlineSyncing">offlineSyncing</a></span></li>
 	
@@ -201,6 +203,8 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/user">user</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/userPlaylists">userPlaylists</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/usingVolumeNormalization">usingVolumeNormalization</a></span></li>
 	
 </ul></li>
 
@@ -495,6 +499,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	</span>
 	<span class="task-item-suffix">property</span>
 	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/offlineSyncError">&nbsp;&nbsp;offlineSyncError</a></code>
+		<span class="tooltip"><p>Returns the last error encountered during offline syncing, or <code>nil</code> if there is no problem.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
 </li>
 						</ul>
 						
@@ -504,13 +515,6 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 
 						<ul class="task-list">
 							<li>
-	<span class="tooltip">
-		<code><a href="#//api/name/friends">&nbsp;&nbsp;friends</a></code>
-		<span class="tooltip"><p>Returns the logged in user&rsquo;s <a href="#//api/name/friends">friends</a>, as an array of <a href="../Classes/SPUser.html">SPUser</a> objects.</p></span>
-	</span>
-	<span class="task-item-suffix">property</span>
-	
-</li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/inboxPlaylist">&nbsp;&nbsp;inboxPlaylist</a></code>
 		<span class="tooltip"><p>Returns the logged in user&rsquo;s inbox playlist.</p></span>
@@ -662,6 +666,14 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
+		<code><a href="#//api/name/usingVolumeNormalization">&nbsp;&nbsp;usingVolumeNormalization</a></code>
+		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is employing volume normalization (that is, attempts to keep the
+sound level of each track the same), otherwise <code>NO</code>.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
 		<code><a href="#//api/name/playing">&nbsp;&nbsp;playing</a></code>
 		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently <a href="#//api/name/playing">playing</a> a track, otherwise <code>NO</code>.</p></span>
 	</span>
@@ -779,38 +791,6 @@ The connection state is undefined.</p>
 	
 	
 	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) __weak id&lt;SPSessionDelegate&gt; delegate</code></div>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPSession.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/friends" title="friends"></a>
-	<h3 class="subsubtitle method-title">friends</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Returns the logged in user&rsquo;s <a href="#//api/name/friends">friends</a>, as an array of <a href="../Classes/SPUser.html">SPUser</a> objects.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) NSArray *friends</code></div>
 	
 	
 	
@@ -977,6 +957,38 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	
 	
 	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSDictionary *offlineStatistics</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/offlineSyncError" title="offlineSyncError"></a>
+	<h3 class="subsubtitle method-title">offlineSyncError</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the last error encountered during offline syncing, or <code>nil</code> if there is no problem.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readonly, retain) NSError *offlineSyncError</code></div>
 	
 	
 	
@@ -1270,6 +1282,44 @@ starred or unstarred.</p>
 			
 		</ul>
 	</div>
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/usingVolumeNormalization" title="usingVolumeNormalization"></a>
+	<h3 class="subsubtitle method-title">usingVolumeNormalization</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is employing volume normalization (that is, attempts to keep the
+sound level of each track the same), otherwise <code>NO</code>.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization</code></div>
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="warning"><p><strong>Important:</strong> This property currently has no effect on iOS platforms.</p></div>
+	</div>
+	
+	
+	
+	
 	
 	
 	
@@ -2672,7 +2722,7 @@ convenience methods use.</p>
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-10-03)</span><br />
+						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
 						

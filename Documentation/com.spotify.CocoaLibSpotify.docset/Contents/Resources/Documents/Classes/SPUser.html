@@ -38,10 +38,6 @@
 	
 	<option value="//api/name/displayName">&nbsp;&nbsp;&nbsp;&nbsp;displayName</option>
 	
-	<option value="//api/name/fullName">&nbsp;&nbsp;&nbsp;&nbsp;fullName</option>
-	
-	<option value="//api/name/imageURL">&nbsp;&nbsp;&nbsp;&nbsp;imageURL</option>
-	
 	<option value="//api/name/loaded">&nbsp;&nbsp;&nbsp;&nbsp;loaded</option>
 	
 	<option value="//api/name/spotifyURL">&nbsp;&nbsp;&nbsp;&nbsp;spotifyURL</option>
@@ -64,8 +60,6 @@
 	
 	<option value="//api/name/initWithUserStruct:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithUserStruct:inSession:</option>
 	
-	<option value="//api/name/relationshipWithUser:">&nbsp;&nbsp;&nbsp;&nbsp;- relationshipWithUser:</option>
-	
 	
 	
 </select>
@@ -86,8 +80,6 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Properties">Properties</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Social">Social</a></span></li>
-	
 </ul></li>
 
 
@@ -99,10 +91,6 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/canonicalName">canonicalName</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/displayName">displayName</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fullName">fullName</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/imageURL">imageURL</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/loaded">loaded</a></span></li>
 	
@@ -127,8 +115,6 @@
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithUserStruct:inSession:">initWithUserStruct:inSession:</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/relationshipWithUser:">relationshipWithUser:</a></span></li>
 	
 </ul></li>
 
@@ -230,13 +216,6 @@
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/imageURL">&nbsp;&nbsp;imageURL</a></code>
-		<span class="tooltip"><p>Returns the URL to the user&rsquo;s profile image, or <code>nil</code> if she doesn&rsquo;t have one.</p></span>
-	</span>
-	<span class="task-item-suffix">property</span>
-	
-</li><li>
-	<span class="tooltip">
 		<code><a href="#//api/name/loaded">&nbsp;&nbsp;loaded</a></code>
 		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/user">user</a> has finished loading and all data is available.</p></span>
 	</span>
@@ -255,28 +234,6 @@
 		<span class="tooltip"><p>Returns the opaque structure used by the C LibSpotify API.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
-	
-</li>
-						</ul>
-						
-						
-						<a title="Social" name="task_Social"></a>
-						<h3 class="subsubtitle task-title">Social</h3>
-
-						<ul class="task-list">
-							<li>
-	<span class="tooltip">
-		<code><a href="#//api/name/fullName">&nbsp;&nbsp;fullName</a></code>
-		<span class="tooltip"><p>Returns the user&rsquo;s full name from social networks, or <code>nil</code> if it isn&rsquo;t known.</p></span>
-	</span>
-	<span class="task-item-suffix">property</span>
-	
-</li><li>
-	<span class="tooltip">
-		<code><a href="#//api/name/relationshipWithUser:">&ndash;&nbsp;relationshipWithUser:</a></code>
-		<span class="tooltip"><p>Returns the relationship of the <a href="#//api/name/user">user</a> with another <a href="#//api/name/user">user</a>.</p></span>
-	</span>
-	
 	
 </li>
 						</ul>
@@ -335,70 +292,6 @@
 	
 	
 	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSString *displayName</code></div>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPUser.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/fullName" title="fullName"></a>
-	<h3 class="subsubtitle method-title">fullName</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Returns the user&rsquo;s full name from social networks, or <code>nil</code> if it isn&rsquo;t known.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSString *fullName</code></div>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPUser.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/imageURL" title="imageURL"></a>
-	<h3 class="subsubtitle method-title">imageURL</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Returns the URL to the user&rsquo;s profile image, or <code>nil</code> if she doesn&rsquo;t have one.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSURL *imageURL</code></div>
 	
 	
 	
@@ -714,65 +607,6 @@ you create SPUser objects using <a href="#//api/name/userWithUserStruct:inSessio
 	
 </div>
 						
-						<div class="section-method">
-	<a name="//api/name/relationshipWithUser:" title="relationshipWithUser:"></a>
-	<h3 class="subsubtitle method-title">relationshipWithUser:</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Returns the relationship of the <a href="#//api/name/user">user</a> with another <a href="#//api/name/user">user</a>.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (sp_relation_type)relationshipWithUser:(SPUser *)<em>friendOrFoe</em></code></div>
-	
-	
-	<div class="method-subsection arguments-section parameters">
-		<h4 class="method-subtitle parameter-title">Parameters</h4>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>friendOrFoe</em></dt>
-			<dd><p>The <a href="#//api/name/user">user</a> to get the relationship status of.</p></dd>
-		</dl>
-		
-	</div>
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>Possible values are:</p>
-
-<p>SP_RELATION_TYPE_UNKNOWN  <br/>
-Not yet known.</p>
-
-<p>SP_RELATION_TYPE_NONE <br/>
-No relation.</p>
-
-<p>SP_RELATION_TYPE_UNIDIRECTIONAL   <br/>
-The currently logged in <a href="#//api/name/user">user</a> is following this uer.</p>
-
-<p>SP_RELATION_TYPE_BIDIRECTIONAL<br/>
-Bidirectional friendship established.</p>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPUser.h</code><br />
-	</div>				
-	
-	
-</div>
-						
 					</div>
 					
 					
@@ -786,7 +620,7 @@ Bidirectional friendship established.</p>
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-10-03)</span><br />
+						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
 						

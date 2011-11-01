@@ -4,6 +4,10 @@ CocoaLibSpotify is an Objective-C wrapper around our libspotify library. It prov
 
 CocoaLibSpotify requires libspotify.framework, which isn't included in the repository. The Mac Framework and iOS Library  Xcode projects include a build step to download and unpack it from developer.spotify.com automatically. If this fails for some reason, download it manually from developer.spotify.com and unpack it into the project folder.
 
+## Note for CocoaLibSpotify Users Prior To LibSpotify 10 ##
+
+The playlist API changed in CocoaLibSpotify for libspotify 10. `SPPlaylist` no longer has a `tracks` property, but instead has `items`, which can contain tracks, albums, artists or playlists. Please consult the documentation for more information. 
+
 ## Building -  Mac OS X ##
 
 The Xcode project was built in Xcode 4.0, but should also work fine in Xcode 3.2.x.
@@ -14,7 +18,7 @@ The built CocoaLibSpotify.framework contains libspotify.framework as a child fra
 
 Otherwise, you'd point to the downloaded libspotify.framework manually, something like this:
 
-`../../libspotify-9.1.32-Darwin-universal`
+`../../libspotify-10.1.16-Darwin-universal`
 
 ## Building - iOS ##
 
