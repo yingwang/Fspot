@@ -25,6 +25,8 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/** This class represents an item in a playlist, be it a track, artist, album or something else. */
+
 #import <Foundation/Foundation.h>
 #import "CocoaLibSpotifyPlatformImports.h"
 
@@ -40,27 +42,57 @@
 	NSString *message;
 }
 
--(id)initWithPlaceholderTrack:(sp_track *)track atIndex:(int)itemIndex inPlaylist:(SPPlaylist *)aPlaylist;
+///----------------------------
+/// @name Querying The Item
+///----------------------------
 
-@property (readonly) NSURL *itemURL;
-@property (readonly) sp_linktype itemURLType;
-
-@property (readonly, retain) id <SPPlaylistableItem> item;
+/** Returns the `Class` of the item this object represents. */
 @property (readonly) Class itemClass;
 
-@property (readwrite, getter = isUnread) BOOL unread;
-@property (readonly, copy) NSDate *dateAdded;
+/** Returns the Spotify URI of the item this object represents. */
+@property (readonly) NSURL *itemURL;
+
+/** Returns the `sp_linktype` of the item this object represents. */
+@property (readonly) sp_linktype itemURLType;
+
+/** Returns the item this object represents.
+ 
+ The item is typically a track, artist, album or playlist.
+ */
+@property (readonly, retain) id <SPPlaylistableItem> item;
+
+///----------------------------
+/// @name Metadata
+///----------------------------
+
+/* Returns the creator of the item this object represents. 
+ 
+ This value is used in the user's inbox playlist and playlists that are or
+ were collaborative, and represents the user that added the track to the
+ playlist.
+ */
 @property (readonly, retain) SPUser *creator;
+
+/* Returns the date that the item this object represents was added to the playlist. 
+ 
+ This value is used in the user's inbox playlist and playlists that are or
+ were collaborative, and represents the date and time the track was
+ added to the playlist.
+ */
+@property (readonly, copy) NSDate *dateAdded;
+
+/* Returns the message attached to the item this object represents. 
+ 
+ This value is used in the user's inbox playlist and reflects the message
+ the sender attached to the item when sending it.
+ */
 @property (readonly, copy) NSString *message;
 
-@property (readonly) int itemIndex;
-
-// --
-
--(void)setDateCreatedFromLibSpotify:(NSDate *)date;
--(void)setCreatorFromLibSpotify:(SPUser *)user;
--(void)setUnreadFromLibSpotify:(BOOL)unread;
--(void)setMessageFromLibSpotify:(NSString *)msg;
--(void)setItemIndexFromLibSpotify:(int)newIndex;
+/* Returns the "unread" status of the item this object represents. 
+ 
+ This value is only normally used in the user's inbox playlist. In the
+ Spotify client, unread tracks have a blue dot by them in the inbox.
+ */
+@property (readwrite, getter = isUnread) BOOL unread;
 
 @end

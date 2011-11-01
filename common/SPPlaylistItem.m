@@ -41,7 +41,7 @@
 
 @end
 
-@implementation SPPlaylistItem
+@implementation SPPlaylistItem (SPPlaylistItemInternal)
 
 -(id)initWithPlaceholderTrack:(sp_track *)track atIndex:(int)index inPlaylist:(SPPlaylist *)aPlaylist {
 	
@@ -61,16 +61,50 @@
 		const char *msg = sp_playlist_track_message(playlist.playlist, index);
 		if (msg != NULL)
 			self.message = [NSString stringWithUTF8String:msg];
-
+		
 	}
 	return self;
 }
+
+-(int)itemIndex {
+	return itemIndex;
+}
+
+-(void)setItemIndex:(int)index {
+	itemIndex = index;
+}
+
+-(void)setDateCreatedFromLibSpotify:(NSDate *)date {
+	self.dateAdded = date;
+}
+
+-(void)setCreatorFromLibSpotify:(SPUser *)user {
+	self.creator = user;
+}
+
+-(void)setUnreadFromLibSpotify:(BOOL)unread {
+	[self willChangeValueForKey:@"unread"];
+	[self didChangeValueForKey:@"unread"];
+}
+
+-(void)setMessageFromLibSpotify:(NSString *)msg {
+	self.message = msg;
+}
+
+-(void)setItemIndexFromLibSpotify:(int)newIndex {
+	itemIndex = newIndex;
+}
+
+@end
+
+@implementation SPPlaylistItem
+
+
 
 @synthesize item;
 @synthesize dateAdded;
 @synthesize creator;
 @synthesize message;
-@synthesize itemIndex;
 
 -(NSString *)description {
 	return [NSString stringWithFormat:@"%@: %@", [super description], [self.item description]];
@@ -106,30 +140,6 @@
 
 -(void)setUnread:(BOOL)unread {
 	sp_playlist_track_set_seen(playlist.playlist, itemIndex, !unread);
-}
-
-#pragma mark -
-#pragma mark Setters from LibSpotify callbacks
-
--(void)setDateCreatedFromLibSpotify:(NSDate *)date {
-	self.dateAdded = date;
-}
-
--(void)setCreatorFromLibSpotify:(SPUser *)user {
-	self.creator = user;
-}
-
--(void)setUnreadFromLibSpotify:(BOOL)unread {
-	[self willChangeValueForKey:@"unread"];
-	[self didChangeValueForKey:@"unread"];
-}
-
--(void)setMessageFromLibSpotify:(NSString *)msg {
-	self.message = msg;
-}
-
--(void)setItemIndexFromLibSpotify:(int)newIndex {
-	itemIndex = newIndex;
 }
 
 -(void)dealloc {

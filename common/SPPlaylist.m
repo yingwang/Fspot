@@ -38,6 +38,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPURLExtensions.h"
 #import "SPErrorExtensions.h"
 #import "SPPlaylistItem.h"
+#import "SPPlaylistItemInternal.h"
 
 @interface SPPlaylist ()
 
