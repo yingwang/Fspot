@@ -1,12 +1,10 @@
-CocoaLibSpotify
-===============
+# CocoaLibSpotify #
 
 CocoaLibSpotify is an Objective-C wrapper around our libspotify library. It provides easy access to libspotify's features in a friendly, KVC/O compliant Objective-C wrapper.
 
 CocoaLibSpotify requires libspotify.framework, which isn't included in the repository. The Mac Framework and iOS Library  Xcode projects include a build step to download and unpack it from developer.spotify.com automatically. If this fails for some reason, download it manually from developer.spotify.com and unpack it into the project folder.
 
-Building -  Mac OS X
-====================
+## Building -  Mac OS X ##
 
 The Xcode project was built in Xcode 4.0, but should also work fine in Xcode 3.2.x.
 
@@ -18,8 +16,7 @@ Otherwise, you'd point to the downloaded libspotify.framework manually, somethin
 
 `../../libspotify-9.1.32-Darwin-universal`
 
-Building - iOS
-==============
+## Building - iOS ##
 
 The built libCocoaLibSpotify contains libspotify internally as a static library, as well as all of the required header files in a directory called "include".
 
@@ -44,8 +41,7 @@ Once everything is set up, simply import the following header to get started wit
 
 `#import "CocoaLibSpotify.h"`
 
-Playback Helper Classes
-=======================
+## Playback Helper Classes ##
 
 If you want to use the provided playback helper classes, you also need to link to the following framworks in your project:
 
@@ -60,12 +56,10 @@ iOS
 - AudioToolbox.framework
 - AVFoundation.framework
 
-Documentation
-=============
+## Documentation ##
 
 The headers of CocoaLibSpotify are well documented, and we've provided an Xcode DocSet to provide documentation right in Xcode. With these and the sample projects, you should have everything you need to dive right in!
 
-Contact
-=======
+## Contact ##
 
 If you have any problems or find any bugs, see our GitHub page for known issues and discussion. Otherwise, we may be available in irc://irc.freenode.net/spotify. 
