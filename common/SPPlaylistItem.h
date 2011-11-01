@@ -65,7 +65,7 @@
 /// @name Metadata
 ///----------------------------
 
-/* Returns the creator of the item this object represents. 
+/** Returns the creator of the item this object represents. 
  
  This value is used in the user's inbox playlist and playlists that are or
  were collaborative, and represents the user that added the track to the
@@ -73,7 +73,7 @@
  */
 @property (readonly, retain) SPUser *creator;
 
-/* Returns the date that the item this object represents was added to the playlist. 
+/** Returns the date that the item this object represents was added to the playlist. 
  
  This value is used in the user's inbox playlist and playlists that are or
  were collaborative, and represents the date and time the track was
@@ -81,14 +81,14 @@
  */
 @property (readonly, copy) NSDate *dateAdded;
 
-/* Returns the message attached to the item this object represents. 
+/** Returns the message attached to the item this object represents. 
  
  This value is used in the user's inbox playlist and reflects the message
  the sender attached to the item when sending it.
  */
 @property (readonly, copy) NSString *message;
 
-/* Returns the "unread" status of the item this object represents. 
+/** Returns the "unread" status of the item this object represents. 
  
  This value is only normally used in the user's inbox playlist. In the
  Spotify client, unread tracks have a blue dot by them in the inbox.
