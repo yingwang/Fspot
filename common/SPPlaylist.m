@@ -92,7 +92,7 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 	[playlist.items insertObjects:newItems atIndexes:incomingIndexes];
 	playlist.trackChangesAreFromLibSpotifyCallback = NO;
 	
-	if ([[playlist delegate] respondsToSelector:@selector(playlist:didAddTracks:atIndexes:)]) {
+	if ([[playlist delegate] respondsToSelector:@selector(playlist:didAddItems:atIndexes:)]) {
 		[[playlist delegate] playlist:playlist didAddItems:newItems atIndexes:incomingIndexes];
 	}
 }
