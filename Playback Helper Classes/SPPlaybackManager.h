@@ -60,6 +60,7 @@
     NSTimeInterval currentTrackPosition;
 	SPSession *playbackSession;
 	double volume;
+	int currentCoreAudioSampleRate;
 	SPTrack *currentTrack;
 	NSTimeInterval trackPosition;
 	id <SPPlaybackManagerDelegate> delegate;

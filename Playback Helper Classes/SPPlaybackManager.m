@@ -40,6 +40,8 @@
 
 @property (readwrite) NSTimeInterval trackPosition;
 
+-(void)informDelegateOfAudioPlaybackStarting;
+
 // Core Audio
 -(BOOL)setupCoreAudioWithAudioFormat:(const sp_audioformat *)audioFormat error:(NSError **)err;
 -(void)teardownCoreAudio;
@@ -58,6 +60,7 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
 
 static NSString * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOContext"; 
 static NSUInteger const kMaximumBytesInBuffer = 44100 * 2 * 2 * 0.5; // 0.5 Second @ 44.1kHz, 16bit per channel, stereo
+static NSUInteger const kUpdateTrackPositionHz = 5;
 
 @implementation SPPlaybackManager
 
@@ -95,10 +98,14 @@ static NSUInteger const kMaximumBytesInBuffer = 44100 * 2 * 2 * 0.5; // 0.5 Seco
 	self.currentTrack = nil;
 	
 	[self teardownCoreAudio];
+	[self.audioBuffer clear];
 	self.audioBuffer = nil;
     
+	incrementTrackPositionInvocation.target = nil;
     [incrementTrackPositionInvocation release];
+	incrementTrackPositionInvocation = nil;
 	[incrementTrackPositionMethodSignature release];
+	incrementTrackPositionMethodSignature = nil;
 	
     [super dealloc];
 }
@@ -113,17 +120,25 @@ static NSUInteger const kMaximumBytesInBuffer = 44100 * 2 * 2 * 0.5; // 0.5 Seco
 
 -(BOOL)playTrack:(SPTrack *)trackToPlay error:(NSError **)error {
 	
-	[self.playbackSession setPlaying:NO];
+	self.playbackSession.playing = NO;
 	[self.playbackSession unloadPlayback];
 	[self teardownCoreAudio];
-	
 	[self.audioBuffer clear];
+	
+	if (trackToPlay.availability != SP_TRACK_AVAILABILITY_AVAILABLE) {
+		if (error != NULL) *error = [NSError spotifyErrorWithCode:SP_ERROR_TRACK_NOT_PLAYABLE];
+		self.currentTrack = nil;
+		return NO;
+	}
 		
 	self.currentTrack = trackToPlay;
 	self.trackPosition = 0.0;
 	BOOL result = [self.playbackSession playTrack:self.currentTrack error:error];
 	if (result)
 		self.playbackSession.playing = YES;
+	else
+		self.currentTrack = nil;
+	
 	return result;
 }
 
@@ -235,6 +250,7 @@ static NSUInteger const kMaximumBytesInBuffer = 44100 * 2 * 2 * 0.5; // 0.5 Seco
     CloseComponent(outputAudioUnit);
 #endif
     outputAudioUnit = NULL;
+	currentCoreAudioSampleRate = 0;
 }
 
 static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDescription, int code) {
@@ -360,7 +376,8 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
     }
     
     // Start audio output (since we create the audio unit on-demand) and set the volume.
-    [self startAudioUnit];
+    currentCoreAudioSampleRate = audioFormat->sample_rate;
+	[self startAudioUnit];
     [self applyVolumeToAudioUnit:self.volume];
     
     return YES;
@@ -372,7 +389,11 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
 -(NSInteger)session:(SPSession *)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount format:(const sp_audioformat *)audioFormat {
 	
     // This is called by CocoaLibSpotify when there's audio data to be played. Since Core Audio uses callbacks as well to 
-    // fetch data, we store the data in an intermediate buffer.
+    // fetch data, we store the data in an intermediate buffer. This method is called on an aritrary thread, so everything
+	// must be thread-safe. In addition, this method must not block - if your buffers are full, return 0 and the delivery will
+	// be tried again later.
+	
+	[self retain]; // Try to avoid the object being deallocated while this is going on.
 	
 	if (frameCount == 0) {
 		// If this happens (frameCount of 0), the user has seeked the track somewhere (or similar). 
@@ -380,6 +401,11 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
 		[self.audioBuffer clear];
 		return 0;
 	}
+	
+	if (audioFormat->sample_rate != currentCoreAudioSampleRate)
+		// Spotify contains audio in various sample rates. If we encounter one different to the current
+		// sample rate, we need to tear down our Core Audio setup and set it up again.
+		[self teardownCoreAudio];
     
     if (outputAudioUnit == NULL) {
         // Setup Core Audio if it hasn't been set up yet.
@@ -391,9 +417,7 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
     }
 	
 	if (self.audioBuffer.length == 0)
-		[(NSObject *)self.delegate performSelectorOnMainThread:@selector(playbackManagerWillStartPlayingAudio:)
-													withObject:self
-												 waitUntilDone:YES];
+		[self informDelegateOfAudioPlaybackStarting];
 	
 	NSUInteger frameByteSize = sizeof(SInt16) * audioFormat->channels;
 	NSUInteger dataLength = frameCount * frameByteSize;
@@ -406,7 +430,16 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
 	
 	[self.audioBuffer attemptAppendData:audioFrames ofLength:dataLength];
 	
+	[self release];
 	return frameCount;
+}
+
+-(void)informDelegateOfAudioPlaybackStarting {
+	if (![NSThread isMainThread]) {
+		[self performSelectorOnMainThread:_cmd withObject:nil waitUntilDone:NO];
+		return;
+	}
+	[self.delegate playbackManagerWillStartPlayingAudio:self];
 }
 
 #pragma mark -
@@ -425,15 +458,19 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
     // This callback is both super time-sensitive and called on some arbitrary thread, so we
     // have to be extra careful with performance and locking.
     SPPlaybackManager *self = inRefCon;
+	[self retain]; // Try to avoid the object being deallocated while this is going on.
+	
 	AudioBuffer *buffer = &(ioData->mBuffers[0]);
 	UInt32 bytesRequired = buffer->mDataByteSize;
     framesSinceLastTimeUpdate += inNumberFrames;
+	int sampleRate = self->currentCoreAudioSampleRate;
     
     // If we don't have enough data, tell Core Audio about it.
 	NSUInteger availableData = [self->audioBuffer length];
 	if (availableData < bytesRequired) {
 		buffer->mDataByteSize = 0;
 		*ioActionFlags |= kAudioUnitRenderAction_OutputIsSilence;
+		[self release];
 		return noErr;
     }
     
@@ -442,7 +479,7 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
     // SPCircularBuffer deals with thread safety internally so we don't need to worry about it here.
     buffer->mDataByteSize = (UInt32)[self->audioBuffer readDataOfLength:bytesRequired intoAllocatedBuffer:&buffer->mData];
     
-	if (framesSinceLastTimeUpdate >= 8820) {
+	if (sampleRate > 0 && framesSinceLastTimeUpdate >= sampleRate/kUpdateTrackPositionHz) {
         // Only update 5 times per second.
         // Since this render callback from Core Audio is so time-sensitive, we avoid allocating objects
         // and having to use an autorelease pool by pre-allocating the NSInvocation, setting its argument here
@@ -456,11 +493,13 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
 		framesSinceLastTimeUpdate = 0;
 	}
     
+	[self release];
     return noErr;
 }
 
 -(void)incrementTrackPositionWithFrameCount:(UInt32)framesToAppend {
-    self.trackPosition = self.trackPosition + (double)framesToAppend/44100.0;
+	if (currentCoreAudioSampleRate > 0)
+		self.trackPosition = self.trackPosition + (double)framesToAppend/currentCoreAudioSampleRate;
 }
 
 @end
