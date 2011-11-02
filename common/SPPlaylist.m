@@ -185,6 +185,12 @@ static void	playlist_state_changed(sp_playlist *pl, void *userdata) {
     [playlist setLoaded:sp_playlist_is_loaded(pl)];
     [playlist setCollaborativeFromLibSpotifyUpdate:sp_playlist_is_collaborative(pl)];
     [playlist setHasPendingChanges:sp_playlist_has_pending_changes(pl)];
+	
+	[playlist willChangeValueForKey:@"offlineStatus"];
+	[playlist didChangeValueForKey:@"offlineStatus"];
+	
+	[playlist willChangeValueForKey:@"offlineDownloadProgress"];
+	[playlist didChangeValueForKey:@"offlineDownloadProgress"];
 }
 
 // Called when a playlist is updating or is done updating
@@ -199,6 +205,13 @@ static void	playlist_update_in_progress(sp_playlist *pl, bool done, void *userda
 static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
     SPPlaylist *playlist = userdata;
     
+	for (SPPlaylistItem *playlistItem in playlist.items) {
+		if (playlistItem.itemClass == [SPTrack class]) {
+			[(NSObject *)playlistItem.item willChangeValueForKey:@"offlineStatus"];
+			[(NSObject *)playlistItem.item didChangeValueForKey:@"offlineStatus"];
+		}
+	}
+	
     SEL selector = @selector(itemsInPlaylistDidUpdateMetadata:);
     
     if ([[playlist delegate] respondsToSelector:selector]) {
