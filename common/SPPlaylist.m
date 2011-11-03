@@ -205,15 +205,16 @@ static void	playlist_update_in_progress(sp_playlist *pl, bool done, void *userda
 static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
     SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
     
-	for (SPPlaylistItem *playlistItem in playlist.items) {
-		if (playlistItem.itemClass == [SPTrack class]) {
-			[(NSObject *)playlistItem.item willChangeValueForKey:@"offlineStatus"];
-			[(NSObject *)playlistItem.item didChangeValueForKey:@"offlineStatus"];
+	@autoreleasepool {
+		
+		for (SPPlaylistItem *playlistItem in playlist.items) {
+			if (playlistItem.itemClass == [SPTrack class]) {
+				[(NSObject *)playlistItem.item willChangeValueForKey:@"offlineStatus"];
+				[(NSObject *)playlistItem.item didChangeValueForKey:@"offlineStatus"];
+			}
 		}
-	}
-	
-    if ([[playlist delegate] respondsToSelector:@selector(itemsInPlaylistDidUpdateMetadata:)]) {
-        @autoreleasepool {
+		
+		if ([[playlist delegate] respondsToSelector:@selector(itemsInPlaylistDidUpdateMetadata:)]) {
             [playlist.delegate itemsInPlaylistDidUpdateMetadata:playlist];
         }
     }

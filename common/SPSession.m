@@ -70,11 +70,12 @@
 static void connection_error(sp_session *session, sp_error error) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-    [sess willChangeValueForKey:@"connectionState"];
-    [sess didChangeValueForKey:@"connectionState"]; 
-    
-    if ([sess.delegate respondsToSelector:@selector(session:didEncounterNetworkError:)]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		
+		[sess willChangeValueForKey:@"connectionState"];
+		[sess didChangeValueForKey:@"connectionState"]; 
+		
+		if ([sess.delegate respondsToSelector:@selector(session:didEncounterNetworkError:)]) {
             [sess.delegate session:sess didEncounterNetworkError:[NSError spotifyErrorWithCode:error]];
         }
     }
@@ -86,24 +87,20 @@ static void connection_error(sp_session *session, sp_error error) {
 static void logged_in(sp_session *session, sp_error error) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-	if (error != SP_ERROR_OK) {
-        if ([sess.delegate respondsToSelector:@selector(session:didFailToLoginWithError:)]) {
-            @autoreleasepool {
-				[sess.delegate session:sess didFailToLoginWithError:[NSError spotifyErrorWithCode:error]];
-				return;
-			}
-        }
-    }
-    
-    [sess willChangeValueForKey:@"connectionState"];
-    [sess didChangeValueForKey:@"connectionState"];
-    
-    if ([sess.delegate respondsToSelector:@selector(sessionDidLoginSuccessfully:)]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		
+		if (error != SP_ERROR_OK && [sess.delegate respondsToSelector:@selector(session:didFailToLoginWithError:)]) {
+			[sess.delegate session:sess didFailToLoginWithError:[NSError spotifyErrorWithCode:error]];
+			return;
+		}
+		
+		[sess willChangeValueForKey:@"connectionState"];
+		[sess didChangeValueForKey:@"connectionState"];
+		
+		if ([sess.delegate respondsToSelector:@selector(sessionDidLoginSuccessfully:)]) {
             [sess.delegate sessionDidLoginSuccessfully:sess];
         }
     }
-    
 }
 
 /**
@@ -114,15 +111,15 @@ static void logged_in(sp_session *session, sp_error error) {
 static void logged_out(sp_session *session) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
     
-    [sess willChangeValueForKey:@"connectionState"];
-    [sess didChangeValueForKey:@"connectionState"];
-    
-    if ([sess.delegate respondsToSelector:@selector(sessionDidLogOut:)]) {
-		@autoreleasepool {
+	@autoreleasepool {
+		
+		[sess willChangeValueForKey:@"connectionState"];
+		[sess didChangeValueForKey:@"connectionState"];
+		
+		if ([sess.delegate respondsToSelector:@selector(sessionDidLogOut:)]) {
             [sess.delegate sessionDidLogOut:sess];
         }
     }
-    
 }
 
 /**
@@ -160,8 +157,8 @@ static void notify_main_thread(sp_session *session) {
 static void log_message(sp_session *session, const char *data) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-    if ([sess.delegate respondsToSelector:@selector(session:didLogMessage:)]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		if ([sess.delegate respondsToSelector:@selector(session:didLogMessage:)]) {
             [sess.delegate session:sess didLogMessage:[NSString stringWithUTF8String:data]];
         }
     }
@@ -177,8 +174,9 @@ static void log_message(sp_session *session, const char *data) {
 static void metadata_updated(sp_session *session) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-	if ([sess.delegate respondsToSelector:@selector(sessionDidChangeMetadata:)]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		
+		if ([sess.delegate respondsToSelector:@selector(sessionDidChangeMetadata:)]) {
             [sess.delegate sessionDidChangeMetadata:sess];
         }
     }
@@ -195,13 +193,11 @@ static void metadata_updated(sp_session *session) {
  */
 static void message_to_user(sp_session *session, const char *msg) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
-    
-    if ([sess.delegate respondsToSelector:@selector(session:recievedMessageForUser:)]) {
-        @autoreleasepool {
+    @autoreleasepool {
+		if ([sess.delegate respondsToSelector:@selector(session:recievedMessageForUser:)]) {
             [sess.delegate session:sess recievedMessageForUser:[NSString stringWithUTF8String:msg]];
         }
     }
-    
 }
 
 
@@ -228,8 +224,9 @@ static int music_delivery(sp_session *session, const sp_audioformat *format, con
 	
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-	if ([[sess playbackDelegate] respondsToSelector:@selector(session:shouldDeliverAudioFrames:ofCount:format:)]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		
+		if ([[sess playbackDelegate] respondsToSelector:@selector(session:shouldDeliverAudioFrames:ofCount:format:)]) {
 			int framesConsumed = (int)[(id <SPSessionPlaybackDelegate>)[sess playbackDelegate] session:sess
 																			  shouldDeliverAudioFrames:frames
 																							   ofCount:num_frames
@@ -249,14 +246,14 @@ static int music_delivery(sp_session *session, const sp_audioformat *format, con
 static void play_token_lost(sp_session *session) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-	[sess setPlaying:NO];
-	
-    if ([[sess playbackDelegate] respondsToSelector:@selector(sessionDidLosePlayToken:)]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		
+		sess.playing = NO;
+		
+		if ([[sess playbackDelegate] respondsToSelector:@selector(sessionDidLosePlayToken:)]) {
             [sess.playbackDelegate sessionDidLosePlayToken:sess];
         }
     }
-    
 }
 
 /**
@@ -271,10 +268,11 @@ static void play_token_lost(sp_session *session) {
 static void end_of_track(sp_session *session) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-    SEL selector = @selector(sessionDidEndPlayback:);
-    
-    if ([[sess playbackDelegate] respondsToSelector:selector]) {
-        @autoreleasepool {
+	@autoreleasepool {
+		
+		SEL selector = @selector(sessionDidEndPlayback:);
+		
+		if ([[sess playbackDelegate] respondsToSelector:selector]) { 
             [(NSObject *)[sess playbackDelegate] performSelectorOnMainThread:selector
 																  withObject:sess
 															   waitUntilDone:NO];
@@ -286,8 +284,9 @@ static void end_of_track(sp_session *session) {
 static void streaming_error(sp_session *session, sp_error error) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
+	@autoreleasepool {
+	
 	if ([[sess playbackDelegate] respondsToSelector:@selector(session:didEncounterStreamingError:)]) {
-        @autoreleasepool {
 			[(id <SPSessionPlaybackDelegate>)sess.playbackDelegate session:sess didEncounterStreamingError:[NSError spotifyErrorWithCode:error]];
         }
     }
