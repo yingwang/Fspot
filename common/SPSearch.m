@@ -73,15 +73,14 @@ static NSString * const kSPSearchCallbackSearchingAlbumsKey = @"albums";
 void search_complete(sp_search *result, void *userdata);
 void search_complete(sp_search *result, void *userdata) {
 	
-	NSDictionary *properties = (__bridge NSDictionary *)userdata;
+	NSDictionary *properties = (__bridge_transfer NSDictionary *)userdata;
+	// ^ __bridge_transfer the userData dictionary so it's released correctly.
 	SPSearch *search = [properties valueForKey:kSPSearchCallbackSearchObjectKey];
 	
 	[search searchDidComplete:result 
 		wasSearchingForTracks:[[properties valueForKey:kSPSearchCallbackSearchingTracksKey] boolValue]
 					  artists:[[properties valueForKey:kSPSearchCallbackSearchingArtistsKey] boolValue]
 					   albums:[[properties valueForKey:kSPSearchCallbackSearchingAlbumsKey] boolValue]];
-	
-	// ^ Was retained when the search was created.
 }
 
 #pragma mark -
@@ -335,7 +334,6 @@ void search_complete(sp_search *result, void *userdata) {
 		if (artistCount > 0 || albumCount > 0 || trackCount > 0) {
 			
 			NSMutableDictionary *userData = [[NSMutableDictionary alloc] initWithCapacity:4];
-			// ^ Don't release userData, it needs to survive through a search operation. The complete callback releases it.
 			
 			[userData setValue:self forKey:kSPSearchCallbackSearchObjectKey];
 			[userData setValue:[NSNumber numberWithBool:searchArtist] forKey:kSPSearchCallbackSearchingArtistsKey];
@@ -351,7 +349,9 @@ void search_complete(sp_search *result, void *userdata) {
 													artistOffset, //artist_offset 
 													artistCount, //artist_count 
 													&search_complete, //callback
-													(__bridge void *)userData); // userdata
+													(__bridge_retained void *)userData); // userdata
+			// ^ __bridge_retain the userData dictionary, it needs to survive through a search operation. The complete callback releases it.
+			
 			if (newSearch != NULL) {
 				self.activeSearch = newSearch;
 				sp_search_release(newSearch);
