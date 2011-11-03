@@ -46,7 +46,7 @@
 	
 	[self willChangeValueForKey:@"session"];
 	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size] 
-											   userAgent:@"com.spotify.SimplePlayer"
+											   userAgent:@"com.spotify.OfflinePlaylists"
 												   error:nil];
 	[self didChangeValueForKey:@"session"];
 	[self.window center];
@@ -69,6 +69,15 @@
 	[self.trackTable setDoubleAction:@selector(tableViewWasDoubleClicked:)];
 	
 	[self performSelector:@selector(showLoginSheet) withObject:nil afterDelay:0.0];
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
+	if ([SPSession sharedSession].connectionState == SP_CONNECTION_STATE_LOGGED_OUT ||
+		[SPSession sharedSession].connectionState == SP_CONNECTION_STATE_UNDEFINED) 
+		return NSTerminateNow;
+	
+	[[SPSession sharedSession] logout];
+	return NSTerminateLater;
 }
 
 -(void)showLoginSheet {
@@ -144,7 +153,11 @@
             contextInfo:nil];
 }
 
--(void)sessionDidLogOut:(SPSession *)aSession; {}
+-(void)sessionDidLogOut:(SPSession *)aSession; {
+	[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
+}
+
+
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {}
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage; {}
 -(void)sessionDidChangeMetadata:(SPSession *)aSession; {}

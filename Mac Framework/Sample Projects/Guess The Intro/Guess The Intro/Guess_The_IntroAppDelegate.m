@@ -120,6 +120,15 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 	[self.window orderFrontRegardless];
 }
 
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
+	if ([SPSession sharedSession].connectionState == SP_CONNECTION_STATE_LOGGED_OUT ||
+		[SPSession sharedSession].connectionState == SP_CONNECTION_STATE_UNDEFINED) 
+		return NSTerminateNow;
+	
+	[[SPSession sharedSession] logout];
+	return NSTerminateLater;
+}
+
 -(void)windowWillClose:(NSNotification *)notification {
 	[NSApp terminate:self];
 }
@@ -179,7 +188,10 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
             contextInfo:nil];
 }
 
--(void)sessionDidLogOut:(SPSession *)aSession; {}
+-(void)sessionDidLogOut:(SPSession *)aSession; {
+	[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
+}
+
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {}
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage; {}
 -(void)sessionDidChangeMetadata:(SPSession *)aSession; {}
