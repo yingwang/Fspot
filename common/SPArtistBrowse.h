@@ -137,31 +137,31 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readonly, copy) NSError *loadError;
 
 /** Returns the session the artist's metadata is loaded in. */
-@property (nonatomic, readonly, retain) SPSession *session;
+@property (nonatomic, readonly, strong) SPSession *session;
 
 ///----------------------------
 /// @name Metadata
 ///----------------------------
 
 /** Returns a list of albums by this artist, or `nil` if the metadata isn't loaded yet. */
-@property (nonatomic, readonly, retain) NSArray *albums;
+@property (nonatomic, readonly, strong) NSArray *albums;
 
 /** Returns the browse operation's artist. */
-@property (nonatomic, readonly, retain) SPArtist *artist;
+@property (nonatomic, readonly, strong) SPArtist *artist;
 
 /** Returns the artist's biography, or `nil` if the metadata isn't loaded yet. */
 @property (nonatomic, readonly, copy) NSString *biography;
 
 /** Returns the first artist portrait image, or `nil` if the metadata isn't loaded yet or there are no images. */
-@property (nonatomic, readonly, retain) SPImage *firstPortrait;
+@property (nonatomic, readonly, strong) SPImage *firstPortrait;
 
 /** Returns the artist's portrait images, or `nil` if the metadata isn't loaded yet. */
-@property (nonatomic, readonly, retain) NSArray *portraits;
+@property (nonatomic, readonly, strong) NSArray *portraits;
 
 /** Returns a list of related artists for this artist, or `nil` if the metadata isn't loaded yet. */
-@property (nonatomic, readonly, retain) NSArray *relatedArtists;
+@property (nonatomic, readonly, strong) NSArray *relatedArtists;
 
 /** Returns a list of tracks by this artist, or `nil` if the metadata isn't loaded yet. */
-@property (nonatomic, readonly, retain) NSArray *tracks;
+@property (nonatomic, readonly, strong) NSArray *tracks;
 
 @end

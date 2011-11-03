@@ -71,7 +71,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readonly, nonatomic, copy) NSString *name;
 
 /** Returns the folder's containing SPPlaylistContainer. */
-@property (nonatomic, readonly, assign) __weak SPPlaylistContainer *parentContainer;
+@property (nonatomic, readonly) __weak SPPlaylistContainer *parentContainer;
 
 /* Returns the folder's parent folder, or `nil` if the folder is at the top level of its container. */
 -(SPPlaylistFolder *)parentFolder;
@@ -91,6 +91,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readonly) NSMutableArray *playlists;
 
 /** Returns the session the folder is loaded in. */
-@property (readonly, assign) __weak SPSession *session;
+@property (readonly) __weak SPSession *session;
 
 @end

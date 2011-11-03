@@ -34,9 +34,9 @@
 
 @interface SPPlaylistItem ()
 
-@property (readwrite, retain) id <SPPlaylistableItem> item;
+@property (readwrite, strong) id <SPPlaylistableItem> item;
 @property (readwrite, copy) NSDate *dateAdded;
-@property (readwrite, retain) SPUser *creator;
+@property (readwrite, strong) SPUser *creator;
 @property (readwrite, copy) NSString *message;
 
 @end
@@ -143,12 +143,7 @@
 }
 
 -(void)dealloc {
-	self.message = nil;
-	self.creator = nil;
-	self.dateAdded = nil;
-	self.item = nil;
 	playlist = nil;
-	[super dealloc];
 }
 
 @end

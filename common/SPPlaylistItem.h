@@ -47,7 +47,7 @@
 ///----------------------------
 
 /** Returns the `Class` of the item this object represents. */
-@property (readonly) Class itemClass;
+@property (unsafe_unretained, readonly) Class itemClass;
 
 /** Returns the Spotify URI of the item this object represents. */
 @property (readonly) NSURL *itemURL;
@@ -59,7 +59,7 @@
  
  The item is typically a track, artist, album or playlist.
  */
-@property (readonly, retain) id <SPPlaylistableItem> item;
+@property (readonly, strong) id <SPPlaylistableItem> item;
 
 ///----------------------------
 /// @name Metadata
@@ -71,7 +71,7 @@
  were collaborative, and represents the user that added the track to the
  playlist.
  */
-@property (readonly, retain) SPUser *creator;
+@property (readonly, strong) SPUser *creator;
 
 /** Returns the date that the item this object represents was added to the playlist. 
  

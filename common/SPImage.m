@@ -36,15 +36,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPImage ()
 
-@property (readwrite, retain) SPPlatformNativeImage *image;
+@property (readwrite, strong) SPPlatformNativeImage *image;
 @property (readwrite) sp_image *spImage;
 @property (readwrite, getter=isLoaded) BOOL loaded;
-@property (readwrite, assign) __weak SPSession *session;
+@property (readwrite) __weak SPSession *session;
 
 @end
 
 static void image_loaded(sp_image *image, void *userdata) {
-    [(SPImage *)userdata setLoaded:sp_image_is_loaded(image)];
+    [(__bridge SPImage *)userdata setLoaded:sp_image_is_loaded(image)];
 }
 
 static NSString * const kSPImageKVOContext = @"kSPImageKVOContext";
@@ -73,7 +73,7 @@ static NSMutableDictionary *imageCache;
 											   imageId:imageId
 											 inSession:aSession];
 	[imageCache setObject:cachedImage forKey:imageIdAsData];
-	return [cachedImage autorelease];
+	return cachedImage;
 }
 
 +(SPImage *)imageWithImageURL:(NSURL *)imageURL inSession:(SPSession *)aSession {
@@ -106,14 +106,14 @@ static NSMutableDictionary *imageCache;
         [self addObserver:self
                forKeyPath:@"loaded"
                   options:0
-                  context:kSPImageKVOContext];
+                  context:(__bridge void *)kSPImageKVOContext];
 		
 		if (anImage != NULL) {
 			spImage = anImage;
 			sp_image_add_ref(spImage);
 			sp_image_add_load_callback(spImage,
 									   &image_loaded,
-									   self);
+									   (__bridge void *)(self));
         
 			self.loaded = sp_image_is_loaded(spImage);
         }
@@ -122,7 +122,7 @@ static NSMutableDictionary *imageCache;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (context == kSPImageKVOContext) {
+    if (context == (__bridge void *)kSPImageKVOContext) {
         if ([keyPath isEqualToString:@"loaded"] && [self isLoaded] && ([self image] == nil)) {
             if (sp_image_format(spImage) == SP_IMAGE_FORMAT_JPEG) {
                 
@@ -131,7 +131,7 @@ static NSMutableDictionary *imageCache;
                 
                 if (size > 0) {
                     NSData *imageData = [NSData dataWithBytes:data length:size];
-                    [self setImage:[[[SPPlatformNativeImage alloc] initWithData:imageData] autorelease]];
+                    [self setImage:[[SPPlatformNativeImage alloc] initWithData:imageData]];
                 }
             }
         }
@@ -152,8 +152,6 @@ static NSMutableDictionary *imageCache;
 
 -(void)setImage:(SPPlatformNativeImage *)anImage {
 	if (image != anImage) {
-		[anImage retain];
-		[image release];
 		image = anImage;
 	}
 }
@@ -172,7 +170,7 @@ static NSMutableDictionary *imageCache;
 	
 	if (spImage != NULL) {
 		hasRequestedImage = YES;
-		sp_image_add_load_callback(spImage, &image_loaded, self);
+		sp_image_add_load_callback(spImage, &image_loaded, (__bridge void *)(self));
 		self.loaded = sp_image_is_loaded(spImage);
 	}
 }
@@ -198,10 +196,9 @@ static NSMutableDictionary *imageCache;
     [self removeObserver:self forKeyPath:@"loaded"];
     [self setImage:nil];
     
-    sp_image_remove_load_callback(spImage, &image_loaded, self);
+    sp_image_remove_load_callback(spImage, &image_loaded, (__bridge void *)(self));
     sp_image_release(spImage);
     
-    [super dealloc];
 }
 
 @end

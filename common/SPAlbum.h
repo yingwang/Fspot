@@ -108,17 +108,17 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readonly, getter=isLoaded) BOOL loaded;
 
 /** Returns the session the album's metadata is loaded in. */
-@property (readonly, retain) SPSession *session;
+@property (readonly, strong) SPSession *session;
 
 ///----------------------------
 /// @name Metadata
 ///----------------------------
 
 /** Returns the album's artist, or `nil` if the metadata isn't loaded yet. */
-@property (readonly, retain) SPArtist *artist; 
+@property (readonly, strong) SPArtist *artist; 
 
 /** Returns the album's cover image. Returns `nil` if the metadata isn't loaded yet, or if the album doesn't have a cover image. */
-@property (readonly, retain) SPImage *cover;
+@property (readonly, strong) SPImage *cover;
 
 /** Returns `YES` if the album is available in the logged-in user's region. */
 @property (readonly, getter=isAvailable) BOOL available;

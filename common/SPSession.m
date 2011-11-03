@@ -4,31 +4,31 @@
 //
 //  Created by Daniel Kennett on 2/14/11.
 /*
-Copyright (c) 2011, Spotify AB
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of Spotify AB nor the names of its contributors may 
-      be used to endorse or promote products derived from this software 
-      without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL SPOTIFY AB BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ Copyright (c) 2011, Spotify AB
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of Spotify AB nor the names of its contributors may 
+ be used to endorse or promote products derived from this software 
+ without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL SPOTIFY AB BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+ OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #import "SPSession.h"
 #import "SPErrorExtensions.h"
@@ -48,15 +48,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPSession ()
 
-@property (readwrite, retain) SPUser *user;
-@property (readwrite, retain) NSLocale *locale;
+@property (readwrite, strong) SPUser *user;
+@property (readwrite, strong) NSLocale *locale;
 
-@property (readonly, retain) NSMutableDictionary *playlistCache;
-@property (readwrite, retain) NSError *offlineSyncError;
+@property (readonly, strong) NSMutableDictionary *playlistCache;
+@property (readwrite, strong) NSError *offlineSyncError;
 
-@property (readwrite, retain) SPPlaylist *inboxPlaylist;
-@property (readwrite, retain) SPPlaylist *starredPlaylist;
-@property (readwrite, retain) SPPlaylistContainer *userPlaylists;
+@property (readwrite, strong) SPPlaylist *inboxPlaylist;
+@property (readwrite, strong) SPPlaylist *starredPlaylist;
+@property (readwrite, strong) SPPlaylistContainer *userPlaylists;
 
 @end
 
@@ -68,56 +68,40 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Spotify was dropped for some reason.
  */
 static void connection_error(sp_session *session, sp_error error) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
     [sess willChangeValueForKey:@"connectionState"];
     [sess didChangeValueForKey:@"connectionState"]; 
     
-    SEL selector = @selector(session:didEncounterNetworkError:);
-    
-    if ([[sess delegate] respondsToSelector:selector]) {
-        
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess delegate] performSelector:selector
-                              withObject:sess
-                              withObject:[NSError spotifyErrorWithCode:error]];
-        [pool drain];
+    if ([sess.delegate respondsToSelector:@selector(session:didEncounterNetworkError:)]) {
+        @autoreleasepool {
+            [sess.delegate session:sess didEncounterNetworkError:[NSError spotifyErrorWithCode:error]];
+        }
     }
-    
 }
 
 /**
  * This callback is called when an attempt to login has succeeded or failed.
  */
 static void logged_in(sp_session *session, sp_error error) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	if (error != SP_ERROR_OK) {
-    
-		SEL selector = @selector(session:didFailToLoginWithError:);
-        
-        if ([[sess delegate] respondsToSelector:selector]) {
-            
-            NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-            [[sess delegate] performSelector:selector
-                                  withObject:sess
-                                  withObject:[NSError spotifyErrorWithCode:error]];
-            [pool drain];
-			return;
+        if ([sess.delegate respondsToSelector:@selector(session:didFailToLoginWithError:)]) {
+            @autoreleasepool {
+				[sess.delegate session:sess didFailToLoginWithError:[NSError spotifyErrorWithCode:error]];
+				return;
+			}
         }
     }
     
     [sess willChangeValueForKey:@"connectionState"];
     [sess didChangeValueForKey:@"connectionState"];
     
-	SEL selector = @selector(sessionDidLoginSuccessfully:);
-    
-    if ([[sess delegate] respondsToSelector:selector]) {
-        
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess delegate] performSelector:selector
-                              withObject:sess];
-        [pool drain];
+    if ([sess.delegate respondsToSelector:@selector(sessionDidLoginSuccessfully:)]) {
+        @autoreleasepool {
+            [sess.delegate sessionDidLoginSuccessfully:sess];
+        }
     }
     
 }
@@ -128,19 +112,15 @@ static void logged_in(sp_session *session, sp_error error) {
  * @sa sp_session_callbacks#logged_out
  */
 static void logged_out(sp_session *session) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
     
     [sess willChangeValueForKey:@"connectionState"];
     [sess didChangeValueForKey:@"connectionState"];
     
-    SEL selector = @selector(sessionDidLogOut:);
-    
-    if ([[sess delegate] respondsToSelector:selector]) {
-        
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess delegate] performSelector:selector
-                              withObject:sess];
-        [pool drain];
+    if ([sess.delegate respondsToSelector:@selector(sessionDidLogOut:)]) {
+		@autoreleasepool {
+            [sess.delegate sessionDidLogOut:sess];
+        }
     }
     
 }
@@ -162,12 +142,10 @@ static void logged_out(sp_session *session) {
  */
 static void notify_main_thread(sp_session *session) {
     
-    SPSession *sess = (SPSession *)sp_session_userdata(session);
+    SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
     
 	@synchronized (sess) {
-		
 		SEL selector = @selector(prodSession);
-		
 		if ([sess respondsToSelector:selector]) {
 			[sess performSelectorOnMainThread:selector
 								   withObject:nil
@@ -180,17 +158,12 @@ static void notify_main_thread(sp_session *session) {
  * This callback is called for log messages.
  */
 static void log_message(sp_session *session, const char *data) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-    SEL selector = @selector(session:didLogMessage:);
-    
-    if ([[sess delegate] respondsToSelector:selector]) {
-        
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess delegate] performSelector:selector
-                              withObject:sess
-                              withObject:[NSString stringWithUTF8String:data]];
-        [pool drain];
+    if ([sess.delegate respondsToSelector:@selector(session:didLogMessage:)]) {
+        @autoreleasepool {
+            [sess.delegate session:sess didLogMessage:[NSString stringWithUTF8String:data]];
+        }
     }
     
 }
@@ -202,17 +175,13 @@ static void log_message(sp_session *session, const char *data) {
  * your caches and fetch new versions.
  */
 static void metadata_updated(sp_session *session) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-    SEL selector = @selector(sessionDidChangeMetadata:);
-    
-    if ([[sess delegate] respondsToSelector:selector]) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess delegate] performSelector:selector
-                              withObject:sess];
-        [pool drain];
+	if ([sess.delegate respondsToSelector:@selector(sessionDidChangeMetadata:)]) {
+        @autoreleasepool {
+            [sess.delegate sessionDidChangeMetadata:sess];
+        }
     }
-    
 }
 
 /**
@@ -225,16 +194,12 @@ static void metadata_updated(sp_session *session) {
  * @param[in]  message    String in UTF-8 format.
  */
 static void message_to_user(sp_session *session, const char *msg) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
     
-	SEL selector = @selector(session:recievedMessageForUser:);
-    
-    if ([[sess delegate] respondsToSelector:selector]) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess delegate] performSelector:selector
-                              withObject:sess
-                              withObject:[NSString stringWithUTF8String:msg]];
-        [pool drain];
+    if ([sess.delegate respondsToSelector:@selector(session:recievedMessageForUser:)]) {
+        @autoreleasepool {
+            [sess.delegate session:sess recievedMessageForUser:[NSString stringWithUTF8String:msg]];
+        }
     }
     
 }
@@ -261,16 +226,16 @@ static void message_to_user(sp_session *session, const char *msg) {
  */
 static int music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames) {
 	
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	if ([[sess playbackDelegate] respondsToSelector:@selector(session:shouldDeliverAudioFrames:ofCount:format:)]) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        int framesConsumed = (int)[(id <SPSessionPlaybackDelegate>)[sess playbackDelegate] session:sess
-																		  shouldDeliverAudioFrames:frames
-																						   ofCount:num_frames
-																							format:format]; 
-        [pool drain];
-		return framesConsumed;
+        @autoreleasepool {
+			int framesConsumed = (int)[(id <SPSessionPlaybackDelegate>)[sess playbackDelegate] session:sess
+																			  shouldDeliverAudioFrames:frames
+																							   ofCount:num_frames
+																								format:format]; 
+			return framesConsumed;
+		}
     }
 	
 	return num_frames;
@@ -282,17 +247,14 @@ static int music_delivery(sp_session *session, const sp_audioformat *format, con
  * @param[in]  session    Session
  */
 static void play_token_lost(sp_session *session) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	[sess setPlaying:NO];
 	
-    SEL selector = @selector(sessionDidLosePlayToken:);
-    
-    if ([[sess playbackDelegate] respondsToSelector:selector]) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[sess playbackDelegate] performSelector:selector
-									  withObject:sess];
-        [pool drain];
+    if ([[sess playbackDelegate] respondsToSelector:@selector(sessionDidLosePlayToken:)]) {
+        @autoreleasepool {
+            [sess.playbackDelegate sessionDidLosePlayToken:sess];
+        }
     }
     
 }
@@ -307,67 +269,64 @@ static void play_token_lost(sp_session *session) {
  * @param[in]  session    Session
  */
 static void end_of_track(sp_session *session) {
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
     SEL selector = @selector(sessionDidEndPlayback:);
     
     if ([[sess playbackDelegate] respondsToSelector:selector]) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [(NSObject *)[sess playbackDelegate] performSelectorOnMainThread:selector
-															  withObject:sess
-														   waitUntilDone:NO];
-        [pool drain];
+        @autoreleasepool {
+            [(NSObject *)[sess playbackDelegate] performSelectorOnMainThread:selector
+																  withObject:sess
+															   waitUntilDone:NO];
+        }
     }
 }
 
 // Streaming error. Called when streaming cannot start or continue
 static void streaming_error(sp_session *session, sp_error error) {
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
-	SEL selector = @selector(session:didEncounterStreamingError:);
-	
-	if ([[sess playbackDelegate] respondsToSelector:selector]) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [(id <SPSessionPlaybackDelegate>)[sess playbackDelegate] session:sess
-											  didEncounterStreamingError:[NSError spotifyErrorWithCode:error]];
-        [pool drain];
+	if ([[sess playbackDelegate] respondsToSelector:@selector(session:didEncounterStreamingError:)]) {
+        @autoreleasepool {
+			[(id <SPSessionPlaybackDelegate>)sess.playbackDelegate session:sess didEncounterStreamingError:[NSError spotifyErrorWithCode:error]];
+        }
     }
 }
 
 // Called when offline synchronization status is updated
 static void offline_status_updated(sp_session *session) {
 	
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	[sess willChangeValueForKey:@"offlineSyncing"];
-	[sess didChangeValueForKey:@"offlineSyncing"];
-	
-	[sess willChangeValueForKey:@"offlineTracksRemaining"];
-	[sess didChangeValueForKey:@"offlineTracksRemaining"];
-	
-	[sess willChangeValueForKey:@"offlinePlaylistsRemaining"];
-	[sess didChangeValueForKey:@"offlinePlaylistsRemaining"];
-	
-	[sess willChangeValueForKey:@"offlineStatistics"];
-	[sess didChangeValueForKey:@"offlineStatistics"];
-	
-	for (SPPlaylist *playlist in [sess.playlistCache allValues]) {
-		[playlist willChangeValueForKey:@"offlineStatus"];
-		[playlist didChangeValueForKey:@"offlineStatus"];
+	@autoreleasepool {
 		
-		[playlist willChangeValueForKey:@"offlineDownloadProgress"];
-		[playlist didChangeValueForKey:@"offlineDownloadProgress"];
+		[sess willChangeValueForKey:@"offlineSyncing"];
+		[sess didChangeValueForKey:@"offlineSyncing"];
+		
+		[sess willChangeValueForKey:@"offlineTracksRemaining"];
+		[sess didChangeValueForKey:@"offlineTracksRemaining"];
+		
+		[sess willChangeValueForKey:@"offlinePlaylistsRemaining"];
+		[sess didChangeValueForKey:@"offlinePlaylistsRemaining"];
+		
+		[sess willChangeValueForKey:@"offlineStatistics"];
+		[sess didChangeValueForKey:@"offlineStatistics"];
+		
+		for (SPPlaylist *playlist in [sess.playlistCache allValues]) {
+			[playlist willChangeValueForKey:@"offlineStatus"];
+			[playlist didChangeValueForKey:@"offlineStatus"];
+			
+			[playlist willChangeValueForKey:@"offlineDownloadProgress"];
+			[playlist didChangeValueForKey:@"offlineDownloadProgress"];
+		}
+		
 	}
-	
-	[pool drain];
 }
 
 // Called when an error occurs during offline syncing.
 static void offline_error(sp_session *session, sp_error error) {
 	
-	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	sess.offlineSyncError = [NSError spotifyErrorWithCode:error];
 }
 
@@ -407,7 +366,6 @@ static SPSession *sharedSession;
 									   userAgent:(NSString *)userAgent
 										   error:(NSError **)error {
 	
-	[sharedSession release];
 	sharedSession = [[SPSession alloc] initWithApplicationKey:appKey
 													userAgent:userAgent
 														error:error];	
@@ -435,15 +393,14 @@ static SPSession *sharedSession;
 		[self addObserver:self
                forKeyPath:@"connectionState"
                   options:0
-                  context:kSPSessionKVOContext];
+                  context:(__bridge void *)kSPSessionKVOContext];
 		
 		[self addObserver:self
 			   forKeyPath:@"starredPlaylist.items"
 				  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
-				  context:kSPSessionKVOContext];
+				  context:(__bridge void *)kSPSessionKVOContext];
 		
 		if (appKey == nil || [userAgent length] == 0) {
-			[self release];
 			return nil;
 		}
 		
@@ -465,7 +422,6 @@ static SPSession *sharedSession;
 										   withIntermediateDirectories:YES
 															attributes:nil
 																 error:error]) {
-				[self release];
 				return nil;
 			}
 		}
@@ -489,7 +445,6 @@ static SPSession *sharedSession;
 										   withIntermediateDirectories:YES
 															attributes:nil
 																 error:error]) {
-				[self release];
 				return nil;
 			}
 		}
@@ -497,14 +452,14 @@ static SPSession *sharedSession;
 		sp_session_config config;
 		
 		memset(&config, 0, sizeof(config));
-
+		
 		config.api_version = SPOTIFY_API_VERSION;
 		config.application_key = [appKey bytes];
 		config.application_key_size = [appKey length];
 		config.user_agent = [userAgent UTF8String];
 		config.settings_location = [applicationSupportDirectory UTF8String];
 		config.cache_location = [cacheDirectory UTF8String];
-		config.userdata = (void *)self;
+		config.userdata = (__bridge void *)self;
 		config.callbacks = &_callbacks;
 		
 		sp_error createError = sp_session_create(&config, &session);
@@ -514,7 +469,6 @@ static SPSession *sharedSession;
 			if (error != NULL) {
 				*error = [NSError spotifyErrorWithCode:createError];
 			}
-			[self release];
 			return nil;
 		}
 	}
@@ -574,7 +528,7 @@ static SPSession *sharedSession;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (context == kSPSessionKVOContext) {
+    if (context == (__bridge void *)kSPSessionKVOContext) {
 		
 		if ([keyPath isEqualToString:@"starredPlaylist.items"]) {
 			// Bit of a hack to KVO the starred-ness of tracks.
@@ -614,7 +568,7 @@ static SPSession *sharedSession;
                 
                 if (userPlaylists == nil) {
                     sp_playlistcontainer *plc = sp_session_playlistcontainer(session);
-                    [self setUserPlaylists:[[[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self] autorelease]];
+                    [self setUserPlaylists:[[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self]];
                 }
                 
                 [self setUser:[SPUser userWithUserStruct:sp_session_user(session)
@@ -626,8 +580,8 @@ static SPSession *sharedSession;
 				localeId[1] = encodedLocale & 0xFF;
 				localeId[2] = 0;
 				NSString *localeString = [NSString stringWithUTF8String:(const char *)&localeId];
-				self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:localeString] autorelease];
-
+				self.locale = [[NSLocale alloc] initWithLocaleIdentifier:localeString];
+				
 			}
             
             if ([self connectionState] == SP_CONNECTION_STATE_LOGGED_OUT) {
@@ -688,7 +642,7 @@ static SPSession *sharedSession;
     cachedTrack = [[SPTrack alloc] initWithTrackStruct:spTrack
                                              inSession:self];
     [trackCache setObject:cachedTrack forKey:ptrValue];
-    return [cachedTrack autorelease];
+    return cachedTrack;
 }
 
 -(SPUser *)userForUserStruct:(sp_user *)spUser {
@@ -706,7 +660,7 @@ static SPSession *sharedSession;
 	if (cachedUser != nil)
 		[userCache setObject:cachedUser forKey:ptrValue];
 	
-    return [cachedUser autorelease];
+    return cachedUser;
 }
 
 -(SPPlaylist *)playlistForPlaylistStruct:(sp_playlist *)playlist {
@@ -721,7 +675,7 @@ static SPSession *sharedSession;
 	cachedPlaylist = [[SPPlaylist alloc] initWithPlaylistStruct:playlist
                                                       inSession:self];
 	[playlistCache setObject:cachedPlaylist forKey:ptrValue];
-	return [cachedPlaylist autorelease];
+	return cachedPlaylist;
 }
 
 -(SPPlaylistFolder *)playlistFolderForFolderId:(sp_uint64)playlistId inContainer:(SPPlaylistContainer *)aContainer {
@@ -738,7 +692,7 @@ static SPSession *sharedSession;
 																	inSession:self];
 	
 	[playlistCache setObject:cachedPlaylistFolder forKey:wrappedId];
-	return [cachedPlaylistFolder autorelease];
+	return cachedPlaylistFolder;
 }
 
 -(SPTrack *)trackForURL:(NSURL *)url {
@@ -854,11 +808,11 @@ static SPSession *sharedSession;
                                 withMessage:(NSString *)aFriendlyMessage
                                    delegate:(id <SPPostTracksToInboxOperationDelegate>)operationDelegate {
 	
-	return [[[SPPostTracksToInboxOperation alloc] initBySendingTracks:tracks
-                                                               toUser:targetUserName
-                                                              message:aFriendlyMessage
-                                                            inSession:self
-                                                             delegate:operationDelegate] autorelease];	
+	return [[SPPostTracksToInboxOperation alloc] initBySendingTracks:tracks
+															  toUser:targetUserName
+															 message:aFriendlyMessage
+														   inSession:self
+															delegate:operationDelegate];	
 }
 
 #pragma mark Properties
@@ -1028,18 +982,8 @@ static SPSession *sharedSession;
         [self logout];
     }
 	
-    self.inboxPlaylist = nil;
-	self.starredPlaylist = nil;
-	self.userPlaylists = nil;
-	self.user = nil;
-	self.locale = nil;
-	self.offlineSyncError = nil;
     
-    [trackCache release];
-    [userCache release];
-	[playlistCache release];
     
-    [super dealloc];
 }
 
 @end

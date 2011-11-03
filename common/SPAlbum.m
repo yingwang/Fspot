@@ -39,9 +39,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @interface SPAlbum ()
 
 @property (readwrite) sp_album *album;
-@property (readwrite, retain) SPSession *session;
-@property (readwrite, retain) SPImage *cover; 
-@property (readwrite, retain) SPArtist *artist;
+@property (readwrite, strong) SPSession *session;
+@property (readwrite, strong) SPImage *cover; 
+@property (readwrite, strong) SPArtist *artist;
 @property (readwrite, copy) NSURL *spotifyURL;
 
 -(void)loadAlbumData;
@@ -70,7 +70,7 @@ static NSMutableDictionary *albumCache;
                                                     inSession:aSession];
     
     [albumCache setObject:cachedAlbum forKey:ptrValue];
-    return [cachedAlbum autorelease];
+    return cachedAlbum;
 }
 
 +(SPAlbum *)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession {
@@ -187,14 +187,9 @@ static NSMutableDictionary *albumCache;
 
 -(void)dealloc {
     
-    self.spotifyURL = nil;
-    self.session = nil;
-    [self setCover:nil];
-    [self setArtist:nil];
     
     sp_album_release(album);
     
-    [super dealloc];
 }
 
 @end

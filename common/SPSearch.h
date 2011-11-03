@@ -228,13 +228,13 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 @property (readonly) BOOL hasExhaustedTrackResults;
 
 /** Returns the album results of the search, or `nil` if the search has not loaded or there are no album results. */
-@property (nonatomic, readonly, retain) NSArray *albums;
+@property (nonatomic, readonly, strong) NSArray *albums;
 
 /** Returns the artist results of the search, or `nil` if the search has not loaded or there are no artist results. */
-@property (nonatomic, readonly, retain) NSArray *artists;
+@property (nonatomic, readonly, strong) NSArray *artists;
 
 /** Returns the track results of the search, or `nil` if the search has not loaded or there are no track results. */
-@property (nonatomic, readonly, retain) NSArray *tracks;
+@property (nonatomic, readonly, strong) NSArray *tracks;
 
 ///----------------------------
 /// @name Properties
@@ -250,7 +250,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 @property (nonatomic, readonly, copy) NSString *searchQuery;
 
 /** Returns the session the search is being performed in. */
-@property (nonatomic, readonly, retain) SPSession *session;
+@property (nonatomic, readonly, strong) SPSession *session;
 
 /** Returns the Spotify URI of the search, for example: `spotify:search:rick+astley` */
 @property (nonatomic, readonly, copy) NSURL *spotifyURL;

@@ -66,7 +66,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readonly, getter=isLoaded) BOOL loaded;
 
 /** Returns the owner of the playlist list. */
-@property (readonly, retain) SPUser *owner;
+@property (readonly, strong) SPUser *owner;
 
 /** Returns an array of SPPlaylist and/or SPPlaylistFolders representing the owner's playlists.
  
@@ -80,7 +80,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readonly) NSMutableArray *playlists;
 
 /** Returns the session the list is loaded in. */
-@property (readonly, assign) __weak SPSession *session;
+@property (readonly) __weak SPSession *session;
 
 ///----------------------------
 /// @name Working with Playlists and Folders

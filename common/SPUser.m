@@ -58,7 +58,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(id)initWithUserStruct:(sp_user *)aUser inSession:(SPSession *)aSession {
 	
 	if (aUser == NULL) {
-		[self release];
 		return nil;
 	}
 	
@@ -128,12 +127,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize user;
 
 -(void)dealloc {
-    [self setCanonicalName:nil];
-    [self setDisplayName:nil];
     
     session = nil;
     sp_user_release(user);
-    [super dealloc];
 }
 
 @end

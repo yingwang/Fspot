@@ -40,9 +40,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPSearch ()
 
-@property (nonatomic, readwrite, retain) NSArray *tracks;
-@property (nonatomic, readwrite, retain) NSArray *artists;
-@property (nonatomic, readwrite, retain) NSArray *albums;
+@property (nonatomic, readwrite, strong) NSArray *tracks;
+@property (nonatomic, readwrite, strong) NSArray *artists;
+@property (nonatomic, readwrite, strong) NSArray *albums;
 
 @property (readwrite) BOOL hasExhaustedTrackResults;
 @property (readwrite) BOOL hasExhaustedArtistResults;
@@ -54,7 +54,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSString *suggestedSearchQuery;
 
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
-@property (nonatomic, readwrite, retain) SPSession *session;
+@property (nonatomic, readwrite, strong) SPSession *session;
 @property (readwrite) sp_search *activeSearch;
 
 -(id)initWithSession:(SPSession *)aSession; // Designated initialiser.
@@ -73,7 +73,7 @@ static NSString * const kSPSearchCallbackSearchingAlbumsKey = @"albums";
 void search_complete(sp_search *result, void *userdata);
 void search_complete(sp_search *result, void *userdata) {
 	
-	NSDictionary *properties = userdata;
+	NSDictionary *properties = (__bridge NSDictionary *)userdata;
 	SPSearch *search = [properties valueForKey:kSPSearchCallbackSearchObjectKey];
 	
 	[search searchDidComplete:result 
@@ -81,7 +81,6 @@ void search_complete(sp_search *result, void *userdata) {
 					  artists:[[properties valueForKey:kSPSearchCallbackSearchingArtistsKey] boolValue]
 					   albums:[[properties valueForKey:kSPSearchCallbackSearchingAlbumsKey] boolValue]];
 	
-	[properties release];
 	// ^ Was retained when the search was created.
 }
 
@@ -90,11 +89,11 @@ void search_complete(sp_search *result, void *userdata) {
 @implementation SPSearch
 
 +(SPSearch *)searchWithURL:(NSURL *)searchURL inSession:(SPSession *)aSession {
-	return [[[SPSearch alloc] initWithURL:searchURL inSession:aSession] autorelease];
+	return [[SPSearch alloc] initWithURL:searchURL inSession:aSession];
 }
 
 +(SPSearch *)searchWithSearchQuery:(NSString *)searchQuery inSession:(SPSession *)aSession {
-	return [[[SPSearch alloc] initWithSearchQuery:searchQuery inSession:aSession] autorelease];
+	return [[SPSearch alloc] initWithSearchQuery:searchQuery inSession:aSession];
 }
 
 -(id)initWithSession:(SPSession *)aSession {
@@ -129,7 +128,6 @@ void search_complete(sp_search *result, void *userdata) {
 								pageSize:kSPSearchDefaultSearchPageSize
 							   inSession:aSession];
 	}
-	[self release];
 	return nil;
 }
 
@@ -160,7 +158,6 @@ void search_complete(sp_search *result, void *userdata) {
 		return self;
 		
 	} else {
-		[self release];
 		return nil;
 	}
 }
@@ -354,7 +351,7 @@ void search_complete(sp_search *result, void *userdata) {
 													artistOffset, //artist_offset 
 													artistCount, //artist_count 
 													&search_complete, //callback
-													userData); // userdata
+													(__bridge void *)userData); // userdata
 			if (newSearch != NULL) {
 				self.activeSearch = newSearch;
 				sp_search_release(newSearch);
@@ -376,17 +373,8 @@ void search_complete(sp_search *result, void *userdata) {
 
 - (void)dealloc {
 	
-	self.searchError = nil;
-	self.tracks = nil;
-	self.artists = nil;
-	self.albums = nil;
-	self.searchQuery = nil;
-	self.suggestedSearchQuery = nil;
-	self.session = nil;
 	self.activeSearch = NULL;
-	self.spotifyURL = nil;
 	
-	[super dealloc];
 }
 
 @end

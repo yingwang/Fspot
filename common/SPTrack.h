@@ -152,10 +152,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///----------------------------
 
 /** Returns the album of the track. If no metadata is available for the track yet, returns `nil`. */
-@property (readonly, retain) SPAlbum *album;
+@property (readonly, strong) SPAlbum *album;
 
 /** Returns the artist(s) of the track. If no metadata is available for the track yet, returns `nil`. */
-@property (readonly, retain) NSArray *artists;
+@property (readonly, strong) NSArray *artists;
 
 /** Returns a string represention of the artist(s) of the track. If no metadata is available for the track yet, returns `nil`. 
  

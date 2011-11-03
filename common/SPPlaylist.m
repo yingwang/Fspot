@@ -47,11 +47,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (readwrite) BOOL hasPendingChanges;
 @property (readwrite, copy) NSString *playlistDescription;
 @property (readwrite, copy) NSURL *spotifyURL;
-@property (readwrite, retain) SPImage *image;
-@property (readwrite, retain) SPUser *owner;
+@property (readwrite, strong) SPImage *image;
+@property (readwrite, strong) SPUser *owner;
 @property (readwrite) BOOL trackChangesAreFromLibSpotifyCallback;
-@property (readwrite, retain) NSMutableArray *itemWrapper;
-@property (readwrite, retain) NSArray *subscribers;
+@property (readwrite, strong) NSMutableArray *itemWrapper;
+@property (readwrite, strong) NSArray *subscribers;
 
 -(void)rebuildItems;
 -(void)loadPlaylistData;
@@ -69,16 +69,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Called when one or more tracks have been added to a playlist
 static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_tracks, int position, void *userdata) {
     
-	SPPlaylist *playlist = userdata;
+	SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	
 	NSMutableArray *newItems = [NSMutableArray arrayWithCapacity:num_tracks];
 	
 	for (NSUInteger currentItem = 0; currentItem < num_tracks; currentItem++) {
 		sp_track *thisTrack = tracks[currentItem];
 		if (thisTrack != NULL) {
-			[newItems addObject:[[[SPPlaylistItem alloc] initWithPlaceholderTrack:thisTrack
+			[newItems addObject:[[SPPlaylistItem alloc] initWithPlaceholderTrack:thisTrack
 																		  atIndex:(int)position + (int)currentItem
-																	   inPlaylist:playlist] autorelease]];
+																	   inPlaylist:playlist]];
 		}
 	}
 	
@@ -100,7 +100,7 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 // Called when one or more tracks have been removed from a playlist
 static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, void *userdata) {
 
-	SPPlaylist *playlist = userdata;	
+	SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;	
 	
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 	
@@ -127,7 +127,7 @@ static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, v
 // Called when one or more tracks have been moved within a playlist
 static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int new_position, void *userdata) {
     
-	SPPlaylist *playlist = userdata;
+	SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 	NSUInteger newStartIndex = new_position;
@@ -167,7 +167,7 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 // Called when a playlist has been renamed. sp_playlist_name() can be used to find out the new name
 static void	playlist_renamed(sp_playlist *pl, void *userdata) {
     NSString *name = [NSString stringWithUTF8String:sp_playlist_name(pl)];
-    [(SPPlaylist *)userdata setPlaylistNameFromLibSpotifyUpdate:name];
+    [(__bridge SPPlaylist *)userdata setPlaylistNameFromLibSpotifyUpdate:name];
 }
 
 /*
@@ -180,7 +180,7 @@ static void	playlist_renamed(sp_playlist *pl, void *userdata) {
  The playlist started loading, or finished loading
  */
 static void	playlist_state_changed(sp_playlist *pl, void *userdata) {
-    SPPlaylist *playlist = userdata;
+    SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	
     [playlist setLoaded:sp_playlist_is_loaded(pl)];
     [playlist setCollaborativeFromLibSpotifyUpdate:sp_playlist_is_collaborative(pl)];
@@ -195,7 +195,7 @@ static void	playlist_state_changed(sp_playlist *pl, void *userdata) {
 
 // Called when a playlist is updating or is done updating
 static void	playlist_update_in_progress(sp_playlist *pl, bool done, void *userdata) {
-    SPPlaylist *playlist = userdata;
+    SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	
 	if (playlist.isUpdating == done && [playlist playlist] == pl)
 		playlist.updating = !done;
@@ -203,7 +203,7 @@ static void	playlist_update_in_progress(sp_playlist *pl, bool done, void *userda
 
 // Called when metadata for one or more tracks in a playlist has been updated.
 static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
-    SPPlaylist *playlist = userdata;
+    SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
     
 	for (SPPlaylistItem *playlistItem in playlist.items) {
 		if (playlistItem.itemClass == [SPTrack class]) {
@@ -212,14 +212,10 @@ static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
 		}
 	}
 	
-    SEL selector = @selector(itemsInPlaylistDidUpdateMetadata:);
-    
-    if ([[playlist delegate] respondsToSelector:selector]) {
-        
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [[playlist delegate] performSelector:selector
-                                  withObject:playlist];
-        [pool drain];
+    if ([[playlist delegate] respondsToSelector:@selector(itemsInPlaylistDidUpdateMetadata:)]) {
+        @autoreleasepool {
+            [playlist.delegate itemsInPlaylistDidUpdateMetadata:playlist];
+        }
     }
     
 }
@@ -227,7 +223,7 @@ static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
 // Called when create time and/or creator for a playlist entry changes
 static void	track_created_changed(sp_playlist *pl, int position, sp_user *user, int when, void *userdata) {
     
-	SPPlaylist *playlist = userdata;
+	SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	SPPlaylistItem *item = [playlist.items objectAtIndex:position];
 	
 	[item setDateCreatedFromLibSpotify:[NSDate dateWithTimeIntervalSince1970:when]];
@@ -237,7 +233,7 @@ static void	track_created_changed(sp_playlist *pl, int position, sp_user *user, 
 // Called when seen attribute for a playlist entry changes
 static void	track_seen_changed(sp_playlist *pl, int position, bool seen, void *userdata) {
     
-	SPPlaylist *playlist = userdata;
+	SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	SPPlaylistItem *item = [playlist.items objectAtIndex:position];
 	
 	[item setUnreadFromLibSpotify:!seen];
@@ -245,19 +241,19 @@ static void	track_seen_changed(sp_playlist *pl, int position, bool seen, void *u
 
 // Called when playlist description has changed
 static void	description_changed(sp_playlist *pl, const char *desc, void *userdata) {
-    SPPlaylist *playlist = userdata;
+    SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
     [playlist setPlaylistDescriptionFromLibSpotifyUpdate:[NSString stringWithUTF8String:desc]];
 }
 
 static void	image_changed(sp_playlist *pl, const byte *image, void *userdata) {
-    SPPlaylist *playlist = userdata;
+    SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
     [playlist setImage:[SPImage imageWithImageId:image inSession:[playlist session]]];
 }
 
 // Called when message attribute for a playlist entry changes
 static void	track_message_changed(sp_playlist *pl, int position, const char *message, void *userdata) {
 
-	SPPlaylist *playlist = userdata;
+	SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	SPPlaylistItem *item = [playlist.items objectAtIndex:position];
 	
 	if (message != NULL)
@@ -268,7 +264,7 @@ static void	track_message_changed(sp_playlist *pl, int position, const char *mes
 
 // Called when playlist subscribers changes (count or list of names)
 static void	subscribers_changed(sp_playlist *pl, void *userdata) {
-    SPPlaylist *playlist = userdata;
+    SPPlaylist *playlist = (__bridge SPPlaylist *)userdata;
 	[playlist rebuildSubscribers];
 }
 
@@ -315,26 +311,26 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
         [self addObserver:self
                forKeyPath:@"name"
                   options:0
-                  context:kSPPlaylistKVOContext];
+                  context:(__bridge void *)kSPPlaylistKVOContext];
         
         [self addObserver:self
                forKeyPath:@"playlistDescription"
                   options:0
-                  context:kSPPlaylistKVOContext];
+                  context:(__bridge void *)kSPPlaylistKVOContext];
         
         [self addObserver:self
                forKeyPath:@"collaborative"
                   options:0
-                  context:kSPPlaylistKVOContext];
+                  context:(__bridge void *)kSPPlaylistKVOContext];
         
         [self addObserver:self
                forKeyPath:@"loaded"
                   options:NSKeyValueObservingOptionOld
-                  context:kSPPlaylistKVOContext];
+                  context:(__bridge void *)kSPPlaylistKVOContext];
 		
 		if (playlist != NULL) {
 			sp_playlist_add_ref(pl);
-			sp_playlist_add_callbacks(playlist, &_playlistCallbacks, (void *)self);
+			sp_playlist_add_callbacks(playlist, &_playlistCallbacks, (__bridge void *)self);
 			sp_playlist_set_in_ram(aSession.session, playlist, true);
 			self.loaded = sp_playlist_is_loaded(pl);
 		}
@@ -426,7 +422,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
-    if (context == kSPPlaylistKVOContext) {
+    if (context == (__bridge void *)kSPPlaylistKVOContext) {
         if ([keyPath isEqualToString:@"name"]) {
             sp_playlist_rename(playlist, [[self name] UTF8String]);
             return;
@@ -453,7 +449,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     [self addObserver:self
            forKeyPath:@"name"
               options:0
-              context:kSPPlaylistKVOContext];
+              context:(__bridge void *)kSPPlaylistKVOContext];
 }
 
 -(void)setPlaylistDescriptionFromLibSpotifyUpdate:(NSString *)newDescription {
@@ -463,7 +459,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     [self addObserver:self
            forKeyPath:@"playlistDescription"
               options:0
-              context:kSPPlaylistKVOContext];
+              context:(__bridge void *)kSPPlaylistKVOContext];
 }
 
 -(void)setCollaborativeFromLibSpotifyUpdate:(BOOL)newCollaborative {
@@ -473,7 +469,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     [self addObserver:self
            forKeyPath:@"collaborative"
               options:0
-              context:kSPPlaylistKVOContext];
+              context:(__bridge void *)kSPPlaylistKVOContext];
 }
 
 #pragma mark -
@@ -517,9 +513,9 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
         sp_track *trackStruct = sp_playlist_track(playlist, (int)currentItemIndex);
         
         if (trackStruct != NULL) {
-			[newItems addObject:[[[SPPlaylistItem alloc] initWithPlaceholderTrack:trackStruct
+			[newItems addObject:[[SPPlaylistItem alloc] initWithPlaceholderTrack:trackStruct
 																		  atIndex:(int)currentItemIndex
-																	   inPlaylist:self] autorelease]];
+																	   inPlaylist:self]];
         }
     }
 	
@@ -530,7 +526,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	self.trackChangesAreFromLibSpotifyCallback = YES;
 	
 	[self willChangeValueForKey:@"items"];
-	[itemWrapper release];
 	itemWrapper = [newItems mutableCopy];
 	[self didChangeValueForKey:@"items"];
 	
@@ -577,7 +572,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 - (void)forwardInvocation:(NSInvocation *)invocation {
 	
 	if ([invocation selector] == @selector(items)) {
-		id value = [self mutableArrayValueForKey:@"items"];
+		__unsafe_unretained id value = [self mutableArrayValueForKey:@"items"];
 		[invocation setReturnValue:&value];
 	}
 }
@@ -652,21 +647,15 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     [self removeObserver:self forKeyPath:@"loaded"];
     
 	
-	self.subscribers = nil;
-    [self setName:nil];
-    [self setPlaylistDescription:nil];
     [self setDelegate:nil];
-    [self setOwner:nil];
-	[self setItemWrapper:nil];
     
     session = nil;
     
 	if (playlist != NULL) {
-		sp_playlist_remove_callbacks(playlist, &_playlistCallbacks, (void *)self);
+		sp_playlist_remove_callbacks(playlist, &_playlistCallbacks, (__bridge void *)self);
 		sp_playlist_release(playlist);
     }
 		
-    [super dealloc];
 }
 
 

@@ -59,7 +59,7 @@ static NSMutableDictionary *artistCache;
     cachedArtist = [[SPArtist alloc] initWithArtistStruct:anArtist];
     
     [artistCache setObject:cachedArtist forKey:ptrValue];
-    return [cachedArtist autorelease];
+    return cachedArtist;
 }
 
 +(SPArtist *)artistWithArtistURL:(NSURL *)aURL {
@@ -132,9 +132,7 @@ static NSMutableDictionary *artistCache;
 }
 
 -(void)dealloc {
-    self.spotifyURL = nil;
     sp_artist_release(artist);
-    [super dealloc];
 }
 
 @end

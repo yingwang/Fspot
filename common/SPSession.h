@@ -225,7 +225,7 @@ Playback
 ///----------------------------
 
 /** Returns the current delegate object. */
-@property (nonatomic, assign) __weak id <SPSessionDelegate> delegate;
+@property (nonatomic) __weak id <SPSessionDelegate> delegate;
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
@@ -255,7 +255,7 @@ Playback
 @property (readonly) NSTimeInterval offlineKeyTimeRemaining;
 
 /** Returns the last error encountered during offline syncing, or `nil` if there is no problem. */
-@property (readonly, retain) NSError *offlineSyncError;
+@property (readonly, strong) NSError *offlineSyncError;
 
 ///----------------------------
 /// @name User Content
@@ -266,26 +266,26 @@ Playback
  The inbox playlist contains tracks sent to the user by other Spotify users, and is 
  updated as new tracks are sent to the user. 
  */ 
-@property (readonly, retain) SPPlaylist *inboxPlaylist;
+@property (readonly, strong) SPPlaylist *inboxPlaylist;
 
 /** Returns the locale of the logged-in user. */
-@property (readonly, retain) NSLocale *locale;
+@property (readonly, strong) NSLocale *locale;
 
 /** Returns the logged in user's starred playlist.
  
  The starred playlist contains tracks starred by the user, and is updated as new tracks are
  starred or unstarred.
  */ 
-@property (readonly, retain) SPPlaylist *starredPlaylist;
+@property (readonly, strong) SPPlaylist *starredPlaylist;
 
 /** Returns the current logged in user. */
-@property (readonly, retain) SPUser *user;
+@property (readonly, strong) SPUser *user;
 
 /** Returns an SPPlaylistContainer object that contains the user's playlists.
  
  @see SPPlaylistContainer
  */
-@property (readonly, retain) SPPlaylistContainer *userPlaylists;
+@property (readonly, strong) SPPlaylistContainer *userPlaylists;
 
 /** Send tracks to another Spotify user.
  
@@ -425,7 +425,7 @@ Playback
  The playback delegate is responsible for pushing raw audio data provided by the session
  to the system's audio output. See the SimplePlayback sample project for an example of how to do this.
  */
-@property (nonatomic, assign) __weak id <SPSessionPlaybackDelegate> playbackDelegate;
+@property (nonatomic) __weak id <SPSessionPlaybackDelegate> playbackDelegate;
 
 /** Preloads playback assets for the given track.
  

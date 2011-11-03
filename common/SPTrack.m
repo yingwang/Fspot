@@ -42,8 +42,8 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 
 -(void)loadTrackData;
 
-@property (readwrite, retain) SPAlbum *album;
-@property (readwrite, retain) NSArray *artists;
+@property (readwrite, strong) SPAlbum *album;
+@property (readwrite, strong) NSArray *artists;
 @property (readwrite, copy) NSURL *spotifyURL;
 
 @end
@@ -216,13 +216,10 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 
 -(void)dealloc {
     
-    [self setAlbum:nil];
-    [self setArtists:nil];
     
     sp_track_release(track);
     session = nil;
     
-    [super dealloc];
 }
 
 @end

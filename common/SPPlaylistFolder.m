@@ -44,9 +44,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPPlaylistFolder ()
 
-@property (nonatomic, readwrite, assign) __weak SPPlaylistContainer *parentContainer;
+@property (nonatomic, readwrite) __weak SPPlaylistContainer *parentContainer;
 @property (readwrite, nonatomic, copy) NSString *name;
-@property (readwrite, assign) __weak SPSession *session;
+@property (readwrite) __weak SPSession *session;
 
 -(void)performIntegrityCheck;
 -(NSRange)rangeOfChildObjects;
@@ -102,7 +102,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)forwardInvocation:(NSInvocation *)invocation {
 	if ([invocation selector] == @selector(playlists)) {
-		id value = [self mutableArrayValueForKey:@"playlists"];
+		__unsafe_unretained id value = [self mutableArrayValueForKey:@"playlists"];
 		[invocation setReturnValue:&value];
 	}
 }
@@ -242,9 +242,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	if (playlist != NULL)
 		sp_playlist_release(playlist);
 	self.parentContainer = nil;
-	self.name = nil;
 	self.parentContainer = nil;
-    [super dealloc];
 }
 				
                      
