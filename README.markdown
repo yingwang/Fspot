@@ -10,7 +10,7 @@ The playlist API changed in CocoaLibSpotify for libspotify 10. `SPPlaylist` no l
 
 ## Building -  Mac OS X ##
 
-The Xcode project was built in Xcode 4.0, but should also work fine in Xcode 3.2.x.
+The Xcode project was built in Xcode 4.2, and requires Mac OS X Lion.
 
 The built CocoaLibSpotify.framework contains libspotify.framework as a child framework. Sometimes, Xcode gives build errors complaining it can't find <libspotify/api.h>. If you get this, manually add the directory libspotify.framework is in to your project's "Framework Search Paths" build setting. For example, if you're building the CocoaLibSpotify project alongside your application as an embedded Xcode project then copying it into your bundle, you'd have this:
 
@@ -21,6 +21,8 @@ Otherwise, you'd point to the downloaded libspotify.framework manually, somethin
 `../../libspotify-10.1.16-Darwin-universal`
 
 ## Building - iOS ##
+
+The Xcode project was built in Xcode 4.2, and requires iOS 5.0.
 
 The built libCocoaLibSpotify contains libspotify internally as a static library, as well as all of the required header files in a directory called "include".
 
