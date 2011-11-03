@@ -72,6 +72,15 @@
 		  contextInfo:nil];
 }
 
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
+	if ([SPSession sharedSession].connectionState == SP_CONNECTION_STATE_LOGGED_OUT ||
+		[SPSession sharedSession].connectionState == SP_CONNECTION_STATE_UNDEFINED) 
+		return NSTerminateNow;
+	
+	[[SPSession sharedSession] logout];
+	return NSTerminateLater;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 	
 	// Invoked when the current playback position changed (see below). This is a bit of a workaround
@@ -132,7 +141,10 @@
             contextInfo:nil];
 }
 
--(void)sessionDidLogOut:(SPSession *)aSession; {}
+-(void)sessionDidLogOut:(SPSession *)aSession; {
+	[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
+}
+
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {}
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage; {}
 -(void)sessionDidChangeMetadata:(SPSession *)aSession; {}
