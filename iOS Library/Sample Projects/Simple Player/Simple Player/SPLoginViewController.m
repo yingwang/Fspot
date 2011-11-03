@@ -64,7 +64,7 @@
 													   delegate:nil
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
-		[[alert autorelease] show];
+		[alert show];
 
 		return;
 	}
@@ -90,7 +90,7 @@
 												   delegate:nil
 										  cancelButtonTitle:@"OK"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 	
 	self.usernameField.enabled = YES;
 	self.passwordField.enabled = YES;
@@ -132,12 +132,5 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void)dealloc {
-	[usernameField release];
-	[passwordField release];
-	[loginButton release];
-	[spinner release];
-	[super dealloc];
-}
 
 @end

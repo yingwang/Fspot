@@ -39,10 +39,10 @@
 	UIActivityIndicatorView *spinner;
 }
 
-@property (nonatomic, retain) IBOutlet UITextField *usernameField;
-@property (nonatomic, retain) IBOutlet UITextField *passwordField;
-@property (nonatomic, retain) IBOutlet UIButton *loginButton;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *spinner;
+@property (nonatomic, strong) IBOutlet UITextField *usernameField;
+@property (nonatomic, strong) IBOutlet UITextField *passwordField;
+@property (nonatomic, strong) IBOutlet UIButton *loginButton;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *spinner;
 
 - (IBAction)performLogin:(id)sender;
 

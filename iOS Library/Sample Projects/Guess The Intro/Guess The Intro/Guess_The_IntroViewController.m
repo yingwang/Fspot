@@ -179,7 +179,6 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 	[self removeObserver:self forKeyPath:@"multiplier"];
 
 	
-	[formatter release];
 	formatter = nil;
 
     [super viewDidUnload];
@@ -277,8 +276,8 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
     
 	// Invoked by SPSession after a failed login.
 	// Forward to login view
-    if ([self.modalViewController respondsToSelector:_cmd])
-		[self.modalViewController performSelector:_cmd withObject:aSession withObject:error];
+    if ([self.modalViewController respondsToSelector:@selector(session:didFailToLoginWithError:)])
+		[self.modalViewController performSelector:@selector(session:didFailToLoginWithError:) withObject:aSession withObject:error];
 }
 
 -(void)sessionDidLogOut:(SPSession *)aSession; {}
@@ -293,7 +292,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 												   delegate:nil
 										  cancelButtonTitle:@"OK"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 }
 
 #pragma mark -
@@ -634,7 +633,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 												   delegate:self
 										  cancelButtonTitle:@"Again!"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 }
 
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -667,7 +666,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 														   delegate:self
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
-			[[alert autorelease] show];
+			[alert show];
 		}
 		return;
 	}
@@ -698,41 +697,9 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 
 
 - (void)dealloc {
-    [currentScoreLabel release];
-    [multiplierLabel release];
-    [highScoreLabel release];
-    [track1Button release];
-    [track1TitleLabel release];
-    [track2ArtistLabel release];
-    [track1ArtistLabel release];
-    [track2Button release];
-    [track2TitleLabel release];
-    [track3Button release];
-    [track3TitleLabel release];
-    [track3ArtistLabel release];
-    [track4Button release];
-    [track4TitleLabel release];
-    [track4ArtistLabel release];
-    [roundProgressIndicator release];
-    [currentRoundScoreLabel release];
-	[countdownLabel release];
 	
-	[playlist release];
-	[playbackManager release];
-	[regionTopList release];
-	[userTopList release];
-	[trackPool release];
-	[firstSuggestion release];
-	[secondSuggestion release];
-	[thirdSuggestion release];
-	[fourthSuggestion release];
 	[roundTimer invalidate];
-	[roundTimer release];
-	[roundStartDate release];
-	[gameStartDate release];
 	
-	[isLoadingView release];
-    [super dealloc];
 }
 
 @end

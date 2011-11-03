@@ -57,7 +57,7 @@
 											   userAgent:@"com.spotify.SimplePlayer-iOS"
 												   error:nil];
 
-	self.playbackManager = [[[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]] autorelease];
+	self.playbackManager = [[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]];
 
 	[self addObserver:self forKeyPath:@"currentTrack.name" options:0 context:nil];
 	[self addObserver:self forKeyPath:@"currentTrack.artists" options:0 context:nil];
@@ -73,7 +73,7 @@
 }
 
 -(void)showLogin {
-	[self.mainViewController presentModalViewController:[[[SPLoginViewController alloc] init] autorelease]
+	[self.mainViewController presentModalViewController:[[SPLoginViewController alloc] init]
 											   animated:NO];
 }
 
@@ -167,7 +167,7 @@
 															   delegate:nil
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
-				[[alert autorelease] show];
+				[alert show];
 			}
 			
 			self.currentTrack = track;
@@ -180,7 +180,7 @@
 												   delegate:nil
 										  cancelButtonTitle:@"OK"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 }
 
 - (IBAction)setTrackPosition:(id)sender {
@@ -202,8 +202,8 @@
 	// Invoked by SPSession after a failed login.
 
 	// Forward to the login view controller
-	if ([self.mainViewController.modalViewController respondsToSelector:_cmd])
-		[self.mainViewController.modalViewController performSelector:_cmd withObject:aSession withObject:error];
+	if ([self.mainViewController.modalViewController respondsToSelector:@selector(session:didFailToLoginWithError:)])
+		[self.mainViewController.modalViewController performSelector:@selector(session:didFailToLoginWithError:) withObject:aSession withObject:error];
 }
 
 -(void)sessionDidLogOut:(SPSession *)aSession; {}
@@ -218,7 +218,7 @@
 												   delegate:nil
 										  cancelButtonTitle:@"OK"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 }
 
 
@@ -229,16 +229,6 @@
 	[self removeObserver:self forKeyPath:@"currentTrack.album.cover.image"];
 	[self removeObserver:self forKeyPath:@"playbackManager.trackPosition"];
 	
-	[_currentTrack release];
-	[_playbackManager release];
-	[_window release];
-	[_mainViewController release];
-	[_trackURIField release];
-	[_trackTitle release];
-	[_trackArtist release];
-	[_coverView release];
-	[_positionSlider release];
-    [super dealloc];
 }
 
 @end
