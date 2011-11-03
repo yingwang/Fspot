@@ -34,9 +34,9 @@
 
 @interface SPPlaybackManager ()
 
-@property (nonatomic, readwrite, retain) SPCircularBuffer *audioBuffer;
-@property (nonatomic, readwrite, retain) SPTrack *currentTrack;
-@property (nonatomic, readwrite, retain) SPSession *playbackSession;
+@property (nonatomic, readwrite, strong) SPCircularBuffer *audioBuffer;
+@property (nonatomic, readwrite, strong) SPTrack *currentTrack;
+@property (nonatomic, readwrite, strong) SPSession *playbackSession;
 
 @property (readwrite) NSTimeInterval trackPosition;
 
@@ -71,18 +71,18 @@ static NSUInteger const kUpdateTrackPositionHz = 5;
         self.playbackSession = aSession;
 		self.playbackSession.playbackDelegate = self;
 		self.volume = 1.0;
-		self.audioBuffer = [[[SPCircularBuffer alloc] initWithMaximumLength:kMaximumBytesInBuffer] autorelease];
+		self.audioBuffer = [[SPCircularBuffer alloc] initWithMaximumLength:kMaximumBytesInBuffer];
 		
 		[self addObserver:self
 			   forKeyPath:@"playbackSession.playing"
 				  options:0
-				  context:kSPPlaybackManagerKVOContext];
+				  context:(__bridge void *)kSPPlaybackManagerKVOContext];
         
         // We pre-allocate the NSInvocation for setting the current playback time for performance reasons.
         // See SPPlaybackManagerAudioUnitRenderDelegateCallback() for more.
         SEL incrementTrackPositionSelector = @selector(incrementTrackPositionWithFrameCount:);
-		incrementTrackPositionMethodSignature = [[SPPlaybackManager instanceMethodSignatureForSelector:incrementTrackPositionSelector] retain];
-		incrementTrackPositionInvocation = [[NSInvocation invocationWithMethodSignature:incrementTrackPositionMethodSignature] retain];
+		incrementTrackPositionMethodSignature = [SPPlaybackManager instanceMethodSignatureForSelector:incrementTrackPositionSelector];
+		incrementTrackPositionInvocation = [NSInvocation invocationWithMethodSignature:incrementTrackPositionMethodSignature];
 		[incrementTrackPositionInvocation setSelector:incrementTrackPositionSelector];
 		[incrementTrackPositionInvocation setTarget:self];
     }
@@ -94,20 +94,14 @@ static NSUInteger const kUpdateTrackPositionHz = 5;
 	[self removeObserver:self forKeyPath:@"playbackSession.playing"];
 	
 	self.playbackSession.playbackDelegate = nil;
-	self.playbackSession = nil;
-	self.currentTrack = nil;
 	
 	[self teardownCoreAudio];
 	[self.audioBuffer clear];
-	self.audioBuffer = nil;
     
 	incrementTrackPositionInvocation.target = nil;
-    [incrementTrackPositionInvocation release];
 	incrementTrackPositionInvocation = nil;
-	[incrementTrackPositionMethodSignature release];
 	incrementTrackPositionMethodSignature = nil;
 	
-    [super dealloc];
 }
 
 @synthesize audioBuffer;
@@ -163,7 +157,7 @@ static NSUInteger const kUpdateTrackPositionHz = 5;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
-	if ([keyPath isEqualToString:@"playbackSession.playing"] && context == kSPPlaybackManagerKVOContext) {
+	if ([keyPath isEqualToString:@"playbackSession.playing"] && context == (__bridge void *)kSPPlaybackManagerKVOContext) {
         if (self.playbackSession.isPlaying) {
 			[self startAudioUnit];
 		} else {
@@ -355,7 +349,7 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
     // for its buffers.
     AURenderCallbackStruct callback;
     callback.inputProc = SPPlaybackManagerAudioUnitRenderDelegateCallback;
-    callback.inputProcRefCon = self;
+    callback.inputProcRefCon = (__bridge void *)(self);
     
     status = AudioUnitSetProperty(outputAudioUnit,
                                   kAudioUnitProperty_SetRenderCallback,
@@ -393,8 +387,6 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
 	// must be thread-safe. In addition, this method must not block - if your buffers are full, return 0 and the delivery will
 	// be tried again later.
 	
-	[self retain]; // Try to avoid the object being deallocated while this is going on.
-	
 	if (frameCount == 0) {
 		// If this happens (frameCount of 0), the user has seeked the track somewhere (or similar). 
 		// Clear audio buffers and wait for more data.
@@ -430,7 +422,6 @@ static inline void fillWithError(NSError **mayBeAnError, NSString *localizedDesc
 	
 	[self.audioBuffer attemptAppendData:audioFrames ofLength:dataLength];
 	
-	[self release];
 	return frameCount;
 }
 
@@ -457,8 +448,8 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
     // This callback is called by Core Audio when it needs more audio data to fill its buffers.
     // This callback is both super time-sensitive and called on some arbitrary thread, so we
     // have to be extra careful with performance and locking.
-    SPPlaybackManager *self = inRefCon;
-	[self retain]; // Try to avoid the object being deallocated while this is going on.
+    
+	SPPlaybackManager *self = (__bridge SPPlaybackManager *)inRefCon;
 	
 	AudioBuffer *buffer = &(ioData->mBuffers[0]);
 	UInt32 bytesRequired = buffer->mDataByteSize;
@@ -470,7 +461,6 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
 	if (availableData < bytesRequired) {
 		buffer->mDataByteSize = 0;
 		*ioActionFlags |= kAudioUnitRenderAction_OutputIsSilence;
-		[self release];
 		return noErr;
     }
     
@@ -493,7 +483,6 @@ static OSStatus SPPlaybackManagerAudioUnitRenderDelegateCallback(void *inRefCon,
 		framesSinceLastTimeUpdate = 0;
 	}
     
-	[self release];
     return noErr;
 }
 
