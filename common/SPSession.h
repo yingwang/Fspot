@@ -77,6 +77,7 @@ Playback
     SPUser *user;
 	NSLocale *locale;
 	NSError *offlineSyncError;
+    NSString *userAgent;
 }
 
 /** Returns a shared SPSession object. 
@@ -234,6 +235,9 @@ Playback
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
 @property (readonly) sp_session *session;
+
+/** Returns the user agent value the session was initialized with. */
+@property (nonatomic, copy, readonly) NSString *userAgent;
 
 ///----------------------------
 /// @name Offline Syncing

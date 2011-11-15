@@ -58,6 +58,8 @@
 @property (readwrite, strong) SPPlaylist *starredPlaylist;
 @property (readwrite, strong) SPPlaylistContainer *userPlaylists;
 
+@property (nonatomic, copy, readwrite) NSString *userAgent;
+
 @end
 
 #pragma mark Session Callbacks
@@ -362,11 +364,11 @@ static SPSession *sharedSession;
 }
 
 +(void)initializeSharedSessionWithApplicationKey:(NSData *)appKey
-									   userAgent:(NSString *)userAgent
+									   userAgent:(NSString *)aUserAgent
 										   error:(NSError **)error {
 	
 	sharedSession = [[SPSession alloc] initWithApplicationKey:appKey
-													userAgent:userAgent
+													userAgent:aUserAgent
 														error:error];	
 }
 
@@ -380,10 +382,12 @@ static SPSession *sharedSession;
 }
 
 -(id)initWithApplicationKey:(NSData *)appKey
-				  userAgent:(NSString *)userAgent
+				  userAgent:(NSString *)aUserAgent
 					  error:(NSError **)error {
 	
 	if ((self = [super init])) {
+        
+        self.userAgent = aUserAgent;
         
         trackCache = [[NSMutableDictionary alloc] init];
         userCache = [[NSMutableDictionary alloc] init];
@@ -399,7 +403,7 @@ static SPSession *sharedSession;
 				  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
 				  context:(__bridge void *)kSPSessionKVOContext];
 		
-		if (appKey == nil || [userAgent length] == 0) {
+		if (appKey == nil || [aUserAgent length] == 0) {
 			return nil;
 		}
 		
@@ -411,9 +415,9 @@ static SPSession *sharedSession;
 																			YES);
 		
 		if ([potentialDirectories count] > 0) {
-			applicationSupportDirectory = [[potentialDirectories objectAtIndex:0] stringByAppendingPathComponent:userAgent];
+			applicationSupportDirectory = [[potentialDirectories objectAtIndex:0] stringByAppendingPathComponent:aUserAgent];
 		} else {
-			applicationSupportDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:userAgent];
+			applicationSupportDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:aUserAgent];
 		}
 		
 		if (![[NSFileManager defaultManager] fileExistsAtPath:applicationSupportDirectory]) {
@@ -434,9 +438,9 @@ static SPSession *sharedSession;
 																				 YES);
 		
 		if ([potentialCacheDirectories count] > 0) {
-			cacheDirectory = [[potentialCacheDirectories objectAtIndex:0] stringByAppendingPathComponent:userAgent];
+			cacheDirectory = [[potentialCacheDirectories objectAtIndex:0] stringByAppendingPathComponent:aUserAgent];
 		} else {
-			cacheDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:userAgent];
+			cacheDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:aUserAgent];
 		}
 		
 		if (![[NSFileManager defaultManager] fileExistsAtPath:cacheDirectory]) {
@@ -455,7 +459,7 @@ static SPSession *sharedSession;
 		config.api_version = SPOTIFY_API_VERSION;
 		config.application_key = [appKey bytes];
 		config.application_key_size = [appKey length];
-		config.user_agent = [userAgent UTF8String];
+		config.user_agent = [aUserAgent UTF8String];
 		config.settings_location = [applicationSupportDirectory UTF8String];
 		config.cache_location = [cacheDirectory UTF8String];
 		config.userdata = (__bridge void *)self;
@@ -628,6 +632,7 @@ static SPSession *sharedSession;
 @synthesize user;
 @synthesize locale;
 @synthesize offlineSyncError;
+@synthesize userAgent;
 
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     
