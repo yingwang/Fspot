@@ -61,8 +61,9 @@ Playback
 @protocol SPSessionDelegate;
 @protocol SPSessionPlaybackDelegate;
 @protocol SPPostTracksToInboxOperationDelegate;
+@protocol SPSessionPlaybackProvider;
 
-@interface SPSession : NSObject {
+@interface SPSession : NSObject <SPSessionPlaybackProvider> {
     @private
     sp_session *session;
 	BOOL playing;
@@ -553,20 +554,20 @@ Playback
  
  @param aSession The session that paused playback. 
  */
--(void)sessionDidLosePlayToken:(SPSession *)aSession;
+-(void)sessionDidLosePlayToken:(id <SPSessionPlaybackProvider>)aSession;
 
 /** Called when playback stopped naturally at the end of a track.
  
  @param aSession The session that stopped playback. 
  */
--(void)sessionDidEndPlayback:(SPSession *)aSession;
+-(void)sessionDidEndPlayback:(id <SPSessionPlaybackProvider>)aSession;
 
 /** Called when playback stopped due to a streaming error. 
  
  @param aSession The session that stopped playback. 
  @param error The error that occurred.
  */
--(void)session:(SPSession *)aSession didEncounterStreamingError:(NSError *)error;
+-(void)session:(id <SPSessionPlaybackProvider>)aSession didEncounterStreamingError:(NSError *)error;
 
 /** Called when audio data has been decompressed and should be pushed to the audio buffers. 
  
@@ -590,7 +591,7 @@ Playback
  the output from the library if your output buffers are saturated. Delivery will 
  be retried in about 100ms.
  */
--(NSInteger)session:(SPSession *)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount format:(const sp_audioformat *)audioFormat;
+-(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount format:(const sp_audioformat *)audioFormat;
 
 @end
 
