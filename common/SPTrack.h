@@ -117,6 +117,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Returns `YES` if the track has finished loading and all data is available. */ 
 @property (readonly, getter=isLoaded) BOOL loaded;
 
+/** Returns `YES` if the track is a local file and requires separate playback. */
+@property (readonly, getter = isLocal) BOOL local;
+
 /** Returns the Spotify URI of the track, for example: `spotify:track:6JEK0CvvjDjjMUBFoXShNZ` */
 @property (readonly, copy) NSURL *spotifyURL;
 

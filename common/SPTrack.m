@@ -146,6 +146,9 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 	
 	[self willChangeValueForKey:@"loaded"];
     [self didChangeValueForKey:@"loaded"];
+	
+	[self willChangeValueForKey:@"local"];
+    [self didChangeValueForKey:@"local"];
 }
 
 #pragma mark -
@@ -197,6 +200,10 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 
 -(BOOL)isLoaded {
 	return sp_track_is_loaded(track);
+}
+
+-(BOOL)isLocal {
+	return sp_track_is_local(session.session, track);
 }
 
 -(BOOL)starred {
