@@ -45,7 +45,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 @property (nonatomic, readwrite, getter=isAvailable) BOOL available;
-@property (nonatomic, readwrite) NSString *name;
+@property (nonatomic, readwrite, copy) NSString *name;
 @property (nonatomic, readwrite) sp_albumtype type;
 @property (nonatomic, readwrite) NSUInteger year;
 
@@ -96,8 +96,8 @@ static NSMutableDictionary *albumCache;
 
 -(id)initWithAlbumStruct:(sp_album *)anAlbum inSession:(SPSession *)aSession {
     if ((self = [super init])) {
-        album = anAlbum;
-        sp_album_add_ref(album);
+        self.album = anAlbum;
+        sp_album_add_ref(self.album);
         self.session = aSession;
         sp_link *link = sp_link_create_from_album(anAlbum);
         if (link != NULL) {
@@ -105,7 +105,7 @@ static NSMutableDictionary *albumCache;
             sp_link_release(link);
         }
         
-        if (!sp_album_is_loaded(album)) {
+        if (!sp_album_is_loaded(self.album)) {
             [self performSelector:@selector(checkLoaded)
                        withObject:nil
                        afterDelay:.25];
@@ -117,7 +117,7 @@ static NSMutableDictionary *albumCache;
 }
 
 -(void)checkLoaded {
-    BOOL isLoaded = sp_album_is_loaded(album);
+    BOOL isLoaded = sp_album_is_loaded(self.album);
     if (!isLoaded) {
         [self performSelector:_cmd
                    withObject:nil
@@ -128,19 +128,19 @@ static NSMutableDictionary *albumCache;
 }
 
 -(void)loadAlbumData {
-    const byte *imageId = sp_album_cover(album);
+    const byte *imageId = sp_album_cover(self.album);
     
     if (imageId != NULL) {
         [self setCover:[SPImage imageWithImageId:imageId
-                                              inSession:session]];
+                                              inSession:self.session]];
     }
     
-    sp_artist *spArtist = sp_album_artist(album);
+    sp_artist *spArtist = sp_album_artist(self.album);
     if (spArtist != NULL) {
         [self setArtist:[SPArtist artistWithArtistStruct:spArtist]];
     }
     
-	const char *nameCharArray = sp_album_name(album);
+	const char *nameCharArray = sp_album_name(self.album);
     if (nameCharArray != NULL) {
         NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
         self.name = [nameString length] > 0 ? nameString : nil;
@@ -148,10 +148,10 @@ static NSMutableDictionary *albumCache;
         self.name = nil;
     }
 
-	self.year = sp_album_year(album);
-	self.type = sp_album_type(album);
-	self.available = sp_album_is_available(album);
-	self.loaded = sp_album_is_loaded(album);
+	self.year = sp_album_year(self.album);
+	self.type = sp_album_type(self.album);
+	self.available = sp_album_is_available(self.album);
+	self.loaded = sp_album_is_loaded(self.album);
 }
 
 -(NSString *)description {

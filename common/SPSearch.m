@@ -85,7 +85,13 @@ void search_complete(sp_search *result, void *userdata) {
 
 #pragma mark -
 
-@implementation SPSearch
+@implementation SPSearch {
+	sp_search *activeSearch;
+	NSInteger requestedTrackResults;
+	NSInteger requestedArtistResults;
+	NSInteger requestedAlbumResults;
+	NSInteger pageSize;
+}
 
 +(SPSearch *)searchWithURL:(NSURL *)searchURL inSession:(SPSession *)aSession {
 	return [[SPSearch alloc] initWithURL:searchURL inSession:aSession];

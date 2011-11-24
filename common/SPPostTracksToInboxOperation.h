@@ -38,15 +38,7 @@
 @class SPSession;
 @protocol SPPostTracksToInboxOperationDelegate;
 
-@interface SPPostTracksToInboxOperation : NSObject {
-@private
-	SPSession *session;
-	NSString *destinationUser;
-	NSArray *tracks;
-	NSString *message;
-	sp_inbox *inboxOperation;
-	__weak id <SPPostTracksToInboxOperationDelegate> delegate;
-}
+@interface SPPostTracksToInboxOperation : NSObject
 
 ///----------------------------
 /// @name Creating and Initializing Track Post Operations

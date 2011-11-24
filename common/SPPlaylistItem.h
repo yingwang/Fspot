@@ -34,12 +34,6 @@
 @class SPUser;
 
 @interface SPPlaylistItem : NSObject {
-	id item;
-	__weak SPPlaylist *playlist;
-	int itemIndex;
-	NSDate *dateAdded;
-	SPUser *creator;
-	NSString *message;
 	BOOL _unread;
 }
 

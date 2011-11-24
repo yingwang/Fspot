@@ -38,6 +38,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(void)checkLoaded;
 @property (nonatomic, copy, readwrite) NSString *name;
 @property (nonatomic, copy, readwrite) NSURL *spotifyURL;
+@property (nonatomic, readwrite) sp_artist *artist;
 
 @end
 
@@ -84,8 +85,8 @@ static NSMutableDictionary *artistCache;
 
 -(id)initWithArtistStruct:(sp_artist *)anArtist {
     if ((self = [super init])) {
-        artist = anArtist;
-        sp_artist_add_ref(artist);
+        self.artist = anArtist;
+        sp_artist_add_ref(self.artist);
         sp_link *link = sp_link_create_from_artist(anArtist);
         if (link != NULL) {
             self.spotifyURL = [NSURL urlWithSpotifyLink:link];
@@ -98,14 +99,14 @@ static NSMutableDictionary *artistCache;
 }
 
 -(void)checkLoaded {
-    BOOL loaded = sp_artist_is_loaded(artist);
+    BOOL loaded = sp_artist_is_loaded(self.artist);
     if (!loaded) {
         [self performSelector:_cmd
                    withObject:nil
                    afterDelay:.25];
     } else {
         
-        const char *nameCharArray = sp_artist_name(artist);
+        const char *nameCharArray = sp_artist_name(self.artist);
 		if (nameCharArray != NULL) {
 			NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
 			self.name = [nameString length] > 0 ? nameString : nil;

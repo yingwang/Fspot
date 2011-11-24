@@ -66,7 +66,9 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 	} 
 }
 
-@implementation SPPostTracksToInboxOperation
+@implementation SPPostTracksToInboxOperation {
+	sp_inbox *inboxOperation;
+}
 
 +(SPPostTracksToInboxOperation *)sendTracks:(NSArray *)tracksToSend
 									 toUser:(NSString *)user 

@@ -42,6 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSString *canonicalName;
 @property (nonatomic, readwrite, copy) NSString *displayName;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
+@property (nonatomic, readwrite) sp_user *user;
+@property (nonatomic, readwrite) __weak SPSession *session;
 
 @end
 
@@ -62,12 +64,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	}
 	
     if ((self = [super init])) {
-        user = aUser;
-        sp_user_add_ref(user);
+        self.user = aUser;
+        sp_user_add_ref(self.user);
+        self.session = aSession;
         
-        session = aSession;
-        
-        if (!sp_user_is_loaded(user)) {
+        if (!sp_user_is_loaded(self.user)) {
             [self performSelector:@selector(checkLoaded)
                        withObject:nil
                        afterDelay:.25];
@@ -84,7 +85,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)checkLoaded {
-    BOOL userLoaded = sp_user_is_loaded(user);
+    BOOL userLoaded = sp_user_is_loaded(self.user);
     if (!userLoaded) {
         [self performSelector:_cmd
                    withObject:nil
@@ -96,23 +97,23 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)loadUserData {
     
-    [self setLoaded:sp_user_is_loaded(user)];
+    [self setLoaded:sp_user_is_loaded(self.user)];
     
     if ([self isLoaded]) {
 		
-		sp_link *link = sp_link_create_from_user(user);
+		sp_link *link = sp_link_create_from_user(self.user);
 		if (link != NULL) {
 			[self setSpotifyURL:[NSURL urlWithSpotifyLink:link]];
 			sp_link_release(link);
 		}
      
-        const char *canonical = sp_user_canonical_name(user);
+        const char *canonical = sp_user_canonical_name(self.user);
         if (canonical != NULL) {
             NSString *canonicalString = [NSString stringWithUTF8String:canonical];
             [self setCanonicalName:[canonicalString length] > 0 ? canonicalString : nil];
         }
         
-        const char *display = sp_user_display_name(user);
+        const char *display = sp_user_display_name(self.user);
         if (display != NULL) {
             NSString *displayString = [NSString stringWithUTF8String:display];
             [self setDisplayName:[displayString length] > 0 ? displayString : nil];
@@ -125,9 +126,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize displayName;
 @synthesize loaded;
 @synthesize user;
+@synthesize session;
 
 -(void)dealloc {
-    session = nil;
     sp_user_release(user);
 }
 

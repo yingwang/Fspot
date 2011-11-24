@@ -154,7 +154,11 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 	}
 }
 
-@implementation SPToplist
+@implementation SPToplist {
+	sp_toplistbrowse *albumBrowseOperation;
+	sp_toplistbrowse *artistBrowseOperation;
+	sp_toplistbrowse *trackBrowseOperation;
+}
 
 +(SPToplist *)globalToplistInSession:(SPSession *)aSession {
 	return [[SPToplist alloc] initLocaleToplistWithLocale:nil 

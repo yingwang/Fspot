@@ -47,20 +47,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPSession;
 @class SPImage;
 
-@interface SPArtistBrowse : NSObject {
-@private
-	BOOL loaded;
-	NSError *loadError;
-	SPArtist *artist;
-	SPSession *session;
-	NSArray *portraits;
-	SPPlatformNativeImage *firstPortrait;
-	NSArray *tracks;
-	NSArray *albums;
-	NSArray *relatedArtists;
-	NSString *biography;
-    sp_artistbrowse *browseOperation;
-}
+@interface SPArtistBrowse : NSObject
 
 ///----------------------------
 /// @name Creating and Initializing Artist Browses

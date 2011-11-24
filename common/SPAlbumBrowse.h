@@ -46,18 +46,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPSession;
 @class SPArtist;
 
-@interface SPAlbumBrowse : NSObject {
-@private
-	BOOL loaded;
-	NSError *loadError;
-	SPSession *session;
-	SPAlbum *album;
-	SPArtist *artist;
-	NSArray *tracks;
-	NSArray *copyrights;
-	NSString *review;
-	sp_albumbrowse *browseOperation;
-}
+@interface SPAlbumBrowse : NSObject
 
 ///----------------------------
 /// @name Creating and Initializing Album Browses

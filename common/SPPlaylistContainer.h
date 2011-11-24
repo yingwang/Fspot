@@ -41,14 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPPlaylist;
 @class SPPlaylistFolder;
 
-@interface SPPlaylistContainer : NSObject {
-    @private
-    sp_playlistcontainer *container;
-    __weak SPSession *session;
-    SPPlaylistFolder *rootFolder;
-    SPUser *owner;
-	BOOL loaded;
-}
+@interface SPPlaylistContainer : NSObject
 
 ///----------------------------
 /// @name Properties

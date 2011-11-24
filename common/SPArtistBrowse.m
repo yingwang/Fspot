@@ -127,7 +127,9 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 	}
 }
 
-@implementation SPArtistBrowse
+@implementation SPArtistBrowse {
+    sp_artistbrowse *browseOperation;
+}
 
 +(SPArtistBrowse *)browseArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
 	return [[SPArtistBrowse alloc] initWithArtist:anArtist

@@ -54,8 +54,12 @@
 @property (nonatomic, readwrite, strong) NSLocale *locale;
 
 @property (nonatomic, readwrite) sp_connectionstate connectionState;
-@property (nonatomic, readonly, strong) NSMutableDictionary *playlistCache;
+@property (nonatomic, readwrite, strong) NSMutableDictionary *playlistCache;
+@property (nonatomic, readwrite, strong) NSMutableDictionary *userCache;
+@property (nonatomic, readwrite, strong) NSMutableDictionary *trackCache;
 @property (nonatomic, readwrite, strong) NSError *offlineSyncError;
+
+@property (nonatomic, readwrite) sp_session *session;
 
 @property (nonatomic, readwrite, strong) SPPlaylist *inboxPlaylist;
 @property (nonatomic, readwrite, strong) SPPlaylist *starredPlaylist;
@@ -65,6 +69,8 @@
 @property (nonatomic, readwrite) NSUInteger offlineTracksRemaining;
 @property (nonatomic, readwrite) NSUInteger offlinePlaylistsRemaining;
 @property (nonatomic, readwrite, copy) NSDictionary *offlineStatistics;
+
+
 
 @property (nonatomic, copy, readwrite) NSString *userAgent;
 
@@ -366,7 +372,10 @@ static sp_session_callbacks _callbacks = {
 
 static NSString * const kSPSessionKVOContext = @"kSPSessionKVOContext";
 
-@implementation SPSession
+@implementation SPSession {
+	BOOL _playing;
+	sp_session *session;
+}
 
 static SPSession *sharedSession;
 
@@ -400,9 +409,9 @@ static SPSession *sharedSession;
         
         self.userAgent = aUserAgent;
         
-        trackCache = [[NSMutableDictionary alloc] init];
-        userCache = [[NSMutableDictionary alloc] init];
-		playlistCache = [[NSMutableDictionary alloc] init];
+        self.trackCache = [[NSMutableDictionary alloc] init];
+        self.userCache = [[NSMutableDictionary alloc] init];
+		self.playlistCache = [[NSMutableDictionary alloc] init];
 		
 		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
 		
@@ -481,7 +490,7 @@ static SPSession *sharedSession;
 		sp_error createError = sp_session_create(&config, &session);
 		
 		if (createError != SP_ERROR_OK) {
-			session = NULL;
+			self.session = NULL;
 			if (error != NULL) {
 				*error = [NSError spotifyErrorWithCode:createError];
 			}
@@ -496,20 +505,20 @@ static SPSession *sharedSession;
 					   password:(NSString *)password
 			rememberCredentials:(BOOL)rememberMe {
     
-	if ([userName length] == 0 || [password length] == 0 || session == NULL)
+	if ([userName length] == 0 || [password length] == 0 || self.session == NULL)
 		return;
 	
 	[self logout];
     
-    sp_session_login(session, [userName UTF8String], [password UTF8String], rememberMe);
+    sp_session_login(self.session, [userName UTF8String], [password UTF8String], rememberMe);
 }
 
 -(BOOL)attemptLoginWithStoredCredentials:(NSError **)error {
 	
-    if (session == NULL)
+    if (self.session == NULL)
         return NO;
     
-	sp_error errorCode = sp_session_relogin(session);
+	sp_error errorCode = sp_session_relogin(self.session);
 	
 	if (errorCode != SP_ERROR_OK) {
 		if (error != NULL) {
@@ -522,11 +531,11 @@ static SPSession *sharedSession;
 
 -(NSString *)storedCredentialsUserName {
 	
-    if (session == NULL)
+    if (self.session == NULL)
         return nil;
     
 	char userNameBuffer[300];
-	int userNameLength = sp_session_remembered_user(session, (char *)&userNameBuffer, sizeof(userNameBuffer));
+	int userNameLength = sp_session_remembered_user(self.session, (char *)&userNameBuffer, sizeof(userNameBuffer));
 	
 	if (userNameLength == -1)
 		return nil;
@@ -539,8 +548,8 @@ static SPSession *sharedSession;
 }
 
 -(void)forgetStoredCredentials {
-    if (session)
-        sp_session_forget_me(session);
+    if (self.session)
+        sp_session_forget_me(self.session);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -570,27 +579,27 @@ static SPSession *sharedSession;
             
             if ([self connectionState] == SP_CONNECTION_STATE_LOGGED_IN || [self connectionState] == SP_CONNECTION_STATE_OFFLINE) {
                 
-                if (inboxPlaylist == nil) {
-                    sp_playlist *pl = sp_session_inbox_create(session);
+                if (self.inboxPlaylist == nil) {
+                    sp_playlist *pl = sp_session_inbox_create(self.session);
                     [self setInboxPlaylist:[self playlistForPlaylistStruct:pl]];
                     sp_playlist_release(pl);
                 }
                 
-                if (starredPlaylist == nil) {
-                    sp_playlist *pl = sp_session_starred_create(session);
+                if (self.starredPlaylist == nil) {
+                    sp_playlist *pl = sp_session_starred_create(self.session);
                     [self setStarredPlaylist:[self playlistForPlaylistStruct:pl]];
                     sp_playlist_release(pl);
                 }
                 
-                if (userPlaylists == nil) {
-                    sp_playlistcontainer *plc = sp_session_playlistcontainer(session);
+                if (self.userPlaylists == nil) {
+                    sp_playlistcontainer *plc = sp_session_playlistcontainer(self.session);
                     [self setUserPlaylists:[[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self]];
                 }
                 
-                [self setUser:[SPUser userWithUserStruct:sp_session_user(session)
+                [self setUser:[SPUser userWithUserStruct:sp_session_user(self.session)
                                                inSession:self]];
 				
-				int encodedLocale = sp_session_user_country(session);
+				int encodedLocale = sp_session_user_country(self.session);
 				char localeId[3];
 				localeId[0] = encodedLocale >> 8 & 0xFF;
 				localeId[1] = encodedLocale & 0xFF;
@@ -616,22 +625,24 @@ static SPSession *sharedSession;
 }
 
 -(void)logout {
-	[trackCache removeAllObjects];
-	[userCache removeAllObjects];
-	[playlistCache removeAllObjects];
+	[self.trackCache removeAllObjects];
+	[self.userCache removeAllObjects];
+	[self.playlistCache removeAllObjects];
 	self.inboxPlaylist = nil;
 	self.starredPlaylist = nil;
 	self.userPlaylists = nil;
 	self.user = nil;
 	self.locale = nil;
 	
-	if (session != NULL) {
-        sp_session_logout(session);
+	if (self.session != NULL) {
+        sp_session_logout(self.session);
     }
 }
 
 @synthesize connectionState;
 @synthesize playlistCache;
+@synthesize trackCache;
+@synthesize userCache;
 @synthesize inboxPlaylist;
 @synthesize starredPlaylist;
 @synthesize userPlaylists;
@@ -643,7 +654,7 @@ static SPSession *sharedSession;
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     
     NSValue *ptrValue = [NSValue valueWithPointer:spTrack];
-    SPTrack *cachedTrack = [trackCache objectForKey:ptrValue];
+    SPTrack *cachedTrack = [self.trackCache objectForKey:ptrValue];
     
     if (cachedTrack != nil) {
         return cachedTrack;
@@ -651,14 +662,14 @@ static SPSession *sharedSession;
     
     cachedTrack = [[SPTrack alloc] initWithTrackStruct:spTrack
                                              inSession:self];
-    [trackCache setObject:cachedTrack forKey:ptrValue];
+    [self.trackCache setObject:cachedTrack forKey:ptrValue];
     return cachedTrack;
 }
 
 -(SPUser *)userForUserStruct:(sp_user *)spUser {
     
     NSValue *ptrValue = [NSValue valueWithPointer:spUser];
-    SPUser *cachedUser = [userCache objectForKey:ptrValue];
+    SPUser *cachedUser = [self.userCache objectForKey:ptrValue];
     
     if (cachedUser != nil) {
         return cachedUser;
@@ -668,7 +679,7 @@ static SPSession *sharedSession;
                                           inSession:self];
 	
 	if (cachedUser != nil)
-		[userCache setObject:cachedUser forKey:ptrValue];
+		[self.userCache setObject:cachedUser forKey:ptrValue];
 	
     return cachedUser;
 }
@@ -741,10 +752,10 @@ static SPSession *sharedSession;
 
 -(SPPlaylist *)playlistForURL:(NSURL *)url {
 	
-	if ([url spotifyLinkType] == SP_LINKTYPE_PLAYLIST && session != NULL) {
+	if ([url spotifyLinkType] == SP_LINKTYPE_PLAYLIST && self.session != NULL) {
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
-			sp_playlist *aPlaylist = sp_playlist_create(session, link);
+			sp_playlist *aPlaylist = sp_playlist_create(self.session, link);
 			sp_link_release(link);
 			SPPlaylist *playlist = [self playlistForPlaylistStruct:aPlaylist];
 			sp_playlist_release(aPlaylist);
@@ -828,18 +839,18 @@ static SPSession *sharedSession;
 #pragma mark Properties
 
 -(void)setPreferredBitrate:(sp_bitrate)bitrate {
-    if (session)
-        sp_session_preferred_bitrate(session, bitrate);
+    if (self.session)
+        sp_session_preferred_bitrate(self.session, bitrate);
 }
 
 -(void)setMaximumCacheSizeMB:(size_t)maximumCacheSizeMB {
-    if (session)
-        sp_session_set_cache_size(session, maximumCacheSizeMB);
+    if (self.session)
+        sp_session_set_cache_size(self.session, maximumCacheSizeMB);
 }
 
 -(NSTimeInterval)offlineKeyTimeRemaining {
-	if (session != NULL)
-		return (NSTimeInterval)sp_offline_time_left(session);
+	if (self.session != NULL)
+		return (NSTimeInterval)sp_offline_time_left(self.session);
 	else
 		return 0.0;
 }
@@ -895,12 +906,12 @@ static SPSession *sharedSession;
 -(void)setPlaying:(BOOL)nowPlaying {
     if (session != NULL) {
         sp_session_player_play(session, nowPlaying);
-        playing = nowPlaying;
+        _playing = nowPlaying;
     }
 }
 
 -(BOOL)isPlaying {
-	return playing && (session != NULL);
+	return _playing && (session != NULL);
 }
 
 -(void)setUsingVolumeNormalization:(BOOL)usingVolumeNormalization {

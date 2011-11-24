@@ -42,17 +42,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPSession;
 
 @interface SPPlaylistFolder : NSObject {
-    @private
-    
-	__weak SPPlaylistContainer *parentContainer;
 	NSRange containerPlaylistRange;
 	// ^ For performance and integrity checking - the first item should be the folder marker, 
 	// the last the end folder marker. 
-	
-	NSString *name;
-	sp_playlist *playlist;
-	__weak SPSession *session;
-	sp_uint64 folderId;
 }
 
 ///----------------------------

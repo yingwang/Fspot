@@ -233,18 +233,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		return [[self mutableArrayValueForKey:@"playlists"] objectAtIndex:virtualIndex];
 	
 	return nil;
-}
-
-#pragma mark -
-
--(void)dealloc {
-	self.session = nil;
-	if (playlist != NULL)
-		sp_playlist_release(playlist);
-	self.parentContainer = nil;
-	self.parentContainer = nil;
-}
-				
+}				
                      
 @end
 

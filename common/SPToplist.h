@@ -44,22 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPUser;
 @class SPSession;
 
-@interface SPToplist : NSObject {
-@private
-    NSLocale *locale;
-	NSString *username;
-	SPSession *session;
-	NSArray *tracks;
-	NSArray *albums;
-	NSArray *artists;
-	BOOL tracksLoaded;
-	BOOL artistsLoaded;
-	BOOL albumsLoaded;
-	NSError *loadError;
-	sp_toplistbrowse *albumBrowseOperation;
-	sp_toplistbrowse *artistBrowseOperation;
-	sp_toplistbrowse *trackBrowseOperation;
-}
+@interface SPToplist : NSObject
 
 ///----------------------------
 /// @name Creating and Initializing Toplists

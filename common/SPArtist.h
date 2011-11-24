@@ -38,12 +38,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import <Foundation/Foundation.h>
 #import "CocoaLibSpotifyPlatformImports.h"
 
-@interface SPArtist : NSObject <SPPlaylistableItem> {
-    @private
-    sp_artist *artist;
-    NSURL *spotifyURL;
-	NSString *name;
-}
+@interface SPArtist : NSObject <SPPlaylistableItem>
 
 ///----------------------------
 /// @name Creating and Initializing Artists

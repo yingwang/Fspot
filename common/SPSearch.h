@@ -42,29 +42,7 @@ static SInt32 const kSPSearchDefaultSearchPageSize = 75;
 /** The "do not search" page size. Used if you don't want to search for a particular kind of result. */
 static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
-@interface SPSearch : NSObject {
-@private
-	SPSession *session;
-	sp_search *activeSearch;
-	
-	NSArray *tracks;
-	NSArray *artists;
-	NSArray *albums;
-	BOOL loaded;
-	NSString *searchQuery;
-	NSString *suggestedSearchQuery;
-	NSURL *spotifyURL;
-	
-	NSError *searchError;
-	
-	BOOL hasExhaustedTrackResults;
-	BOOL hasExhaustedArtistResults;
-	BOOL hasExhaustedAlbumResults;
-	NSInteger requestedTrackResults;
-	NSInteger requestedArtistResults;
-	NSInteger requestedAlbumResults;
-	NSInteger pageSize;
-}
+@interface SPSearch : NSObject
 
 ///----------------------------
 /// @name Creating and Initializing Searches

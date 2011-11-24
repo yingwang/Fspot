@@ -99,7 +99,9 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 	}
 }
 
-@implementation SPAlbumBrowse
+@implementation SPAlbumBrowse {
+	sp_albumbrowse *browseOperation;
+}
 
 +(SPAlbumBrowse *)browseAlbum:(SPAlbum *)anAlbum inSession:(SPSession *)aSession {
 	return [[SPAlbumBrowse alloc] initWithAlbum:anAlbum inSession:aSession];

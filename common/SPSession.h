@@ -63,28 +63,7 @@ Playback
 @protocol SPPostTracksToInboxOperationDelegate;
 @protocol SPSessionPlaybackProvider;
 
-@interface SPSession : NSObject <SPSessionPlaybackProvider> {
-    @private
-    sp_session *session;
-	BOOL playing;
-    SPPlaylist *inboxPlaylist;
-    SPPlaylist *starredPlaylist;
-    SPPlaylistContainer *userPlaylists;
-    NSMutableDictionary *trackCache;
-    NSMutableDictionary *userCache;
-	NSMutableDictionary *playlistCache;
-    __weak id <SPSessionDelegate> delegate;
-    __weak id <SPSessionPlaybackDelegate> playbackDelegate;
-    SPUser *user;
-	NSLocale *locale;
-	NSError *offlineSyncError;
-    NSString *userAgent;
-	sp_connectionstate connectionState;
-	NSDictionary *offlineStatistics;
-	NSUInteger offlinePlaylistsRemaining;
-	NSUInteger offlineTracksRemaining;
-	BOOL offlineSyncing;
-}
+@interface SPSession : NSObject <SPSessionPlaybackProvider>
 
 /** Returns a shared SPSession object. 
  

@@ -40,26 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPSession;
 @protocol SPPlaylistDelegate;
 
-@interface SPPlaylist : NSObject <SPPlaylistableItem> {
-@private 
-    sp_playlist *playlist;
-    BOOL updating;
-    BOOL loaded;
-    BOOL collaborative;
-    BOOL hasPendingChanges;
-    __weak id <SPPlaylistDelegate> delegate;
-    __weak SPSession *session;
-    NSString *playlistDescription;
-    NSString *name;
-    SPImage *image;
-    SPUser *owner;
-	NSURL *spotifyURL;
-	BOOL trackChangesAreFromLibSpotifyCallback;
-	NSMutableArray *itemWrapper;
-	NSArray *subscribers;
-	float offlineDownloadProgress;
-	sp_playlist_offline_status offlineStatus;
-}
+@interface SPPlaylist : NSObject <SPPlaylistableItem>
 
 ///----------------------------
 /// @name Creating and Initializing Playlists

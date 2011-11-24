@@ -39,16 +39,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static NSUInteger const SPImageIdLength = 20;
 
-@interface SPImage : NSObject {
-    @private
-    SPPlatformNativeImage *image;
-    sp_image *spImage;
-    const byte *imageId;
-    BOOL loaded;
-	BOOL hasRequestedImage;
-	__weak SPSession *session;
-	NSURL *spotifyURL;
-}
+@interface SPImage : NSObject
 
 ///----------------------------
 /// @name Creating and Initializing Images

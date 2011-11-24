@@ -42,22 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPSession;
 
 @interface SPTrack : NSObject <SPPlaylistableItem> {
-    @private
-    sp_track *track;
-    __weak SPSession *session;
-    NSArray *artists;
-    SPAlbum *album;
-	NSURL *spotifyURL;
 	BOOL _starred;
-	NSUInteger trackNumber;
-	NSUInteger discNumber;
-	NSUInteger popularity;
-	NSTimeInterval duration;
-	sp_track_availability availability;
-	sp_track_offline_status offlineStatus;
-	BOOL loaded;
-	BOOL local;
-	NSString *name;
+	sp_track *track;
 }
 
 

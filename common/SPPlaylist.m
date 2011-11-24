@@ -56,6 +56,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, strong) NSArray *subscribers;
 @property (nonatomic, readwrite) float offlineDownloadProgress;
 @property (nonatomic, readwrite) sp_playlist_offline_status offlineStatus;
+@property (nonatomic, readwrite) sp_playlist *playlist;
+@property (nonatomic, readwrite) __weak SPSession *session;
 
 -(void)rebuildItems;
 -(void)loadPlaylistData;
@@ -313,9 +315,9 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 -(id)initWithPlaylistStruct:(sp_playlist *)pl inSession:(SPSession *)aSession {
     
     if ((self = [super init])) {
-        session = aSession;
-        playlist = pl;
-		itemWrapper = [[NSMutableArray alloc] init];
+        self.session = aSession;
+        self.playlist = pl;
+		self.itemWrapper = [[NSMutableArray alloc] init];
 
 		// Add Observers
         
@@ -339,10 +341,10 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
                   options:NSKeyValueObservingOptionOld
                   context:(__bridge void *)kSPPlaylistKVOContext];
 		
-		if (playlist != NULL) {
+		if (self.playlist != NULL) {
 			sp_playlist_add_ref(pl);
-			sp_playlist_add_callbacks(playlist, &_playlistCallbacks, (__bridge void *)self);
-			sp_playlist_set_in_ram(aSession.session, playlist, true);
+			sp_playlist_add_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self);
+			sp_playlist_set_in_ram(aSession.session, self.playlist, true);
 			self.loaded = sp_playlist_is_loaded(pl);
 		}
         
