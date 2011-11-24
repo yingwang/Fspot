@@ -38,10 +38,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)loadUserData;
 
-@property (readwrite, copy) NSURL *spotifyURL;
-@property (readwrite, copy) NSString *canonicalName;
-@property (readwrite, copy) NSString *displayName;
-@property (readwrite, getter=isLoaded) BOOL loaded;
+@property (nonatomic, readwrite, copy) NSURL *spotifyURL;
+@property (nonatomic, readwrite, copy) NSString *canonicalName;
+@property (nonatomic, readwrite, copy) NSString *displayName;
+@property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 
 @end
 
@@ -127,7 +127,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize user;
 
 -(void)dealloc {
-    
     session = nil;
     sp_user_release(user);
 }

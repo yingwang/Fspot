@@ -42,10 +42,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @interface SPPlaylistContainer ()
 
 -(void)rebuildPlaylists;
-@property (readwrite, strong) SPUser *owner;
-@property (readwrite, strong) SPPlaylistFolder *rootFolder;
-@property (readwrite) __weak SPSession *session;
-@property (readwrite, getter=isLoaded) BOOL loaded;
+
+@property (nonatomic, readwrite, strong) SPUser *owner;
+@property (nonatomic, readwrite, strong) SPPlaylistFolder *rootFolder;
+@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 
 @end
 

@@ -31,8 +31,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #import "SPPlaylist.h"
+#import "SPPlaylistInternal.h"
 #import "SPSession.h"
 #import "SPTrack.h"
+#import "SPTrackInternal.h"
 #import "SPImage.h"
 #import "SPUser.h"
 #import "SPURLExtensions.h"
@@ -42,16 +44,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPPlaylist ()
 
-@property (readwrite, getter=isUpdating) BOOL updating;
-@property (readwrite, getter=isLoaded) BOOL loaded;
-@property (readwrite) BOOL hasPendingChanges;
-@property (readwrite, copy) NSString *playlistDescription;
-@property (readwrite, copy) NSURL *spotifyURL;
-@property (readwrite, strong) SPImage *image;
-@property (readwrite, strong) SPUser *owner;
-@property (readwrite) BOOL trackChangesAreFromLibSpotifyCallback;
-@property (readwrite, strong) NSMutableArray *itemWrapper;
-@property (readwrite, strong) NSArray *subscribers;
+@property (nonatomic, readwrite, getter=isUpdating) BOOL updating;
+@property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
+@property (nonatomic, readwrite) BOOL hasPendingChanges;
+@property (nonatomic, readwrite, copy) NSString *playlistDescription;
+@property (nonatomic, readwrite, copy) NSURL *spotifyURL;
+@property (nonatomic, readwrite, strong) SPImage *image;
+@property (nonatomic, readwrite, strong) SPUser *owner;
+@property (nonatomic, readwrite) BOOL trackChangesAreFromLibSpotifyCallback;
+@property (nonatomic, readwrite, strong) NSMutableArray *itemWrapper;
+@property (nonatomic, readwrite, strong) NSArray *subscribers;
+@property (nonatomic, readwrite) float offlineDownloadProgress;
+@property (nonatomic, readwrite) sp_playlist_offline_status offlineStatus;
 
 -(void)rebuildItems;
 -(void)loadPlaylistData;
@@ -186,11 +190,7 @@ static void	playlist_state_changed(sp_playlist *pl, void *userdata) {
     [playlist setCollaborativeFromLibSpotifyUpdate:sp_playlist_is_collaborative(pl)];
     [playlist setHasPendingChanges:sp_playlist_has_pending_changes(pl)];
 	
-	[playlist willChangeValueForKey:@"offlineStatus"];
-	[playlist didChangeValueForKey:@"offlineStatus"];
-	
-	[playlist willChangeValueForKey:@"offlineDownloadProgress"];
-	[playlist didChangeValueForKey:@"offlineDownloadProgress"];
+	[playlist offlineSyncStatusMayHaveChanged];
 }
 
 // Called when a playlist is updating or is done updating
@@ -209,8 +209,8 @@ static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
 		
 		for (SPPlaylistItem *playlistItem in playlist.items) {
 			if (playlistItem.itemClass == [SPTrack class]) {
-				[(NSObject *)playlistItem.item willChangeValueForKey:@"offlineStatus"];
-				[(NSObject *)playlistItem.item didChangeValueForKey:@"offlineStatus"];
+				SPTrack *track = playlistItem.item;
+				[track setOfflineStatusFromLibSpotifyUpdate:sp_track_offline_get_status(track.track)];
 			}
 		}
 		
@@ -289,6 +289,16 @@ static sp_playlist_callbacks _playlistCallbacks = {
 #pragma mark -
 
 static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
+
+@implementation SPPlaylist (SPPlaylistInternal)
+
+-(void)offlineSyncStatusMayHaveChanged {
+	
+	self.offlineStatus = sp_playlist_get_offline_status(self.session.session, self.playlist);
+	self.offlineDownloadProgress = sp_playlist_get_offline_download_completed(self.session.session, self.playlist) / 100.0;
+}
+
+@end
 
 @implementation SPPlaylist
 
@@ -370,16 +380,8 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	return self.offlineStatus != SP_PLAYLIST_OFFLINE_STATUS_NO;
 }
 
--(sp_playlist_offline_status)offlineStatus {
-	return sp_playlist_get_offline_status(self.session.session, self.playlist);
-}
-
--(float)offlineDownloadProgress {
-	if (!self.isMarkedForOfflinePlayback)
-		return 0.0;
-	
-	return sp_playlist_get_offline_download_completed(self.session.session, self.playlist) / 100.0f;
-}
+@synthesize offlineDownloadProgress;
+@synthesize offlineStatus;
 
 #pragma mark -
 #pragma mark Private Methods
@@ -416,6 +418,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     [self setOwner:[SPUser userWithUserStruct:sp_playlist_owner(playlist) inSession:session]];
     [self setCollaborativeFromLibSpotifyUpdate:sp_playlist_is_collaborative(playlist)];
     [self setHasPendingChanges:sp_playlist_has_pending_changes(playlist)];
+	[self offlineSyncStatusMayHaveChanged];
     
 	[self rebuildItems];
 	sp_playlist_update_subscribers(self.session.session, self.playlist);
@@ -435,10 +438,8 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 			if (self.isLoaded) {
                 [self loadPlaylistData];
             }
-            
             return;
         }
-        
     } 
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
