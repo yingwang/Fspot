@@ -52,7 +52,7 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 @property (nonatomic, readwrite) sp_track_offline_status offlineStatus;
 @property (nonatomic, readwrite) NSUInteger discNumber;
 @property (nonatomic, readwrite) NSTimeInterval duration;
-@property (nonatomic, readwrite) NSString *name;
+@property (nonatomic, readwrite, copy) NSString *name;
 @property (nonatomic, readwrite) NSUInteger popularity;
 @property (nonatomic, readwrite) NSUInteger trackNumber;
 @property (nonatomic, readwrite, getter = isLocal) BOOL local;

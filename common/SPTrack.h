@@ -195,7 +195,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readonly) NSTimeInterval duration;
 
 /** Returns the name of the track.  If no metadata is available for the track yet, returns an empty string. */
-@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, readonly, copy) NSString *name;
 
 /** Returns the popularity of the track in range 0 to 100. If no metadata is available for the track yet, returns 0.*/
 @property (nonatomic, readonly) NSUInteger popularity;
