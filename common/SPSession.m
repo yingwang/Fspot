@@ -33,11 +33,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPSession.h"
 #import "SPErrorExtensions.h"
 #import "SPTrack.h"
+#import "SPTrackInternal.h"
 #import "SPPlaylistContainer.h"
 #import "SPUser.h"
 #import "SPAlbum.h"
 #import "SPArtist.h"
 #import "SPPlaylist.h"
+#import "SPPlaylistInternal.h"
 #import "SPPlaylistFolder.h"
 #import "SPURLExtensions.h"
 #import "SPSearch.h"
@@ -48,15 +50,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPSession ()
 
-@property (readwrite, retain) SPUser *user;
-@property (readwrite, retain) NSLocale *locale;
+@property (nonatomic, readwrite, retain) SPUser *user;
+@property (nonatomic, readwrite, retain) NSLocale *locale;
 
-@property (readonly, retain) NSMutableDictionary *playlistCache;
-@property (readwrite, retain) NSError *offlineSyncError;
+@property (nonatomic, readwrite) sp_connectionstate connectionState;
+@property (nonatomic, readonly, retain) NSMutableDictionary *playlistCache;
+@property (nonatomic, readwrite, retain) NSError *offlineSyncError;
 
-@property (readwrite, retain) SPPlaylist *inboxPlaylist;
-@property (readwrite, retain) SPPlaylist *starredPlaylist;
-@property (readwrite, retain) SPPlaylistContainer *userPlaylists;
+@property (nonatomic, readwrite, retain) SPPlaylist *inboxPlaylist;
+@property (nonatomic, readwrite, retain) SPPlaylist *starredPlaylist;
+@property (nonatomic, readwrite, retain) SPPlaylistContainer *userPlaylists;
+
+@property (nonatomic, readwrite, getter=isOfflineSyncing) BOOL offlineSyncing;
+@property (nonatomic, readwrite) NSUInteger offlineTracksRemaining;
+@property (nonatomic, readwrite) NSUInteger offlinePlaylistsRemaining;
+@property (nonatomic, readwrite, copy) NSDictionary *offlineStatistics;
 
 @property (nonatomic, copy, readwrite) NSString *userAgent;
 
@@ -71,9 +79,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 static void connection_error(sp_session *session, sp_error error) {
 	SPSession *sess = (SPSession *)sp_session_userdata(session);
-	
-    [sess willChangeValueForKey:@"connectionState"];
-    [sess didChangeValueForKey:@"connectionState"]; 
+	sess.connectionState = sp_session_connectionstate(session);
     
     SEL selector = @selector(session:didEncounterNetworkError:);
     
@@ -109,8 +115,7 @@ static void logged_in(sp_session *session, sp_error error) {
         }
     }
     
-    [sess willChangeValueForKey:@"connectionState"];
-    [sess didChangeValueForKey:@"connectionState"];
+    sess.connectionState = sp_session_connectionstate(session);
     
 	SEL selector = @selector(sessionDidLoginSuccessfully:);
     
@@ -132,19 +137,19 @@ static void logged_in(sp_session *session, sp_error error) {
 static void logged_out(sp_session *session) {
 	SPSession *sess = (SPSession *)sp_session_userdata(session);
     
-    [sess willChangeValueForKey:@"connectionState"];
-    [sess didChangeValueForKey:@"connectionState"];
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	sess.connectionState = sp_session_connectionstate(session);
     
     SEL selector = @selector(sessionDidLogOut:);
     
     if ([[sess delegate] respondsToSelector:selector]) {
         
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         [[sess delegate] performSelector:selector
                               withObject:sess];
-        [pool drain];
     }
     
+	[pool drain];
 }
 
 /**
@@ -247,8 +252,8 @@ static void message_to_user(sp_session *session, const char *msg) {
  *
  * @param[in]  session    Session
  * @param[in]  format     Audio format descriptor sp_audioformat
- * @param[in]  frames     Points to raw PCM data as described by \p format
- * @param[in]  num_frames Number of available samples in \p frames.
+ * @param[in]  frames     Points to raw PCM data as described by format
+ * @param[in]  num_frames Number of available samples in frames.
  *                        If this is 0, a discontinuity has occured (such as after a seek). The application
  *                        should flush its audio fifos, etc.
  *
@@ -343,24 +348,32 @@ static void offline_status_updated(sp_session *session) {
 	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	[sess willChangeValueForKey:@"offlineSyncing"];
-	[sess didChangeValueForKey:@"offlineSyncing"];
+	sess.offlineTracksRemaining = sp_offline_tracks_to_sync(session);
+	sess.offlinePlaylistsRemaining = sp_offline_num_playlists(session);
+
+	sp_offline_sync_status status;
+	sp_offline_sync_get_status(session, &status);
+	sess.offlineSyncing = status.syncing;
 	
-	[sess willChangeValueForKey:@"offlineTracksRemaining"];
-	[sess didChangeValueForKey:@"offlineTracksRemaining"];
+	NSMutableDictionary *mutableStats = [NSMutableDictionary dictionary];
+	[mutableStats setValue:[NSNumber numberWithInt:status.copied_tracks] forKey:SPOfflineStatisticsCopiedTrackCountKey];
+	[mutableStats setValue:[NSNumber numberWithLongLong:status.copied_bytes] forKey:SPOfflineStatisticsCopiedTrackSizeKey];
 	
-	[sess willChangeValueForKey:@"offlinePlaylistsRemaining"];
-	[sess didChangeValueForKey:@"offlinePlaylistsRemaining"];
+	[mutableStats setValue:[NSNumber numberWithInt:status.done_tracks] forKey:SPOfflineStatisticsDoneTrackCountKey];
+	[mutableStats setValue:[NSNumber numberWithLongLong:status.done_bytes] forKey:SPOfflineStatisticsDoneTrackSizeKey];
 	
-	[sess willChangeValueForKey:@"offlineStatistics"];
-	[sess didChangeValueForKey:@"offlineStatistics"];
+	[mutableStats setValue:[NSNumber numberWithInt:status.queued_tracks] forKey:SPOfflineStatisticsQueuedTrackCountKey];
+	[mutableStats setValue:[NSNumber numberWithLongLong:status.queued_bytes] forKey:SPOfflineStatisticsQueuedTrackSizeKey];
 	
-	for (SPPlaylist *playlist in [sess.playlistCache allValues]) {
-		[playlist willChangeValueForKey:@"offlineStatus"];
-		[playlist didChangeValueForKey:@"offlineStatus"];
+	[mutableStats setValue:[NSNumber numberWithInt:status.error_tracks] forKey:SPOfflineStatisticsFailedTrackCountKey];
+	[mutableStats setValue:[NSNumber numberWithInt:status.willnotcopy_tracks] forKey:SPOfflineStatisticsWillNotCopyTrackCountKey];
+	[mutableStats setValue:[NSNumber numberWithBool:status.syncing] forKey:SPOfflineStatisticsIsSyncingKey];
+	
+	sess.offlineStatistics = [NSDictionary dictionaryWithDictionary:mutableStats];
+	
 		
-		[playlist willChangeValueForKey:@"offlineDownloadProgress"];
-		[playlist didChangeValueForKey:@"offlineDownloadProgress"];
+	for (SPPlaylist *playlist in [sess.playlistCache allValues]) {
+		[playlist offlineSyncStatusMayHaveChanged];
 	}
 	
 	[pool drain];
@@ -435,6 +448,8 @@ static SPSession *sharedSession;
         trackCache = [[NSMutableDictionary alloc] init];
         userCache = [[NSMutableDictionary alloc] init];
 		playlistCache = [[NSMutableDictionary alloc] init];
+		
+		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
 		
 		[self addObserver:self
                forKeyPath:@"connectionState"
@@ -595,8 +610,8 @@ static SPSession *sharedSession;
 			[someTracks addObjectsFromArray:newStarredTracks];
 			[someTracks addObjectsFromArray:oldStarredTracks];
 			
-			[someTracks makeObjectsPerformSelector:@selector(willChangeValueForKey:) withObject:@"starred"];
-			[someTracks makeObjectsPerformSelector:@selector(didChangeValueForKey:) withObject:@"starred"];
+			for (SPTrack *track in someTracks)
+				[track setStarredFromLibSpotifyUpdate:sp_track_is_starred(self.session, track.track)];
 			
 			return;
             
@@ -649,14 +664,6 @@ static SPSession *sharedSession;
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
--(sp_connectionstate)connectionState {
-    if (session != NULL) {
-        return sp_session_connectionstate(session);
-    } else {
-        return SP_CONNECTION_STATE_UNDEFINED;
-    }
-}
-
 -(void)logout {
 	[trackCache removeAllObjects];
 	[userCache removeAllObjects];
@@ -672,6 +679,7 @@ static SPSession *sharedSession;
     }
 }
 
+@synthesize connectionState;
 @synthesize playlistCache;
 @synthesize inboxPlaylist;
 @synthesize starredPlaylist;
@@ -878,61 +886,17 @@ static SPSession *sharedSession;
         sp_session_set_cache_size(session, maximumCacheSizeMB);
 }
 
--(NSUInteger)offlineTracksRemaining {
-    if (session)
-        return sp_offline_tracks_to_sync(session);
-    else
-        return 0;
-}
-
--(NSUInteger)offlinePlaylistsRemaining {
-    if (session)
-        return sp_offline_num_playlists(session);
-    else
-        return 0;
-}
-
--(NSDictionary *)offlineStatistics {
-    
-    if (session == NULL)
-        return nil;
-	
-	sp_offline_sync_status status;
-	sp_offline_sync_get_status(session, &status);
-	
-	NSMutableDictionary *mutableStats = [NSMutableDictionary dictionary];
-	[mutableStats setValue:[NSNumber numberWithInt:status.copied_tracks] forKey:SPOfflineStatisticsCopiedTrackCountKey];
-	[mutableStats setValue:[NSNumber numberWithLongLong:status.copied_bytes] forKey:SPOfflineStatisticsCopiedTrackSizeKey];
-	
-	[mutableStats setValue:[NSNumber numberWithInt:status.done_tracks] forKey:SPOfflineStatisticsDoneTrackCountKey];
-	[mutableStats setValue:[NSNumber numberWithLongLong:status.done_bytes] forKey:SPOfflineStatisticsDoneTrackSizeKey];
-	
-	[mutableStats setValue:[NSNumber numberWithInt:status.queued_tracks] forKey:SPOfflineStatisticsQueuedTrackCountKey];
-	[mutableStats setValue:[NSNumber numberWithLongLong:status.queued_bytes] forKey:SPOfflineStatisticsQueuedTrackSizeKey];
-	
-	[mutableStats setValue:[NSNumber numberWithInt:status.error_tracks] forKey:SPOfflineStatisticsFailedTrackCountKey];
-	[mutableStats setValue:[NSNumber numberWithInt:status.willnotcopy_tracks] forKey:SPOfflineStatisticsWillNotCopyTrackCountKey];
-	[mutableStats setValue:[NSNumber numberWithBool:status.syncing] forKey:SPOfflineStatisticsIsSyncingKey];
-	
-	return [NSDictionary dictionaryWithDictionary:mutableStats];
-}
-
 -(NSTimeInterval)offlineKeyTimeRemaining {
-    if (session != NULL)
-        return (NSTimeInterval)sp_offline_time_left(session);
-    else
-        return 0.0;
+	if (session != NULL)
+		return (NSTimeInterval)sp_offline_time_left(session);
+	else
+		return 0.0;
 }
 
--(BOOL)isOfflineSyncing {
-    
-    if (session == NULL)
-        return NO;
-    
-	sp_offline_sync_status status;
-	sp_offline_sync_get_status(session, &status);
-	return status.syncing;
-}
+@synthesize offlineStatistics;
+@synthesize offlinePlaylistsRemaining;
+@synthesize offlineTracksRemaining;
+@synthesize offlineSyncing;
 
 @synthesize delegate;
 @synthesize playbackDelegate;
@@ -1034,6 +998,7 @@ static SPSession *sharedSession;
     }
 	
 	self.userAgent = nil;
+	self.offlineStatistics = nil;
     self.inboxPlaylist = nil;
 	self.starredPlaylist = nil;
 	self.userPlaylists = nil;

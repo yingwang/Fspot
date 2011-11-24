@@ -79,6 +79,11 @@ Playback
 	NSLocale *locale;
 	NSError *offlineSyncError;
     NSString *userAgent;
+	sp_connectionstate connectionState;
+	NSDictionary *offlineStatistics;
+	NSUInteger offlinePlaylistsRemaining;
+	NSUInteger offlineTracksRemaining;
+	BOOL offlineSyncing;
 }
 
 /** Returns a shared SPSession object. 
@@ -204,7 +209,7 @@ Playback
  SP_CONNECTION_STATE_UNDEFINED 	
  The connection state is undefined.
  */
-@property (readonly) sp_connectionstate connectionState;
+@property (nonatomic, readonly) sp_connectionstate connectionState;
 
 /** Set the maximum cache size, in megabytes. 
  
@@ -235,7 +240,7 @@ Playback
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
-@property (readonly) sp_session *session;
+@property (nonatomic, readonly) sp_session *session;
 
 /** Returns the user agent value the session was initialized with. */
 @property (nonatomic, copy, readonly) NSString *userAgent;
@@ -245,22 +250,22 @@ Playback
 ///----------------------------
 
 /** Returns `YES` if tracks are currently being downloaded for offline playback, otherwise `NO`. */
-@property (readonly, getter=isOfflineSyncing) BOOL offlineSyncing;
+@property (nonatomic, readonly, getter=isOfflineSyncing) BOOL offlineSyncing;
 
 /** Returns the number of tracks still waiting to be downloaded for offline playback. */
-@property (readonly) NSUInteger offlineTracksRemaining;
+@property (nonatomic, readonly) NSUInteger offlineTracksRemaining;
 
 /** Returns the number of playlists still waiting to be downloaded for offline playback. */
-@property (readonly) NSUInteger offlinePlaylistsRemaining;
+@property (nonatomic, readonly) NSUInteger offlinePlaylistsRemaining;
 
 /** Returns a dictionary containing information about any offline sync activity. See Contants for keys. */
-@property (readonly, copy) NSDictionary *offlineStatistics;
+@property (nonatomic, readonly, copy) NSDictionary *offlineStatistics;
 
 /** Returns the time until the user needs to reconnect to Spotify to renew offline syncing keys. */
-@property (readonly) NSTimeInterval offlineKeyTimeRemaining;
+@property (nonatomic, readonly) NSTimeInterval offlineKeyTimeRemaining;
 
 /** Returns the last error encountered during offline syncing, or `nil` if there is no problem. */
-@property (readonly, retain) NSError *offlineSyncError;
+@property (nonatomic, readonly, retain) NSError *offlineSyncError;
 
 ///----------------------------
 /// @name User Content
@@ -271,26 +276,26 @@ Playback
  The inbox playlist contains tracks sent to the user by other Spotify users, and is 
  updated as new tracks are sent to the user. 
  */ 
-@property (readonly, retain) SPPlaylist *inboxPlaylist;
+@property (nonatomic, readonly, retain) SPPlaylist *inboxPlaylist;
 
 /** Returns the locale of the logged-in user. */
-@property (readonly, retain) NSLocale *locale;
+@property (nonatomic, readonly, retain) NSLocale *locale;
 
 /** Returns the logged in user's starred playlist.
  
  The starred playlist contains tracks starred by the user, and is updated as new tracks are
  starred or unstarred.
  */ 
-@property (readonly, retain) SPPlaylist *starredPlaylist;
+@property (nonatomic, readonly, retain) SPPlaylist *starredPlaylist;
 
 /** Returns the current logged in user. */
-@property (readonly, retain) SPUser *user;
+@property (nonatomic, readonly, retain) SPUser *user;
 
 /** Returns an SPPlaylistContainer object that contains the user's playlists.
  
  @see SPPlaylistContainer
  */
-@property (readonly, retain) SPPlaylistContainer *userPlaylists;
+@property (nonatomic, readonly, retain) SPPlaylistContainer *userPlaylists;
 
 /** Send tracks to another Spotify user.
  
@@ -420,17 +425,17 @@ Playback
  
  @warning *Important:* This property currently has no effect on iOS platforms.
  */
-@property (readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization;
+@property (nonatomic, readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization;
 
 /** Returns `YES` if the session is currently playing a track, otherwise `NO`. */
-@property (readwrite, getter=isPlaying) BOOL playing;
+@property (nonatomic, readwrite, getter=isPlaying) BOOL playing;
 
 /** Returns the session's playback delegate object.
  
  The playback delegate is responsible for pushing raw audio data provided by the session
  to the system's audio output. See the SimplePlayback sample project for an example of how to do this.
  */
-@property (nonatomic, assign) __weak id <SPSessionPlaybackDelegate> playbackDelegate;
+@property (nonatomic, nonatomic, assign) __weak id <SPSessionPlaybackDelegate> playbackDelegate;
 
 /** Preloads playback assets for the given track.
  
