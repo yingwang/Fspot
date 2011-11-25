@@ -157,6 +157,7 @@ static NSMutableDictionary *imageCache;
 -(SPPlatformNativeImage *)image {
 	if (image == nil && !hasRequestedImage)
 		[self beginLoading];
+<<<<<<< HEAD
 	return image;
 }
 
@@ -165,6 +166,14 @@ static NSMutableDictionary *imageCache;
 		[anImage retain];
 		[image release];
 		image = anImage;
+=======
+	return _image;
+}
+
+-(void)setImage:(SPPlatformNativeImage *)anImage {
+	if (_image != anImage) {
+		_image = anImage;
+>>>>>>> 52229c6... Fix infinite recursion in SPImage.
 	}
 }
 
