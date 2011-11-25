@@ -47,6 +47,7 @@
 #import "SPPostTracksToInboxOperation.h"
 #import "SPPlaylistContainerInternal.h"
 #import "SPPlaylistFolderInternal.h"
+#import "SPPlaylistItem.h"
 
 @interface SPSession ()
 
@@ -558,20 +559,22 @@ static SPSession *sharedSession;
 		if ([keyPath isEqualToString:@"starredPlaylist.items"]) {
 			// Bit of a hack to KVO the starred-ness of tracks.
 			
-			NSArray *oldStarredTracks = [change valueForKey:NSKeyValueChangeOldKey];
-			if (oldStarredTracks == (id)[NSNull null])
-				oldStarredTracks = nil;
+			NSArray *oldStarredItems = [change valueForKey:NSKeyValueChangeOldKey];
+			if (oldStarredItems == (id)[NSNull null])
+				oldStarredItems = nil;
 			
-			NSArray *newStarredTracks = [change valueForKey:NSKeyValueChangeNewKey];
-			if (newStarredTracks == (id)[NSNull null])
-				newStarredTracks = nil;
+			NSArray *newStarredItems = [change valueForKey:NSKeyValueChangeNewKey];
+			if (newStarredItems == (id)[NSNull null])
+				newStarredItems = nil;
 			
-			NSMutableSet *someTracks = [NSMutableSet set];
-			[someTracks addObjectsFromArray:newStarredTracks];
-			[someTracks addObjectsFromArray:oldStarredTracks];
+			NSMutableSet *someItems = [NSMutableSet set];
+			[someItems addObjectsFromArray:newStarredItems];
+			[someItems addObjectsFromArray:oldStarredItems];
 			
-			for (SPTrack *track in someTracks)
-				[track setStarredFromLibSpotifyUpdate:sp_track_is_starred(self.session, track.track)];
+			for (SPPlaylistItem *playlistItem in someItems) {
+				if (playlistItem.itemClass == [SPTrack class])
+					[(SPTrack *)playlistItem.item setStarredFromLibSpotifyUpdate:sp_track_is_starred(self.session, ((SPTrack *)playlistItem.item).track)];
+			}
 			
 			return;
             
