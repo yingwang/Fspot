@@ -600,7 +600,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 			[itemWrapper insertObject:anItem atIndex:anIndex];
 			[self resetItemIndexes];
 			
-		} else if (([anItem isKindOfClass:[SPTrack class]]) || ([anItem isKindOfClass:[SPPlaylistItem class]] && [((SPPlaylistItem *)anItem).itemClass isKindOfClass:[SPTrack class]])) {
+		} else if (([anItem isKindOfClass:[SPTrack class]]) || ([anItem isKindOfClass:[SPPlaylistItem class]] && ((SPPlaylistItem *)anItem).itemClass == [SPTrack class])) {
 			
 			sp_track *track;
 			
