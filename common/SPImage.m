@@ -53,6 +53,7 @@ static NSString * const kSPImageKVOContext = @"kSPImageKVOContext";
 
 @implementation SPImage {
 	BOOL hasRequestedImage;
+	SPPlatformNativeImage *_image;
 }
 
 static NSMutableDictionary *imageCache;
@@ -161,12 +162,12 @@ static NSMutableDictionary *imageCache;
 -(SPPlatformNativeImage *)image {
 	if (self.spImage == nil && !hasRequestedImage)
 		[self beginLoading];
-	return self.image;
+	return _image;
 }
 
 -(void)setImage:(SPPlatformNativeImage *)anImage {
-	if (self.image != anImage) {
-		self.image = anImage;
+	if (_image != anImage) {
+		_image = anImage;
 	}
 }
 
