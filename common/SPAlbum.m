@@ -45,7 +45,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 @property (nonatomic, readwrite, getter=isAvailable) BOOL available;
-@property (nonatomic, readwrite) NSString *name;
+@property (nonatomic, readwrite, copy) NSString *name;
 @property (nonatomic, readwrite) sp_albumtype type;
 @property (nonatomic, readwrite) NSUInteger year;
 

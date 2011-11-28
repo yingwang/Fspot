@@ -129,7 +129,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readonly, getter=isAvailable) BOOL available;
 
 /** Returns the name of the album. */
-@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, readonly, copy) NSString *name;
 
 /** Returns the Spotify URI of the track, for example: `spotify:album:43p5dnBeVx4H2bzy0W1cGL` */
 @property (nonatomic, readonly, copy) NSURL *spotifyURL;
