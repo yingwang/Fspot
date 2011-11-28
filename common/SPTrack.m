@@ -41,6 +41,7 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 
 @interface SPTrack ()
 
+-(void)checkLoaded;
 -(void)loadTrackData;
 
 @property (nonatomic, readwrite, strong) SPAlbum *album;
@@ -92,13 +93,7 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
         self.track = tr;
         sp_track_add_ref(self.track);
         
-        if (!sp_track_is_loaded(self.track)) {
-            [self performSelector:@selector(checkLoaded)
-                       withObject:nil
-                       afterDelay:kCheckLoadedDuration];
-        } else {
-            [self loadTrackData];
-        }
+        [self checkLoaded];
     }   
     return self;
 }
