@@ -79,7 +79,7 @@ Playback
 	NSLocale *locale;
 	NSError *offlineSyncError;
     NSString *userAgent;
-	sp_connectionstate connectionState;
+	sp_connectionstate _connectionState;
 	NSDictionary *offlineStatistics;
 	NSUInteger offlinePlaylistsRemaining;
 	NSUInteger offlineTracksRemaining;
