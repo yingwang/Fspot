@@ -105,7 +105,7 @@ static NSMutableDictionary *albumCache;
             self.spotifyURL = [NSURL urlWithSpotifyLink:link];
             sp_link_release(link);
         }
-        
+
         [self checkLoaded];
     }
     return self;
@@ -118,7 +118,7 @@ static NSMutableDictionary *albumCache;
                    withObject:nil
                    afterDelay:.25];
     } else {
-        [self loadAlbumData];        
+        [self loadAlbumData];
     }
 }
 

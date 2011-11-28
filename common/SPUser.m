@@ -70,7 +70,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         self.session = aSession;
         
         [self checkLoaded];
-        
     }
     return self;
 }

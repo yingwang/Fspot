@@ -376,6 +376,7 @@ static NSString * const kSPSessionKVOContext = @"kSPSessionKVOContext";
 @implementation SPSession {
 	BOOL _playing;
 	sp_session *session;
+	sp_connectionstate _connectionState;
 }
 
 static SPSession *sharedSession;
@@ -636,13 +637,25 @@ static SPSession *sharedSession;
 	self.userPlaylists = nil;
 	self.user = nil;
 	self.locale = nil;
+	self.connectionState = SP_CONNECTION_STATE_LOGGED_OUT;
 	
 	if (self.session != NULL) {
         sp_session_logout(self.session);
     }
 }
 
-@synthesize connectionState;
+-(sp_connectionstate)connectionState {
+	// This is AWFUL. Will fix when libspotify has proper callbacks
+	// for the connection state changing.
+	if (self.session != nil) {
+		sp_connectionstate newState = sp_session_connectionstate(self.session);
+		if (self.connectionState != _connectionState)
+			self.connectionState = newState;
+	}
+	return _connectionState;
+}
+
+@synthesize connectionState = _connectionState;
 @synthesize playlistCache;
 @synthesize trackCache;
 @synthesize userCache;

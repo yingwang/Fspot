@@ -91,7 +91,7 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 	NSIndexSet *incomingIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(position, [newItems count])];
 	
 	if ([[playlist delegate] respondsToSelector:@selector(playlist:willAddItems:atIndexes:)]) {
-		[[playlist delegate] playlist:playlist willAddItems:newItems atIndexes:incomingIndexes];
+		[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist willAddItems:newItems atIndexes:incomingIndexes];
 	}
 	
 	playlist.trackChangesAreFromLibSpotifyCallback = YES;
@@ -99,7 +99,7 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 	playlist.trackChangesAreFromLibSpotifyCallback = NO;
 	
 	if ([[playlist delegate] respondsToSelector:@selector(playlist:didAddItems:atIndexes:)]) {
-		[[playlist delegate] playlist:playlist didAddItems:newItems atIndexes:incomingIndexes];
+		[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didAddItems:newItems atIndexes:incomingIndexes];
 	}
 }
 
@@ -118,7 +118,7 @@ static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, v
 	NSArray *outgoingItems = [playlist.items objectsAtIndexes:indexes];
 	
 	if ([[playlist delegate] respondsToSelector:@selector(playlist:willRemoveItems:atIndexes:)]) {
-		[[playlist delegate] playlist:playlist willRemoveItems:outgoingItems atIndexes:indexes];
+		[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist willRemoveItems:outgoingItems atIndexes:indexes];
 	}
 	
 	playlist.trackChangesAreFromLibSpotifyCallback = YES;
@@ -126,7 +126,7 @@ static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, v
 	playlist.trackChangesAreFromLibSpotifyCallback = NO;
 	
 	if ([[playlist delegate] respondsToSelector:@selector(playlist:didRemoveItems:atIndexes:)]) {
-		[[playlist delegate] playlist:playlist didRemoveItems:outgoingItems atIndexes:indexes];
+		[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didRemoveItems:outgoingItems atIndexes:indexes];
 	}
 }
 
@@ -151,7 +151,7 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 	NSMutableIndexSet *newIndexes = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(newStartIndex, [movedItems count])];
 	
 	if ([[playlist delegate] respondsToSelector:@selector(playlist:willMoveItems:atIndexes:toIndexes:)]) {
-		[[playlist delegate] playlist:playlist willMoveItems:movedItems atIndexes:indexes toIndexes:newIndexes];
+		[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist willMoveItems:movedItems atIndexes:indexes toIndexes:newIndexes];
 	}
 	
 	NSMutableArray *newItemArray = [NSMutableArray arrayWithArray:playlistItems];
@@ -166,7 +166,7 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 	playlist.trackChangesAreFromLibSpotifyCallback = NO;
 	
 	if ([[playlist delegate] respondsToSelector:@selector(playlist:didMoveItems:atIndexes:toIndexes:)]) {
-		[[playlist delegate] playlist:playlist didMoveItems:movedItems atIndexes:indexes toIndexes:newIndexes];
+		[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didMoveItems:movedItems atIndexes:indexes toIndexes:newIndexes];
 	}
 }
 
