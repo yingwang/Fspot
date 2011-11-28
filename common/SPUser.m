@@ -68,7 +68,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         sp_user_add_ref(user);
         
         [self checkLoaded];
-        
     }
     return self;
 }
