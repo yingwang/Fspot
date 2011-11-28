@@ -688,7 +688,7 @@ static SPSession *sharedSession;
 	// for the connection state changing.
 	if (self.session != nil) {
 		sp_connectionstate newState = sp_session_connectionstate(self.session);
-		if (self.connectionState != _connectionState)
+		if (newState != _connectionState)
 			self.connectionState = newState;
 	}
 	return _connectionState;
