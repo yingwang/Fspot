@@ -36,6 +36,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPUser ()
 
+-(void)checkLoaded;
 -(void)loadUserData;
 
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
@@ -66,15 +67,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         user = aUser;
         sp_user_add_ref(user);
         
-        session = aSession;
-        
-        if (!sp_user_is_loaded(user)) {
-            [self performSelector:@selector(checkLoaded)
-                       withObject:nil
-                       afterDelay:.25];
-        } else {
-            [self loadUserData];
-        }
+        [self checkLoaded];
         
     }
     return self;

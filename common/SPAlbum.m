@@ -49,6 +49,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite) sp_albumtype type;
 @property (nonatomic, readwrite) NSUInteger year;
 
+-(void)checkLoaded;
 -(void)loadAlbumData;
 
 @end
@@ -112,6 +113,8 @@ static NSMutableDictionary *albumCache;
         } else {
             [self loadAlbumData];
         }
+		
+        [self checkLoaded];
     }
     return self;
 }
