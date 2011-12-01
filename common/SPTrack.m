@@ -199,8 +199,6 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 @synthesize track;
 
 -(void)dealloc {
-	
-	[self removeObserver:self forKeyPath:@"starred"];
     
 	[self setName:nil];
     [self setAlbum:nil];
