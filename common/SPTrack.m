@@ -200,8 +200,6 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 @synthesize track;
 
 -(void)dealloc {
-	
-	[self removeObserver:self forKeyPath:@"starred"];
     
     sp_track_release(track);
     session = nil;
