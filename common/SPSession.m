@@ -48,6 +48,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPPlaylistContainerInternal.h"
 #import "SPPlaylistFolderInternal.h"
 #import "SPPlaylistItem.h"
+#import "SPUnknownPlaylist.h"
 
 @interface SPSession ()
 
@@ -788,6 +789,10 @@ static SPSession *sharedSession;
 	
 	[playlistCache setObject:cachedPlaylistFolder forKey:wrappedId];
 	return [cachedPlaylistFolder autorelease];
+}
+
+-(SPPlaylist *)unknownPlaylistForPlaylistStruct:(sp_playlist *)playlist {
+	return (SPUnknownPlaylist*) [self playlistForPlaylistStruct:playlist];
 }
 
 -(SPTrack *)trackForURL:(NSURL *)url {
