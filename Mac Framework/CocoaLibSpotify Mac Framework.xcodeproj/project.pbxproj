@@ -25,7 +25,7 @@
 		503D632D13258084007772CA /* SPArtist.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CE762B13117F890047543F /* SPArtist.m */; };
 		503D632E13258084007772CA /* SPImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CE7624131149AD0047543F /* SPImage.m */; };
 		504379031370564D001DD605 /* SPPlaylistContainerInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 504379011370564C001DD605 /* SPPlaylistContainerInternal.h */; };
-		50437908137057D9001DD605 /* SPPlaylistFolderInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50437906137057D7001DD605 /* SPPlaylistFolderInternal.h */; };
+		50437908137057D9001DD605 /* SPPlaylistFolderInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50437906137057D7001DD605 /* SPPlaylistFolderInternal.h */; settings = {ATTRIBUTES = (); }; };
 		50632D5E145E9AF100A51AC8 /* SPPlaylistItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50632D5C145E9AF100A51AC8 /* SPPlaylistItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50632D5F145E9AF100A51AC8 /* SPPlaylistItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 50632D5D145E9AF100A51AC8 /* SPPlaylistItem.m */; };
 		506359451369833500B90B67 /* SPToplist.h in Headers */ = {isa = PBXBuildFile; fileRef = 506359431369833500B90B67 /* SPToplist.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -48,6 +48,7 @@
 		5099D87A13644E71005C7CDC /* SPArtistBrowse.m in Sources */ = {isa = PBXBuildFile; fileRef = 5099D87813644E71005C7CDC /* SPArtistBrowse.m */; };
 		5099D88413647D4F005C7CDC /* SPAlbumBrowse.h in Headers */ = {isa = PBXBuildFile; fileRef = 5099D88213647D4F005C7CDC /* SPAlbumBrowse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5099D88513647D4F005C7CDC /* SPAlbumBrowse.m in Sources */ = {isa = PBXBuildFile; fileRef = 5099D88313647D4F005C7CDC /* SPAlbumBrowse.m */; };
+		509E6A8614DAE1CB009874C9 /* SPUnknownPlaylist.h in Headers */ = {isa = PBXBuildFile; fileRef = 509E6A8514DAE1CB009874C9 /* SPUnknownPlaylist.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50B7850E136EC15400D51152 /* SPPlaylistFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 503D56B0131086DB00894014 /* SPPlaylistFolder.m */; };
 		50D9864713605B8000DA5542 /* SPSearch.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D9864513605B8000DA5542 /* SPSearch.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50D9864813605B8000DA5542 /* SPSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 50D9864613605B8000DA5542 /* SPSearch.m */; };
@@ -107,6 +108,7 @@
 		5099D87813644E71005C7CDC /* SPArtistBrowse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPArtistBrowse.m; path = ../common/SPArtistBrowse.m; sourceTree = "<group>"; };
 		5099D88213647D4F005C7CDC /* SPAlbumBrowse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPAlbumBrowse.h; path = ../common/SPAlbumBrowse.h; sourceTree = "<group>"; };
 		5099D88313647D4F005C7CDC /* SPAlbumBrowse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPAlbumBrowse.m; path = ../common/SPAlbumBrowse.m; sourceTree = "<group>"; };
+		509E6A8514DAE1CB009874C9 /* SPUnknownPlaylist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPUnknownPlaylist.h; path = ../common/SPUnknownPlaylist.h; sourceTree = "<group>"; };
 		50AB044C1312D00400357CD2 /* SPUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SPUser.h; path = ../common/SPUser.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		50AB044D1312D00900357CD2 /* SPUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPUser.m; path = ../common/SPUser.m; sourceTree = "<group>"; };
 		50CE7623131149AD0047543F /* SPImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SPImage.h; path = ../common/SPImage.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -203,6 +205,7 @@
 				5028ECB7130937B200BF0B22 /* SPSession.m */,
 				5028ECB913093B5800BF0B22 /* SPPlaylist.h */,
 				50DE7F40147E757D005403A9 /* SPPlaylistInternal.h */,
+				509E6A8514DAE1CB009874C9 /* SPUnknownPlaylist.h */,
 				5028ECBA13093B5800BF0B22 /* SPPlaylist.m */,
 				50632D5C145E9AF100A51AC8 /* SPPlaylistItem.h */,
 				5098401A146035AA00C0FC18 /* SPPlaylistItemInternal.h */,
@@ -275,13 +278,14 @@
 				5099D87913644E71005C7CDC /* SPArtistBrowse.h in Headers */,
 				5099D88413647D4F005C7CDC /* SPAlbumBrowse.h in Headers */,
 				506359451369833500B90B67 /* SPToplist.h in Headers */,
+				509E6A8614DAE1CB009874C9 /* SPUnknownPlaylist.h in Headers */,
 				504379031370564D001DD605 /* SPPlaylistContainerInternal.h in Headers */,
-				50437908137057D9001DD605 /* SPPlaylistFolderInternal.h in Headers */,
 				5082F17C1406E29D0001F5C8 /* CocoaLibSpotify.h in Headers */,
 				5082F17D1406E29D0001F5C8 /* CocoaLibSpotifyPlatformImports.h in Headers */,
 				50749E0C1406E40500063404 /* SPURLExtensions.h in Headers */,
 				50749E111406E44500063404 /* CocoaLibSpotify-Prefix.pch in Headers */,
 				50749E141406E4AD00063404 /* SPTrack.h in Headers */,
+				50437908137057D9001DD605 /* SPPlaylistFolderInternal.h in Headers */,
 				50632D5E145E9AF100A51AC8 /* SPPlaylistItem.h in Headers */,
 				50983C23145EBAD200C0FC18 /* SPCommon.h in Headers */,
 				5098401B146035AA00C0FC18 /* SPPlaylistItemInternal.h in Headers */,

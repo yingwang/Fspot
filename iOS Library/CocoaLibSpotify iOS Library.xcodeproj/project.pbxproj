@@ -14,6 +14,7 @@
 		509840291460444100C0FC18 /* SPPlaylistItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 509840261460444100C0FC18 /* SPPlaylistItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5098402A1460444100C0FC18 /* SPPlaylistItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 509840271460444100C0FC18 /* SPPlaylistItem.m */; };
 		5098402B1460444100C0FC18 /* SPPlaylistItemInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 509840281460444100C0FC18 /* SPPlaylistItemInternal.h */; };
+		509E6A8014DAE15E009874C9 /* SPUnknownPlaylist.h in Headers */ = {isa = PBXBuildFile; fileRef = 509E6A7F14DAE15E009874C9 /* SPUnknownPlaylist.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50AF49E01439CBFE00E4A5EF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50AF49DF1439CBFE00E4A5EF /* Foundation.framework */; };
 		50AF4A501439CF4700E4A5EF /* CocoaLibSpotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50AF4A511439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AF4A4F1439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -63,6 +64,7 @@
 		509840261460444100C0FC18 /* SPPlaylistItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItem.h; path = ../common/SPPlaylistItem.h; sourceTree = "<group>"; };
 		509840271460444100C0FC18 /* SPPlaylistItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPPlaylistItem.m; path = ../common/SPPlaylistItem.m; sourceTree = "<group>"; };
 		509840281460444100C0FC18 /* SPPlaylistItemInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItemInternal.h; path = ../common/SPPlaylistItemInternal.h; sourceTree = "<group>"; };
+		509E6A7F14DAE15E009874C9 /* SPUnknownPlaylist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPUnknownPlaylist.h; path = ../common/SPUnknownPlaylist.h; sourceTree = "<group>"; };
 		50AF49DC1439CBFE00E4A5EF /* libCocoaLibSpotify.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLibSpotify.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		50AF49DF1439CBFE00E4A5EF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CocoaLibSpotify.h; path = ../common/CocoaLibSpotify.h; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				50AF4A341439CC5200E4A5EF /* Metadata */,
 				50AF4A671439CF8600E4A5EF /* SPPlaylist.h */,
 				50DE7F54147E833D005403A9 /* SPPlaylistInternal.h */,
+				509E6A7F14DAE15E009874C9 /* SPUnknownPlaylist.h */,
 				50AF4A681439CF8600E4A5EF /* SPPlaylist.m */,
 				50AF4A691439CF8600E4A5EF /* SPPlaylistContainer.h */,
 				50AF4A6A1439CF8600E4A5EF /* SPPlaylistContainer.m */,
@@ -256,6 +259,7 @@
 				50AF4A991439CF8600E4A5EF /* SPUser.h in Headers */,
 				500EC8B51439D02A00E8A60C /* CocoaLibSpotify iOS Library-Prefix.pch in Headers */,
 				50984021146043EC00C0FC18 /* api.h in Headers */,
+				509E6A8014DAE15E009874C9 /* SPUnknownPlaylist.h in Headers */,
 				509840251460442600C0FC18 /* SPCommon.h in Headers */,
 				509840291460444100C0FC18 /* SPPlaylistItem.h in Headers */,
 				5098402B1460444100C0FC18 /* SPPlaylistItemInternal.h in Headers */,

@@ -73,5 +73,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import <CocoaLibSpotify/SPArtistBrowse.h>
 #import <CocoaLibSpotify/SPAlbumBrowse.h>
 #import <CocoaLibSpotify/SPToplist.h>
+#import <CocoaLibSpotify/SPUnknownPlaylist.h>
 
 #endif
