@@ -37,10 +37,12 @@
 #if TARGET_OS_IPHONE
 #import "api.h"
 #import <UIKit/UIKit.h>
+#import <CoreAudio/CoreAudioTypes.h>
 #import "SPCommon.h"
 #define SPPlatformNativeImage UIImage
 #else
 #import <Cocoa/Cocoa.h>
+#import <CoreAudio/CoreAudio.h>
 #import <libspotify/api.h>
 #import <CocoaLibSpotify/SPCommon.h>
 #define SPPlatformNativeImage NSImage
