@@ -626,6 +626,28 @@ Playback
 
 @protocol SPSessionAudioDeliveryDelegate <NSObject>
 
+/** Called when audio data has been decompressed and should be pushed to the audio buffers. 
+ 
+ See the SimplePlayback sample project for an example of how to implement audio playback.
+ 
+ @warning *Important:* This function is called from an internal session thread - you need to have 
+ proper synchronization!
+ 
+ @warning *Important:* If this method is called with a frameCount of 0, an "audio discontinuity" has occurred - 
+ for example, the user has seeked playback to another part of the track. You should clear audio buffers and prepare
+ for new audio.
+ 
+ @warning *Important:* This function must never block. If your output buffers are full you must 
+ return 0 to signal that the library should retry delivery in a short while.
+ 
+ @param aSession The session providing the audio data.
+ @param audioFrames A buffer containing the audio data.
+ @param frameCount The number of frames in the buffer.
+ @param audioDescription An AudioStreamBasicDescription containing information about the audio format.
+ @return Number of frames consumed. This value can be used to rate limit 
+ the output from the library if your output buffers are saturated. Delivery will 
+ be retried in about 100ms.
+ */
 -(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount streamDescription:(AudioStreamBasicDescription)audioDescription;
 
 @end
