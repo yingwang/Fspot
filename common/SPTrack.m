@@ -74,6 +74,14 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 	self.offlineStatus = status;
 }
 
+-(void)updateAlbumBrowseSpecificMembers {
+    if (discNumber == 0)
+    {
+        discNumber = sp_track_disc( track );
+        trackNumber = sp_track_index( track );
+    }
+}
+
 @end
 
 @implementation SPTrack
