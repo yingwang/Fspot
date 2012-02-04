@@ -797,7 +797,10 @@ static SPSession *sharedSession;
 
 -(SPTrack *)trackForURL:(NSURL *)url {
 	
-	if ([url spotifyLinkType] == SP_LINKTYPE_TRACK) {
+	sp_linktype linkType = [url spotifyLinkType];
+	
+	if (linkType == SP_LINKTYPE_TRACK ||
+		linkType == SP_LINKTYPE_LOCALTRACK) {
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_track *track = sp_link_as_track(link);
@@ -873,6 +876,7 @@ static SPSession *sharedSession;
 	
 	switch (linkType) {
 		case SP_LINKTYPE_TRACK:
+		case SP_LINKTYPE_LOCALTRACK:
 			return [self trackForURL:aSpotifyUrlOfSomeKind];
 			break;
 		case SP_LINKTYPE_ALBUM:
