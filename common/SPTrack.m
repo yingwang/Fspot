@@ -75,7 +75,6 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 	self.offlineStatus = status;
 }
 
-
 -(void)updateAlbumBrowseSpecificMembers {
     if (self.discNumber == 0)
     {

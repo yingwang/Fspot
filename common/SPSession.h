@@ -61,6 +61,7 @@ Playback
 @class SPUnknownPlaylist;
 @protocol SPSessionDelegate;
 @protocol SPSessionPlaybackDelegate;
+@protocol SPSessionAudioDeliveryDelegate;
 @protocol SPPostTracksToInboxOperationDelegate;
 @protocol SPSessionPlaybackProvider;
 
@@ -422,10 +423,17 @@ Playback
 
 /** Returns the session's playback delegate object.
  
- The playback delegate is responsible for pushing raw audio data provided by the session
- to the system's audio output. See the SimplePlayback sample project for an example of how to do this.
+ The playback delegate is responsible for dealing with playback events from CocoaLibSpotify, such as
+ playback ending or being paused because the account is being used for playback elsewhere.
  */
-@property (nonatomic, nonatomic) __weak id <SPSessionPlaybackDelegate> playbackDelegate;
+@property (nonatomic, readwrite, weak) id <SPSessionPlaybackDelegate> playbackDelegate;
+
+/** Returns the session's audio delivery delegate object.
+ 
+ The audio delivery delegate is responsible for pushing raw audio data provided by the session
+ to the system's audio output. See the SimplePlayback sample project for an example of how to do this.
+*/
+@property (nonatomic, readwrite, weak) id <SPSessionAudioDeliveryDelegate> audioDeliveryDelegate;
 
 /** Preloads playback assets for the given track.
  
@@ -568,6 +576,10 @@ Playback
  
  See the SimplePlayback sample project for an example of how to implement audio playback.
  
+ @warning This method is deprecated and will only be called if the -audioDeliveryDelegate property is NOT set.
+ 
+ @deprecated
+ 
  @warning *Important:* This function is called from an internal session thread - you need to have 
  proper synchronization!
  
@@ -587,6 +599,12 @@ Playback
  be retried in about 100ms.
  */
 -(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount format:(const sp_audioformat *)audioFormat;
+
+@end
+
+@protocol SPSessionAudioDeliveryDelegate <NSObject>
+
+-(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount streamDescription:(AudioStreamBasicDescription)audioDescription;
 
 @end
 

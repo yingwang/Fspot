@@ -80,6 +80,8 @@
 
 #pragma mark Session Callbacks
 
+static AudioStreamBasicDescription libSpotifyAudioDescription;
+
 /* ------------------------  BEGIN SESSION CALLBACKS  ---------------------- */
 /**
  * This callback is called when the user was logged in, but the connection to
@@ -240,6 +242,23 @@ static int music_delivery(sp_session *session, const sp_audioformat *format, con
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	@autoreleasepool {
+		
+		if ([sess audioDeliveryDelegate] != nil) {
+			
+			if (format->sample_rate != (float)libSpotifyAudioDescription.mSampleRate || format->channels != libSpotifyAudioDescription.mChannelsPerFrame) {
+				// Update the libSpotify audio description to match the current data
+				libSpotifyAudioDescription.mSampleRate = (float)format->sample_rate;
+				libSpotifyAudioDescription.mBytesPerPacket = format->channels * sizeof(SInt16);
+				libSpotifyAudioDescription.mBytesPerFrame = libSpotifyAudioDescription.mBytesPerPacket;
+				libSpotifyAudioDescription.mChannelsPerFrame = format->channels;
+			}
+			
+			int framesConsumed = (int)[(id <SPSessionAudioDeliveryDelegate>)[sess audioDeliveryDelegate] session:sess
+																						shouldDeliverAudioFrames:frames
+																										 ofCount:num_frames
+																							   streamDescription:libSpotifyAudioDescription];
+			return framesConsumed;
+		}
 		
 		if ([[sess playbackDelegate] respondsToSelector:@selector(session:shouldDeliverAudioFrames:ofCount:format:)]) {
 			int framesConsumed = (int)[(id <SPSessionPlaybackDelegate>)[sess playbackDelegate] session:sess
@@ -477,8 +496,15 @@ static SPSession *sharedSession;
 			}
 		}
 		
-		sp_session_config config;
+		// Set the audio description - other fields will be filled in when we start getting audio.
+		memset(&libSpotifyAudioDescription, 0, sizeof(libSpotifyAudioDescription));
+		libSpotifyAudioDescription.mFormatID = kAudioFormatLinearPCM;
+		libSpotifyAudioDescription.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked | kAudioFormatFlagsNativeEndian;
+		libSpotifyAudioDescription.mFramesPerPacket = 1;
+		libSpotifyAudioDescription.mBitsPerChannel = 16;
+		libSpotifyAudioDescription.mReserved = 0;
 		
+		sp_session_config config;
 		memset(&config, 0, sizeof(config));
 		
 		config.api_version = SPOTIFY_API_VERSION;
@@ -890,6 +916,7 @@ static SPSession *sharedSession;
 
 @synthesize delegate;
 @synthesize playbackDelegate;
+@synthesize audioDeliveryDelegate;
 @synthesize session;
 
 #pragma mark Playback
