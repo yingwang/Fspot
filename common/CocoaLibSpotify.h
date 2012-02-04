@@ -52,6 +52,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPArtistBrowse.h"
 #import "SPAlbumBrowse.h"
 #import "SPToplist.h"
+#import "SPUnknownPlaylist.h"
 
 #else
 
@@ -72,5 +73,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import <CocoaLibSpotify/SPArtistBrowse.h>
 #import <CocoaLibSpotify/SPAlbumBrowse.h>
 #import <CocoaLibSpotify/SPToplist.h>
+#import <CocoaLibSpotify/SPUnknownPlaylist.h>
 
 #endif

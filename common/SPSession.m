@@ -48,6 +48,7 @@
 #import "SPPlaylistContainerInternal.h"
 #import "SPPlaylistFolderInternal.h"
 #import "SPPlaylistItem.h"
+#import "SPUnknownPlaylist.h"
 
 @interface SPSession ()
 
@@ -673,6 +674,9 @@ static SPSession *sharedSession;
     SPTrack *cachedTrack = [self.trackCache objectForKey:ptrValue];
     
     if (cachedTrack != nil) {
+        // track may have been cached without album browse specific fields
+        [cachedTrack updateAlbumBrowseSpecificMembers];
+        
         return cachedTrack;
     }
     
@@ -732,9 +736,16 @@ static SPSession *sharedSession;
 	return cachedPlaylistFolder;
 }
 
+-(SPPlaylist *)unknownPlaylistForPlaylistStruct:(sp_playlist *)playlist {
+	return (SPUnknownPlaylist*) [self playlistForPlaylistStruct:playlist];
+}
+
 -(SPTrack *)trackForURL:(NSURL *)url {
 	
-	if ([url spotifyLinkType] == SP_LINKTYPE_TRACK) {
+	sp_linktype linkType = [url spotifyLinkType];
+	
+	if (linkType == SP_LINKTYPE_TRACK ||
+		linkType == SP_LINKTYPE_LOCALTRACK) {
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_track *track = sp_link_as_track(link);
@@ -810,6 +821,7 @@ static SPSession *sharedSession;
 	
 	switch (linkType) {
 		case SP_LINKTYPE_TRACK:
+		case SP_LINKTYPE_LOCALTRACK:
 			return [self trackForURL:aSpotifyUrlOfSomeKind];
 			break;
 		case SP_LINKTYPE_ALBUM:

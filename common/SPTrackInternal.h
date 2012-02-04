@@ -38,4 +38,6 @@
 -(void)setStarredFromLibSpotifyUpdate:(BOOL)starred;
 -(void)setOfflineStatusFromLibSpotifyUpdate:(sp_track_offline_status)status;
 
+-(void)updateAlbumBrowseSpecificMembers;
+
 @end

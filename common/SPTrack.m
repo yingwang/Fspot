@@ -75,6 +75,15 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 	self.offlineStatus = status;
 }
 
+
+-(void)updateAlbumBrowseSpecificMembers {
+    if (self.discNumber == 0)
+    {
+        self.discNumber = sp_track_disc( track );
+        self.trackNumber = sp_track_index( track );
+    }
+}
+
 @end
 
 @implementation SPTrack
@@ -200,10 +209,8 @@ static const NSTimeInterval kCheckLoadedDuration = .25;
 @synthesize track;
 
 -(void)dealloc {
-    
     sp_track_release(track);
     session = nil;
-    
 }
 
 @end
