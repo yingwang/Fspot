@@ -447,6 +447,9 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 }
 
 -(void)setPlaylistNameFromLibSpotifyUpdate:(NSString *)newName {
+	if ([newName isEqualToString:self.name])
+		return;
+	
     // Remove observers otherwise we'll create an infinite loop!
     [self removeObserver:self forKeyPath:@"name"];
     [self setName:newName];
