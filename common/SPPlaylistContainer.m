@@ -129,7 +129,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	
 	sp_error errorCode = sp_playlistcontainer_add_folder(self.container, 0, [name UTF8String]);
 	
-	if (errorCode != SP_ERROR_OK)
+	if (errorCode == SP_ERROR_OK)
 		return [[[SPPlaylistFolder alloc] initWithPlaylistFolderId:sp_playlistcontainer_playlist_folder_id(self.container, 0)
 												container:self
 												inSession:self.session] autorelease];
