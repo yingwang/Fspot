@@ -43,8 +43,8 @@
 @protocol SPSessionPlaybackProvider <NSObject>
 
 @property (nonatomic, readwrite, getter=isPlaying) BOOL playing;
-@property (nonatomic) __weak id <SPSessionPlaybackDelegate> playbackDelegate;
-@property (nonatomic) __weak id <SPSessionAudioDeliveryDelegate> audioDeliveryDelegate;
+@property (nonatomic, weak) id <SPSessionPlaybackDelegate> playbackDelegate;
+@property (nonatomic, weak) id <SPSessionAudioDeliveryDelegate> audioDeliveryDelegate;
 
 -(BOOL)preloadTrackForPlayback:(SPTrack *)aTrack error:(NSError **)error;
 -(BOOL)playTrack:(SPTrack *)aTrack error:(NSError **)error;
