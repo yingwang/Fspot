@@ -65,7 +65,6 @@ Playback
 @protocol SPPostTracksToInboxOperationDelegate;
 @protocol SPSessionPlaybackProvider;
 
-
 @interface SPSession : NSObject <SPSessionPlaybackProvider>
 
 /** Returns a shared SPSession object. 
