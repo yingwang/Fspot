@@ -87,7 +87,7 @@ Playback
 	NSUInteger offlinePlaylistsRemaining;
 	NSUInteger offlineTracksRemaining;
 	BOOL offlineSyncing;
-	NSMutableSet *loadingObjects;
+	NSSet *loadingObjects;
 }
 
 /** Returns a shared SPSession object. 

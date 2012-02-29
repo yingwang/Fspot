@@ -480,7 +480,7 @@ static SPSession *sharedSession;
         trackCache = [[NSMutableDictionary alloc] init];
         userCache = [[NSMutableDictionary alloc] init];
 		playlistCache = [[NSMutableDictionary alloc] init];
-		loadingObjects = [[NSMutableSet alloc] init];
+		loadingObjects = [[NSSet alloc] init];
 		
 		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
 		
@@ -942,19 +942,24 @@ static SPSession *sharedSession;
 -(void)addLoadingObject:(id)object;
 {
 	@synchronized(loadingObjects){
-		[loadingObjects addObject:object];
+		NSSet *newSet = [loadingObjects setByAddingObject:object];
+		[loadingObjects release];
+		loadingObjects = [newSet retain];
 	}
 }
 
 -(void)checkLoadingObjects{
 	//Let objects that got new metadata fire their KVO's
 	@synchronized(loadingObjects){
-		NSMutableSet *objects = [loadingObjects copy];
-		for(id object in objects){
+		NSMutableSet *objects = [loadingObjects mutableCopy];
+		for(id object in loadingObjects){
 			if([object checkLoaded]){
-				[loadingObjects removeObject:object];
+				[objects removeObject:object];
 			}
 		}
+		
+		[loadingObjects release];
+		loadingObjects = objects;
 	}
 }
 
