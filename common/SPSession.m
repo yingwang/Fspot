@@ -1071,7 +1071,7 @@ static SPSession *sharedSession;
 -(sp_session *)session {
 	
 #if DEBUG 
-	//NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 #endif
 	return _session;
 }
@@ -1116,11 +1116,7 @@ static SPSession *sharedSession;
 }
 
 -(void)seekPlaybackToOffset:(NSTimeInterval)offset {
-    if (self.session != NULL) {
-		dispatch_sync([SPSession libSpotifyQueue], ^() {
-			sp_session_player_seek(self.session, (int)offset * 1000);
-		});
-	}
+	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session != NULL) sp_session_player_seek(self.session, (int)offset * 1000); });
 }
 
 -(void)setPlaying:(BOOL)nowPlaying {
