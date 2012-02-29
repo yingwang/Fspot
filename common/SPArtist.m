@@ -37,6 +37,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @interface SPArtist ()
 
 -(BOOL)checkLoaded;
+-(void)loadArtistData;
 @property (nonatomic, copy, readwrite) NSString *name;
 @property (nonatomic, copy, readwrite) NSURL *spotifyURL;
 @property (nonatomic, readwrite) sp_artist *artist;
@@ -49,6 +50,8 @@ static NSMutableDictionary *artistCache;
 
 +(SPArtist *)artistWithArtistStruct:(sp_artist *)anArtist inSession:(SPSession *)aSession {
     
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
     if (artistCache == nil) {
         artistCache = [[NSMutableDictionary alloc] init];
     }
@@ -68,23 +71,31 @@ static NSMutableDictionary *artistCache;
 
 +(SPArtist *)artistWithArtistURL:(NSURL *)aURL inSession:(SPSession *)aSession {
 	
-	if ([aURL spotifyLinkType] == SP_LINKTYPE_ARTIST) {
+	if ([aURL spotifyLinkType] != SP_LINKTYPE_ARTIST)
+		return nil;
+	
+	__block SPArtist *newArtist = nil;
+	
+	dispatch_sync([SPSession libSpotifyQueue], ^{
 		sp_link *link = [aURL createSpotifyLink];
 		if (link != NULL) {
 			sp_artist *artist = sp_link_as_artist(link);
 			sp_artist_add_ref(artist);
-			SPArtist *spArtist = [self artistWithArtistStruct:artist inSession:aSession];
+			newArtist = [self artistWithArtistStruct:artist inSession:aSession];
 			sp_artist_release(artist);
 			sp_link_release(link);
-			return spArtist;
 		}
-	}
-	return nil;
+	});
+	
+	return newArtist;
 }
 
 #pragma mark -
 
 -(id)initWithArtistStruct:(sp_artist *)anArtist inSession:(SPSession *)aSession {
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
     if ((self = [super init])) {
         self.artist = anArtist;
         sp_artist_add_ref(self.artist);
@@ -93,39 +104,62 @@ static NSMutableDictionary *artistCache;
             self.spotifyURL = [NSURL urlWithSpotifyLink:link];
             sp_link_release(link);
         }
-
-        if (![self checkLoaded]) {
+		
+		if (!sp_artist_is_loaded(self.artist)) {
             [aSession addLoadingObject:self];
+        } else {
+            [self loadArtistData];
         }
+
     }
     return self;
 }
 
 
+
 -(BOOL)checkLoaded {
-    BOOL loaded = sp_artist_is_loaded(self.artist);
-    if (loaded) {
-        const char *nameCharArray = sp_artist_name(self.artist);
+	__block BOOL isLoaded = NO;
+	dispatch_sync([SPSession libSpotifyQueue], ^{ isLoaded = sp_artist_is_loaded(self.artist); });
+	if (isLoaded) [self loadArtistData];
+	return isLoaded;
+}
+
+-(void)loadArtistData {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		NSString *newName = nil;
+		
+		const char *nameCharArray = sp_artist_name(self.artist);
 		if (nameCharArray != NULL) {
 			NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
-			self.name = [nameString length] > 0 ? nameString : nil;
+			newName = [nameString length] > 0 ? nameString : nil;
 		} else {
-			self.name = nil;
+			newName = nil;
 		}
-    }
-	return loaded;
+		
+		dispatch_async(dispatch_get_main_queue(), ^() { self.name = newName; });
+		
+	});
 }
 
 -(NSString *)description {
 	return [NSString stringWithFormat:@"%@: %@", [super description], self.name];
 }
 
-@synthesize artist;
+-(sp_artist *)artist {
+#if DEBUG
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif
+	return _artist;
+}
+
+@synthesize artist = _artist;
 @synthesize spotifyURL;
 @synthesize name;
 
 -(void)dealloc {
-    sp_artist_release(artist);
+    dispatch_sync([SPSession libSpotifyQueue], ^{ sp_artist_release(self.artist); });
 }
 
 @end
