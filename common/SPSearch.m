@@ -57,6 +57,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, strong) SPSession *session;
 @property (nonatomic, readwrite) sp_search *activeSearch;
 
+@property (nonatomic, readwrite) BOOL searchInProgress;
+
 -(id)initWithSession:(SPSession *)aSession; // Designated initialiser.
 -(void)searchDidComplete:(sp_search *)search wasSearchingForTracks:(BOOL)searchTracks artists:(BOOL)searchArtists albums:(BOOL)searchAlbums;
 
@@ -86,7 +88,7 @@ void search_complete(sp_search *result, void *userdata) {
 #pragma mark -
 
 @implementation SPSearch {
-	sp_search *activeSearch;
+	sp_search *_activeSearch;
 	NSInteger requestedTrackResults;
 	NSInteger requestedArtistResults;
 	NSInteger requestedAlbumResults;
@@ -180,33 +182,32 @@ void search_complete(sp_search *result, void *userdata) {
 @synthesize hasExhaustedAlbumResults;
 
 @synthesize searchError;
+@synthesize searchInProgress;
 
 @synthesize searchQuery;
 @synthesize suggestedSearchQuery;
 @synthesize spotifyURL;
 @synthesize session;
 
-+(NSSet *)keyPathsForValuesAffectingSearchInProgress {
-	return [NSSet setWithObject:@"activeSearch"];
-}
-
--(BOOL)searchInProgress {
-	return self.activeSearch != NULL && !sp_search_is_loaded(self.activeSearch);
-}
-
 -(sp_search *)activeSearch {
-	return activeSearch;
+#if DEBUG
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif
+	return _activeSearch;
 }
 
 -(void)setActiveSearch:(sp_search *)search {
-	if (search != activeSearch) {
-		if (activeSearch != NULL) {
-			sp_search_release(activeSearch);
+#if DEBUG
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif
+	if (search != _activeSearch) {
+		if (_activeSearch != NULL) {
+			sp_search_release(_activeSearch);
 		}
 		if (search != NULL) {
 			sp_search_add_ref(search);
 		}
-		activeSearch = search;
+		_activeSearch = search;
 	}
 }
 
@@ -214,19 +215,25 @@ void search_complete(sp_search *result, void *userdata) {
 
 -(void)searchDidComplete:(sp_search *)search wasSearchingForTracks:(BOOL)searchTracks artists:(BOOL)searchArtists albums:(BOOL)searchAlbums {
 
-	[self willChangeValueForKey:@"searchInProgress"];
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
-	sp_error error = sp_search_error(search);
+	sp_error errorCode = sp_search_error(search);
+	NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
+	NSString *newSuggestion = nil;
+	NSArray *additionalAlbums = nil;
+	BOOL newHasExhaustedAlbums = NO;
 	
-	if (error != SP_ERROR_OK) {
-		self.searchError = [NSError spotifyErrorWithCode:error];
-	}
+	NSArray *additionalArtists = nil;
+	BOOL newHasExhaustedArtists = NO;
+	
+	NSArray *additionalTracks = nil;
+	BOOL newHasExhaustedTracks = NO;
 	
 	const char *suggestion = sp_search_did_you_mean(search);
 	NSString *suggestionString = [NSString stringWithUTF8String:suggestion];
 	
 	if ([suggestionString length] > 0)
-		self.suggestedSearchQuery = suggestionString;
+		newSuggestion = suggestionString;
 		
 	//Albums 
 	
@@ -245,11 +252,10 @@ void search_complete(sp_search *result, void *userdata) {
 				}
 			}
 			albumCount = (int)[newAlbums count];
-			self.albums = [self.albums arrayByAddingObjectsFromArray:newAlbums];
+			additionalAlbums = newAlbums;
 		}
 		
-		self.hasExhaustedAlbumResults = (albumCount < pageSize);
-		requestedAlbumResults += albumCount;
+		newHasExhaustedAlbums = (albumCount < pageSize);
 	}
 	
 	//Artists
@@ -268,11 +274,9 @@ void search_complete(sp_search *result, void *userdata) {
 				}
 			}
 			artistCount = (int)[newArtists count];
-			self.artists = [self.artists arrayByAddingObjectsFromArray:newArtists];
+			additionalArtists = newArtists;
 		}
-		
-		self.hasExhaustedArtistResults = (artistCount < pageSize);
-		requestedArtistResults += artistCount;
+		newHasExhaustedArtists = (artistCount < pageSize);
 	}
 	
 	//Tracks 
@@ -292,14 +296,33 @@ void search_complete(sp_search *result, void *userdata) {
 				}
 			}
 			trackCount = (int)[newTracks count];
-			self.tracks = [self.tracks arrayByAddingObjectsFromArray:newTracks];
+			additionalTracks = newTracks;
 		}
 		
-		self.hasExhaustedTrackResults = (trackCount < pageSize);
-		requestedTrackResults += trackCount;
+		newHasExhaustedTracks = (trackCount < pageSize);
 	}
 	
-	[self didChangeValueForKey:@"searchInProgress"];
+	self.activeSearch = NULL;
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		self.searchError = error;
+		self.suggestedSearchQuery = newSuggestion;
+		self.albums = [self.albums arrayByAddingObjectsFromArray:additionalAlbums];
+		self.hasExhaustedAlbumResults = newHasExhaustedAlbums;
+		requestedAlbumResults += additionalAlbums.count;
+		
+		self.artists = [self.artists arrayByAddingObjectsFromArray:additionalArtists];
+		self.hasExhaustedArtistResults = newHasExhaustedArtists;
+		requestedArtistResults += additionalArtists.count;
+		
+		self.tracks	= [self.tracks arrayByAddingObjectsFromArray:additionalTracks];
+		self.hasExhaustedTrackResults = newHasExhaustedTracks;
+		requestedTrackResults += additionalTracks.count;
+		
+		self.searchInProgress = NO;
+		
+	});
 }
 
 #pragma mark -
@@ -317,70 +340,72 @@ void search_complete(sp_search *result, void *userdata) {
 }
 
 -(BOOL)addPageForArtists:(BOOL)searchArtist albums:(BOOL)searchAlbum tracks:(BOOL)searchTrack {
+		
+	int trackOffset = 0, trackCount = 0, artistOffset = 0, artistCount = 0, albumOffset = 0, albumCount = 0;
 	
-	if (!self.searchInProgress) {
-		
-		int trackOffset = 0, trackCount = 0, artistOffset = 0, artistCount = 0, albumOffset = 0, albumCount = 0;
-		
-		if (searchArtist && !self.hasExhaustedArtistResults) {
-			artistOffset = (int)self.artists.count;
-			artistCount = (int)pageSize;
-		}
-		
-		if (searchAlbum && !self.hasExhaustedAlbumResults) {
-			albumOffset = (int)self.albums.count;
-			albumCount = (int)pageSize;
-		}
-		
-		if (searchTrack && !self.hasExhaustedTrackResults) {
-			trackOffset = (int)self.tracks.count;
-			trackCount = (int)pageSize;
-		}
-		
-		if (artistCount > 0 || albumCount > 0 || trackCount > 0) {
-			
-			NSMutableDictionary *userData = [[NSMutableDictionary alloc] initWithCapacity:4];
-			
-			[userData setValue:self forKey:kSPSearchCallbackSearchObjectKey];
-			[userData setValue:[NSNumber numberWithBool:searchArtist] forKey:kSPSearchCallbackSearchingArtistsKey];
-			[userData setValue:[NSNumber numberWithBool:searchAlbum] forKey:kSPSearchCallbackSearchingAlbumsKey];
-			[userData setValue:[NSNumber numberWithBool:searchTrack] forKey:kSPSearchCallbackSearchingTracksKey];
-			
-			sp_search *newSearch = sp_search_create(self.session.session, 
-													[self.searchQuery UTF8String], //query 
-													trackOffset, // track_offset 
-													trackCount, //track_count 
-													albumOffset, //album_offset 
-													albumCount, //album_count 
-													artistOffset, //artist_offset 
-													artistCount, //artist_count 
-													&search_complete, //callback
-													(__bridge_retained void *)userData); // userdata
-			// ^ __bridge_retain the userData dictionary, it needs to survive through a search operation. The complete callback releases it.
-			
-			if (newSearch != NULL) {
-				self.activeSearch = newSearch;
-				sp_search_release(newSearch);
-				if (self.spotifyURL == nil) {
-					sp_link *searchLink = sp_link_create_from_search(self.activeSearch);
-					if (searchLink != NULL) {
-						self.spotifyURL = [NSURL urlWithSpotifyLink:searchLink];
-						sp_link_release(searchLink);
-					}
-				}
-				return YES;
-			} 
-		} 
+	if (searchArtist && !self.hasExhaustedArtistResults) {
+		artistOffset = (int)self.artists.count;
+		artistCount = (int)pageSize;
 	}
-	return NO;
+	
+	if (searchAlbum && !self.hasExhaustedAlbumResults) {
+		albumOffset = (int)self.albums.count;
+		albumCount = (int)pageSize;
+	}
+	
+	if (searchTrack && !self.hasExhaustedTrackResults) {
+		trackOffset = (int)self.tracks.count;
+		trackCount = (int)pageSize;
+	}
+	
+	if (artistCount == 0 && albumCount == 0 && trackCount == 0)
+		return NO;
+	
+	NSMutableDictionary *userData = [[NSMutableDictionary alloc] initWithCapacity:4];
+	
+	[userData setValue:self forKey:kSPSearchCallbackSearchObjectKey];
+	[userData setValue:[NSNumber numberWithBool:searchArtist] forKey:kSPSearchCallbackSearchingArtistsKey];
+	[userData setValue:[NSNumber numberWithBool:searchAlbum] forKey:kSPSearchCallbackSearchingAlbumsKey];
+	[userData setValue:[NSNumber numberWithBool:searchTrack] forKey:kSPSearchCallbackSearchingTracksKey];
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		sp_search *newSearch = sp_search_create(self.session.session, 
+												[self.searchQuery UTF8String], //query 
+												trackOffset, // track_offset 
+												trackCount, //track_count 
+												albumOffset, //album_offset 
+												albumCount, //album_count 
+												artistOffset, //artist_offset 
+												artistCount, //artist_count 
+												&search_complete, //callback
+												(__bridge_retained void *)userData); // userdata
+		// ^ __bridge_retain the userData dictionary, it needs to survive through a search operation. The complete callback releases it.
+		
+		if (newSearch == NULL)
+			return;
+		
+		self.activeSearch = newSearch;
+		sp_search_release(newSearch);
+		
+		if (self.spotifyURL == nil) {
+			sp_link *searchLink = sp_link_create_from_search(self.activeSearch);
+			if (searchLink != NULL) {
+				NSURL *url = [NSURL urlWithSpotifyLink:searchLink];
+				dispatch_async(dispatch_get_main_queue(), ^() { self.spotifyURL = url; });
+				sp_link_release(searchLink);
+			}
+		}
+	});
+	
+	self.searchInProgress = YES;
+	return YES;
 }
 
 #pragma mark -
 
-- (void)dealloc {
-	
-	self.activeSearch = NULL;
-	
+-(void)dealloc {
+	dispatch_sync([SPSession libSpotifyQueue], ^() { self.activeSearch = NULL; });
 }
 
 @end
