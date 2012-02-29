@@ -612,7 +612,7 @@ static SPSession *sharedSession;
 					   password:(NSString *)password
 			rememberCredentials:(BOOL)rememberMe {
 	
-	if (userName.length == 0 || password.length == 0 || [self libSpotifySessionIsNULL])
+	if (userName.length == 0 || password.length == 0)
 		return;
 	
 	[self logout];
@@ -889,7 +889,7 @@ static SPSession *sharedSession;
 	
 	sp_linktype linkType = [url spotifyLinkType];
 	
-	if (!(linkType == SP_LINKTYPE_TRACK || linkType == SP_LINKTYPE_LOCALTRACK) || [self libSpotifySessionIsNULL])
+	if (!(linkType == SP_LINKTYPE_TRACK || linkType == SP_LINKTYPE_LOCALTRACK))
 		return nil;
 	
 	__block SPTrack *trackObj = nil;
@@ -910,7 +910,7 @@ static SPSession *sharedSession;
 
 -(SPUser *)userForURL:(NSURL *)url {
 	
-	if ([url spotifyLinkType] != SP_LINKTYPE_PROFILE || [self libSpotifySessionIsNULL])
+	if ([url spotifyLinkType] != SP_LINKTYPE_PROFILE)
 		return nil;
 	
 	__block SPUser *userObj = nil;
@@ -931,7 +931,7 @@ static SPSession *sharedSession;
 
 -(SPPlaylist *)playlistForURL:(NSURL *)url {
 	
-	if ([url spotifyLinkType] != SP_LINKTYPE_PLAYLIST || [self libSpotifySessionIsNULL])
+	if ([url spotifyLinkType] != SP_LINKTYPE_PLAYLIST)
 		return nil;
 	
 	__block SPPlaylist *playlist = nil;
