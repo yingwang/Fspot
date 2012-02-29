@@ -48,7 +48,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @end
 
 static void image_loaded(sp_image *image, void *userdata) {
-    [(__bridge SPImage *)userdata setLoaded:sp_image_is_loaded(image)];
+	BOOL isLoaded = sp_image_is_loaded(image);
+	dispatch_async(dispatch_get_main_queue(), ^{ [(__bridge SPImage *)userdata setLoaded:isLoaded]; });
 }
 
 static NSString * const kSPImageKVOContext = @"kSPImageKVOContext";
@@ -62,6 +63,8 @@ static NSMutableDictionary *imageCache;
 
 +(SPImage *)imageWithImageId:(const byte *)imageId inSession:(SPSession *)aSession {
 
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
     if (imageCache == nil) {
         imageCache = [[NSMutableDictionary alloc] init];
     }
@@ -85,7 +88,12 @@ static NSMutableDictionary *imageCache;
 
 +(SPImage *)imageWithImageURL:(NSURL *)imageURL inSession:(SPSession *)aSession {
 	
-	if ([imageURL spotifyLinkType] == SP_LINKTYPE_IMAGE) {
+	if ([imageURL spotifyLinkType] != SP_LINKTYPE_IMAGE)
+		return nil;
+	
+	__block SPImage *spImage = nil;
+	
+	dispatch_sync([SPSession libSpotifyQueue], ^{
 		sp_link *link = [imageURL createSpotifyLink];
 		sp_image *image = sp_image_create_from_link(aSession.session, link);
 		
@@ -93,17 +101,19 @@ static NSMutableDictionary *imageCache;
 			sp_link_release(link);
 		
 		if (image != NULL) {
-			SPImage *spImage = [self imageWithImageId:sp_image_image_id(image) inSession:aSession];
-			sp_image_release(image);	
-			return spImage;
+			spImage = [self imageWithImageId:sp_image_image_id(image) inSession:aSession];
+			sp_image_release(image);
 		}
-	}
-	return nil;
+	});
+		
+	return spImage;
 }
 
 #pragma mark -
 
 -(id)initWithImageStruct:(sp_image *)anImage imageId:(const byte *)anId inSession:aSession {
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
     if ((self = [super init])) {
 		
@@ -122,41 +132,58 @@ static NSMutableDictionary *imageCache;
 									   &image_loaded,
 									   (__bridge void *)(self));
 			
-			[self cacheSpotifyURL];
-        
-			self.loaded = sp_image_is_loaded(self.spImage);
+			BOOL isLoaded = sp_image_is_loaded(self.spImage);
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self cacheSpotifyURL];
+				self.loaded = isLoaded;
+			});
         }
     }
     return self;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (context == (__bridge void *)kSPImageKVOContext) {
-        if ([keyPath isEqualToString:@"loaded"] && [self isLoaded] && ([self image] == nil)) {
-            if (sp_image_format(self.spImage) == SP_IMAGE_FORMAT_JPEG) {
-                
-                size_t size;
-                const byte *data = sp_image_data(self.spImage, &size);
-                
-                if (size > 0) {
-                    NSData *imageData = [NSData dataWithBytes:data length:size];
-                    [self setImage:[[SPPlatformNativeImage alloc] initWithData:imageData]];
-                }
-            }
+    
+	if (context == (__bridge void *)kSPImageKVOContext) {
+        if ([keyPath isEqualToString:@"loaded"] && self.isLoaded && (self.image == nil)) {
+			
+			NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"This should be on the main queue!");
+			
+			dispatch_async([SPSession libSpotifyQueue], ^{
+				
+				if (sp_image_format(self.spImage) == SP_IMAGE_FORMAT_JPEG) {
+					
+					size_t size;
+					const byte *data = sp_image_data(self.spImage, &size);
+					
+					if (size > 0) {
+						NSData *imageData = [NSData dataWithBytes:data length:size];
+						SPPlatformNativeImage *im = [[SPPlatformNativeImage alloc] initWithData:imageData];
+						dispatch_async(dispatch_get_main_queue(), ^{ self.image = im; });
+					}
+				}
+			});
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
-@synthesize spImage;
+-(sp_image *)spImage {
+#if DEBUG
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif 
+	return _spImage;
+}
+
+@synthesize spImage = _spImage;
 @synthesize loaded;
 @synthesize session;
 @synthesize spotifyURL;
 @synthesize imageId;
 
 -(SPPlatformNativeImage *)image {
-	if (self.spImage == nil && !hasRequestedImage)
+	if (_image == nil && !hasRequestedImage)
 		[self beginLoading];
 	return _image;
 }
@@ -171,44 +198,56 @@ static NSMutableDictionary *imageCache;
 
 -(void)beginLoading {
 	
-	if (self.spImage != NULL)
-		return;
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		if (self.spImage != NULL)
+			return;
+		
+		sp_image *newImage = sp_image_create(self.session.session, self.imageId);
+		self.spImage = newImage;
+		
+		if (self.spImage != NULL) {
+			[self cacheSpotifyURL];
+			
+			sp_image_add_load_callback(self.spImage, &image_loaded, (__bridge void *)(self));
+			BOOL isLoaded = sp_image_is_loaded(self.spImage);
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				hasRequestedImage = YES;
+				self.loaded = isLoaded;
+			});
+		}
+	});
 	
-	[self willChangeValueForKey:@"spImage"];
-	sp_image *newImage = sp_image_create(self.session.session, self.imageId);
-	spImage = newImage;
-	[self didChangeValueForKey:@"spImage"];
-	
-	if (spImage != NULL) {
-        [self cacheSpotifyURL];
-        
-		hasRequestedImage = YES;
-		sp_image_add_load_callback(spImage, &image_loaded, (__bridge void *)(self));
-		self.loaded = sp_image_is_loaded(spImage);
-	}
 }
 
 -(void)dealloc {
     
     [self removeObserver:self forKeyPath:@"loaded"];
     
-    sp_image_remove_load_callback(self.spImage, &image_loaded, (__bridge void *)(self));
-    sp_image_release(self.spImage);
-    
+    dispatch_sync([SPSession libSpotifyQueue], ^{
+		sp_image_remove_load_callback(self.spImage, &image_loaded, (__bridge void *)(self));
+		sp_image_release(self.spImage);
+	});
 }
 
--(void) cacheSpotifyURL
-{
-    if (self.spotifyURL != NULL)
-        return;
-    
-    sp_link *link = sp_link_create_from_image(self.spImage);
-    
-    if (link != NULL) {
-        NSURL *url = [NSURL urlWithSpotifyLink:link];
-        self.spotifyURL = url;
-        sp_link_release(link);
-    }
+-(void)cacheSpotifyURL {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+
+		if (self.spotifyURL != NULL)
+			return;
+		
+		sp_link *link = sp_link_create_from_image(self.spImage);
+		
+		if (link != NULL) {
+			NSURL *url = [NSURL urlWithSpotifyLink:link];
+			sp_link_release(link);
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.spotifyURL = url;
+			});
+		}
+	});
 }
 
 @end
