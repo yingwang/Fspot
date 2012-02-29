@@ -67,6 +67,10 @@ Playback
 
 @interface SPSession : NSObject <SPSessionPlaybackProvider>
 
++(dispatch_queue_t)libSpotifyQueue;
+-(BOOL)libSpotifySessionIsNULL;
+
+
 /** Returns a shared SPSession object. 
  
  This is a convenience method for creating and storing a single SPSession instance.
@@ -145,10 +149,9 @@ Playback
  
  Login success or fail methods will be called on the session's delegate. 
  
- @param error An error pointer to be filled with an NSError should a login problem occur.
- @return Returns `YES` if user credentials had been stored and the login attempt began successfully.
+ @param block A block to be called when operation has successfully began. The error parameter will be non-`nil` is an error occurred.
  */
--(BOOL)attemptLoginWithStoredCredentials:(NSError **)error;
+-(void)attemptLoginWithStoredCredentials:(SPErrorableOperationCallback)block;
 
 /** The username saved in the stored credentials.
  
@@ -442,18 +445,16 @@ Playback
  to the next track during normal playback.
  
  @param aTrack The track to preload.
- @param error An NSError pointer that will be filled with any error that occurs.
- @return Returns `YES` if loading started successfully, or `NO` if the track cannot be played.
+ @param block A block to be called when operation has successfully begun. The error parameter will be non-`nil` is an error occurred.
  */
--(BOOL)preloadTrackForPlayback:(SPTrack *)aTrack error:(NSError **)error;
+-(void)preloadTrackForPlayback:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block;
 
 /** Start playing the given track.
  
  @param aTrack The track to play.
- @param error An NSError pointer that will be filled with any error that occurs.
- @return Returns `YES` if playback started successfully, or `NO` if the track cannot be played.
+ @param block A block to be called when operation has successfully begun. The error parameter will be non-`nil` is an error occurred.
  */
--(BOOL)playTrack:(SPTrack *)aTrack error:(NSError **)error;
+-(void)playTrack:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block;
 
 /** Seek the current playback position to the given time. 
  

@@ -29,6 +29,8 @@
  This file contains protocols and other things needed throughout the library.
  */
 
+typedef void (^SPErrorableOperationCallback)(NSError *error);
+
 @class SPTrack;
 @protocol SPSessionPlaybackDelegate;
 @protocol SPSessionAudioDeliveryDelegate;
@@ -46,8 +48,8 @@
 @property (nonatomic, weak) id <SPSessionPlaybackDelegate> playbackDelegate;
 @property (nonatomic, weak) id <SPSessionAudioDeliveryDelegate> audioDeliveryDelegate;
 
--(BOOL)preloadTrackForPlayback:(SPTrack *)aTrack error:(NSError **)error;
--(BOOL)playTrack:(SPTrack *)aTrack error:(NSError **)error;
+-(void)preloadTrackForPlayback:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block;
+-(void)playTrack:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block;
 -(void)seekPlaybackToOffset:(NSTimeInterval)offset;
 -(void)unloadPlayback;
 
