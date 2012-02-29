@@ -262,7 +262,7 @@ void search_complete(sp_search *result, void *userdata) {
 			NSMutableArray *newArtists = [NSMutableArray array];
 			
 			for (int currentArtist = 0; currentArtist < artistCount; currentArtist++) {
-				SPArtist *artist = [SPArtist artistWithArtistStruct:sp_search_artist(search, currentArtist)];			
+				SPArtist *artist = [SPArtist artistWithArtistStruct:sp_search_artist(search, currentArtist) inSession:self.session];			
 				if (artist != nil) {
 					[newArtists addObject:artist];
 				}

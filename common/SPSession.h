@@ -65,6 +65,7 @@ Playback
 @protocol SPPostTracksToInboxOperationDelegate;
 @protocol SPSessionPlaybackProvider;
 
+
 @interface SPSession : NSObject <SPSessionPlaybackProvider>
 
 /** Returns a shared SPSession object. 
@@ -468,6 +469,9 @@ Playback
  */
 -(void)unloadPlayback;
 
+
+//Internal
+-(void)addLoadingObject:(id)object;
 @end
 
 /** General delegate callbacks from SPSession. For playback-related callbacks, see SPSessionPlaybackDelegate. */
@@ -629,6 +633,7 @@ Playback
 -(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount streamDescription:(AudioStreamBasicDescription)audioDescription;
 
 @end
+
 
 ///----------------------------
 /// @name Offline Sync Statistics Keys

@@ -73,7 +73,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		if (albumBrowse.isLoaded) {
 			
 			albumBrowse.review = [NSString stringWithUTF8String:sp_albumbrowse_review(result)];
-			albumBrowse.artist = [SPArtist artistWithArtistStruct:sp_albumbrowse_artist(result)];
+			albumBrowse.artist = [SPArtist artistWithArtistStruct:sp_albumbrowse_artist(result) inSession:albumBrowse.session];
 			
 			int trackCount = sp_albumbrowse_num_tracks(result);
 			NSMutableArray *tracks = [NSMutableArray arrayWithCapacity:trackCount];

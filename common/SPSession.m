@@ -50,6 +50,10 @@
 #import "SPPlaylistItem.h"
 #import "SPUnknownPlaylist.h"
 
+@interface NSObject (SPLoadedObject)
+-(BOOL)checkLoaded;
+@end
+
 @interface SPSession ()
 
 @property (nonatomic, readwrite, strong) SPUser *user;
@@ -72,9 +76,11 @@
 @property (nonatomic, readwrite) NSUInteger offlinePlaylistsRemaining;
 @property (nonatomic, readwrite, copy) NSDictionary *offlineStatistics;
 
-
+@property (nonatomic, readwrite, copy) NSMutableSet *loadingObjects;
 
 @property (nonatomic, copy, readwrite) NSString *userAgent;
+
+-(void)checkLoadingObjects;
 
 @end
 
@@ -192,6 +198,8 @@ static void metadata_updated(sp_session *session) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	@autoreleasepool {
+		
+		[sess checkLoadingObjects];
 		
 		if ([sess.delegate respondsToSelector:@selector(sessionDidChangeMetadata:)]) {
             [sess.delegate sessionDidChangeMetadata:sess];
@@ -434,6 +442,7 @@ static SPSession *sharedSession;
         self.trackCache = [[NSMutableDictionary alloc] init];
         self.userCache = [[NSMutableDictionary alloc] init];
 		self.playlistCache = [[NSMutableDictionary alloc] init];
+		self.loadingObjects = [[NSMutableSet alloc] init];
 		
 		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
 		
@@ -693,6 +702,7 @@ static SPSession *sharedSession;
 @synthesize locale;
 @synthesize offlineSyncError;
 @synthesize userAgent;
+@synthesize loadingObjects;
 
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     
@@ -828,7 +838,7 @@ static SPSession *sharedSession;
 }
 
 -(SPArtist *)artistForURL:(NSURL *)url {
-	return [SPArtist artistWithArtistURL:url];
+	return [SPArtist artistWithArtistURL:url inSession:self];
 }
 
 -(SPImage *)imageForURL:(NSURL *)url {
@@ -854,7 +864,7 @@ static SPSession *sharedSession;
 			return [self albumForURL:aSpotifyUrlOfSomeKind];
 			break;
 		case SP_LINKTYPE_ARTIST:
-			return [SPArtist artistWithArtistURL:aSpotifyUrlOfSomeKind];
+			return [SPArtist artistWithArtistURL:aSpotifyUrlOfSomeKind inSession:self];
 			break;
 		case SP_LINKTYPE_SEARCH:
 			return [self searchForURL:aSpotifyUrlOfSomeKind];
@@ -888,6 +898,25 @@ static SPSession *sharedSession;
 															 message:aFriendlyMessage
 														   inSession:self
 															delegate:operationDelegate];	
+}
+
+-(void)addLoadingObject:(id)object;
+{
+	@synchronized(self.loadingObjects){
+		[self.loadingObjects addObject:object];
+	}
+}
+
+-(void)checkLoadingObjects{
+	//Let objects that got new metadata fire their KVO's
+	@synchronized(self.loadingObjects){
+		NSMutableSet *objects = [self.loadingObjects copy];
+		for(id object in objects){
+			if([object checkLoaded]){
+				[self.loadingObjects removeObject:object];
+			}
+		}
+	}
 }
 
 #pragma mark Properties

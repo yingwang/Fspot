@@ -4,31 +4,31 @@
 //
 //  Created by Daniel Kennett on 4/24/11.
 /*
-Copyright (c) 2011, Spotify AB
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of Spotify AB nor the names of its contributors may 
-      be used to endorse or promote products derived from this software 
-      without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL SPOTIFY AB BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ Copyright (c) 2011, Spotify AB
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of Spotify AB nor the names of its contributors may 
+ be used to endorse or promote products derived from this software 
+ without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL SPOTIFY AB BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+ OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 // IMPORTANT: This class was implemented while enjoying a lovely spring afternoon by a lake 
 // in Sweden. This is my view right now:  http://twitpic.com/4oy9zn
@@ -62,7 +62,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata);
 void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
-	
+		
 		SPArtistBrowse *artistBrowse = (__bridge SPArtistBrowse *)userdata;
 		
 		artistBrowse.loaded = sp_artistbrowse_is_loaded(result);
@@ -105,7 +105,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 			for (int currentArtist =  0; currentArtist < relatedArtistCount; currentArtist++) {
 				sp_artist *artist = sp_artistbrowse_similar_artist(result, currentArtist);
 				if (artist != NULL) {
-					[relatedArtists addObject:[SPArtist artistWithArtistStruct:artist]];
+					[relatedArtists addObject:[SPArtist artistWithArtistStruct:artist inSession:artistBrowse.session]];
 				}
 			}
 			
@@ -123,24 +123,24 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 			
 			artistBrowse.portraits = [NSArray arrayWithArray:portraits];
 		}
-	
+		
 	}
 }
 
 @implementation SPArtistBrowse {
-    sp_artistbrowse *browseOperation;
+	sp_artistbrowse *browseOperation;
 }
 
 +(SPArtistBrowse *)browseArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
 	return [[SPArtistBrowse alloc] initWithArtist:anArtist
-										 inSession:aSession
-											  type:browseMode];
+										inSession:aSession
+											 type:browseMode];
 }
 
 +(SPArtistBrowse *)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
-	return [[SPArtistBrowse alloc] initWithArtist:[SPArtist artistWithArtistURL:artistURL] 
-										 inSession:aSession
-											  type:browseMode];
+	return [[SPArtistBrowse alloc] initWithArtist:[SPArtist artistWithArtistURL:artistURL inSession:aSession]
+										inSession:aSession
+											 type:browseMode];
 }
 
 -(id)initWithArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
@@ -195,7 +195,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 	
 	if (browseOperation != NULL)
 		sp_artistbrowse_release(browseOperation);
-
+	
 }
 
 @end
