@@ -220,11 +220,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize track = _track;
 
 -(sp_track *)track {
-	
 #if DEBUG
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 #endif 
-	
 	return _track;
 }
 

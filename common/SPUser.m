@@ -73,7 +73,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		__block BOOL isLoaded = NO;
 		
 		sp_user_add_ref(self.user);
-		isLoaded = sp_user_is_loaded(user);
+		isLoaded = sp_user_is_loaded(self.user);
 		
 		self.loaded = isLoaded;
 		
@@ -93,7 +93,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(BOOL)checkLoaded {
 	
 	__block BOOL userLoaded = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^{ userLoaded = sp_user_is_loaded(user); });
+	dispatch_sync([SPSession libSpotifyQueue], ^{ userLoaded = sp_user_is_loaded(self.user); });
 
     if (userLoaded)
         [self loadUserData];
@@ -142,11 +142,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize canonicalName;
 @synthesize displayName;
 @synthesize loaded;
-@synthesize user;
+@synthesize user = _user;
 @synthesize session;
 
+-(sp_user *)user {
+#if DEBUG
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif
+	return _user;
+}
+
 -(void)dealloc {
-    dispatch_sync([SPSession libSpotifyQueue], ^() { sp_user_release(user); });
+    dispatch_sync([SPSession libSpotifyQueue], ^() { sp_user_release(self.user); });
 }
 
 @end

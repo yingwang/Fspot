@@ -147,7 +147,14 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 @synthesize message;
 
 @synthesize delegate;
-@synthesize inboxOperation;
+@synthesize inboxOperation = _inboxOperation;
+
+-(sp_inbox *)inboxOperation {
+#if DEBUG
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif
+	return _inboxOperation;
+}
 
 - (void)dealloc {
 	self.delegate = nil;
