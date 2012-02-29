@@ -451,7 +451,7 @@ static dispatch_queue_t libspotify_global_queue;
 +(void)initialize {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		libspotify_global_queue = dispatch_queue_create("com.spotify.CocoaLibSpotify", 0);
+		libspotify_global_queue = dispatch_queue_create("com.spotify.CocoaLibSpotify", DISPATCH_QUEUE_SERIAL);
 	});
 }
 
@@ -726,7 +726,7 @@ static SPSession *sharedSession;
                 
 				dispatch_async([SPSession libSpotifyQueue], ^() {
 					sp_user *userStruct = sp_session_user(self.session);
-					SPUser *newUser = nil; //[SPUser userWithUserStruct:userStruct inSession:self];
+					SPUser *newUser = [SPUser userWithUserStruct:userStruct inSession:self];
 					dispatch_async(dispatch_get_main_queue(), ^() { self.user = newUser; });
 				});
 				
@@ -773,11 +773,18 @@ static SPSession *sharedSession;
 -(sp_connectionstate)connectionState {
 	// This is AWFUL. Will fix when libspotify has proper callbacks
 	// for the connection state changing.
-	__block sp_connectionstate newState = _connectionState;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session != nil) newState = sp_session_connectionstate(self.session); });
+	// OH GOD IT'S WORSE
+#warning WTF is this shit
 	
-	if (newState != _connectionState)
-		self.connectionState = newState;
+	dispatch_async([SPSession libSpotifyQueue], ^() { 
+		if (self.session != nil) {
+			sp_connectionstate newState = sp_session_connectionstate(self.session);
+			if (newState != _connectionState) {
+				dispatch_async(dispatch_get_main_queue(), ^() { self.connectionState = newState; });
+			}
+		}
+	});
+
 	
 	return _connectionState;
 }
@@ -798,6 +805,8 @@ static SPSession *sharedSession;
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     // WARNING: This MUST be called on the LibSpotify worker queue.
 	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
 	NSValue *ptrValue = [NSValue valueWithPointer:spTrack];
 	SPTrack *cachedTrack = [self.trackCache objectForKey:ptrValue];
 	
@@ -817,6 +826,8 @@ static SPSession *sharedSession;
 -(SPUser *)userForUserStruct:(sp_user *)spUser {
     // WARNING: This MUST be called on the LibSpotify worker queue.
     
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
     NSValue *ptrValue = [NSValue valueWithPointer:spUser];
 	SPUser *cachedUser = [self.userCache objectForKey:ptrValue];
     
@@ -836,6 +847,8 @@ static SPSession *sharedSession;
 -(SPPlaylist *)playlistForPlaylistStruct:(sp_playlist *)playlist {
     // WARNING: This MUST be called on the LibSpotify worker queue.
 	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
 	NSValue *ptrValue = [NSValue valueWithPointer:playlist];
 	SPPlaylist *cachedPlaylist = [playlistCache objectForKey:ptrValue];
 	
@@ -852,6 +865,7 @@ static SPSession *sharedSession;
 
 -(SPPlaylistFolder *)playlistFolderForFolderId:(sp_uint64)playlistId inContainer:(SPPlaylistContainer *)aContainer {
 	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
 	NSNumber *wrappedId = [NSNumber numberWithUnsignedLongLong:playlistId];
 	SPPlaylistFolder *cachedPlaylistFolder = [playlistCache objectForKey:wrappedId];

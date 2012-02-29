@@ -42,6 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSArray *tracks;
 @property (nonatomic, readwrite, copy) NSString *message;
 
+@property (nonatomic, readwrite, assign) sp_inbox *inboxOperation;
+
 @property (nonatomic, readwrite) __weak id <SPPostTracksToInboxOperationDelegate> delegate;
 
 @end
@@ -53,21 +55,30 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 		SPPostTracksToInboxOperation *operation = (__bridge SPPostTracksToInboxOperation *)userdata;
 		sp_error errorCode = sp_inbox_error(result);
 		
-		if (errorCode != SP_ERROR_OK) {
-			if ([operation.delegate respondsToSelector:@selector(postTracksToInboxOperation:didFailWithError:)]) {
-				[(id <SPPostTracksToInboxOperationDelegate>)operation.delegate postTracksToInboxOperation:operation didFailWithError:[NSError spotifyErrorWithCode:errorCode]];
-			}
-		} else {
-			if ([operation.delegate respondsToSelector:@selector(postTracksToInboxOperationDidSucceed:)]) {
-				[(id <SPPostTracksToInboxOperationDelegate>)operation.delegate postTracksToInboxOperationDidSucceed:operation];
-			}
+		if (operation.inboxOperation != NULL) {
+			sp_inbox_release(operation.inboxOperation);
+			operation.inboxOperation = NULL;
 		}
-	} 
+		
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (errorCode != SP_ERROR_OK) {
+				if ([operation.delegate respondsToSelector:@selector(postTracksToInboxOperation:didFailWithError:)]) {
+					[(id <SPPostTracksToInboxOperationDelegate>)operation.delegate postTracksToInboxOperation:operation didFailWithError:error];
+				}
+			} else {
+				if ([operation.delegate respondsToSelector:@selector(postTracksToInboxOperationDidSucceed:)]) {
+					[(id <SPPostTracksToInboxOperationDelegate>)operation.delegate postTracksToInboxOperationDidSucceed:operation];
+				}
+			}
+		});
+	}
 }
 
-@implementation SPPostTracksToInboxOperation {
-	sp_inbox *inboxOperation;
-}
+@implementation SPPostTracksToInboxOperation
 
 +(SPPostTracksToInboxOperation *)sendTracks:(NSArray *)tracksToSend
 									 toUser:(NSString *)user 
@@ -98,23 +109,27 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 			self.tracks = tracksToSend;
 			self.delegate = (id)completionDelegate;
 			
+			dispatch_async([SPSession libSpotifyQueue], ^{
+				
+				int trackCount = (int)self.tracks.count;
+				sp_track *trackArray[trackCount];
+				
+				for (NSUInteger i = 0; i < trackCount; i++) {
+					trackArray[i] = [(SPTrack *)[self.tracks objectAtIndex:i] track];
+				}
+				
+				sp_track *const *trackArrayPtr = (sp_track *const *)&trackArray;
+				
+				self.inboxOperation = sp_inbox_post_tracks(aSession.session, 
+														   [user UTF8String],
+														   trackArrayPtr, 
+														   trackCount, 
+														   [aFriendlyGreeting UTF8String], 
+														   &inboxpost_complete, 
+														   (__bridge void *)(self));
+			});
 			
-			int trackCount = (int)[self.tracks count];
-			sp_track *trackArray[trackCount];
 			
-			for (NSUInteger i = 0; i < trackCount; i++) {
-				trackArray[i] = [(SPTrack *)[self.tracks objectAtIndex:i] track];
-			}
-			
-			sp_track *const *trackArrayPtr = (sp_track *const *)&trackArray;
-			
-			inboxOperation = sp_inbox_post_tracks(self.session.session, 
-												  [self.destinationUser UTF8String],
-												  trackArrayPtr, 
-												  trackCount, 
-												  [self.message UTF8String], 
-												  &inboxpost_complete, 
-												  (__bridge void *)(self));
 		} else {
 			return nil;
 		}
@@ -136,12 +151,6 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 
 - (void)dealloc {
 	self.delegate = nil;
-	
-	if (inboxOperation != NULL) {
-		sp_inbox_release(inboxOperation);
-		inboxOperation = NULL;
-	}
-	
 }
 
 @end

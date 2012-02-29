@@ -63,13 +63,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	if (aUser == NULL) {
 		return nil;
 	}
+		
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
     if ((self = [super init])) {
         self.user = aUser;
-        sp_user_add_ref(self.user);
         self.session = aSession;
-        
-        if (!sp_user_is_loaded(user)) {
+		
+		__block BOOL isLoaded = NO;
+		
+		sp_user_add_ref(self.user);
+		isLoaded = sp_user_is_loaded(user);
+		
+		self.loaded = isLoaded;
+		
+        if (!self.loaded) {
             [aSession addLoadingObject:self];
         } else {
             [self loadUserData];
@@ -83,37 +91,51 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(BOOL)checkLoaded {
-    BOOL userLoaded = sp_user_is_loaded(user);
-    if (userLoaded) {
+	
+	__block BOOL userLoaded = NO;
+	dispatch_sync([SPSession libSpotifyQueue], ^{ userLoaded = sp_user_is_loaded(user); });
+
+    if (userLoaded)
         [self loadUserData];
-    }
+	
 	return userLoaded;
 }
 
 -(void)loadUserData {
     
-    [self setLoaded:sp_user_is_loaded(self.user)];
-    
-    if ([self isLoaded]) {
+	dispatch_async([SPSession libSpotifyQueue], ^{
 		
-		sp_link *link = sp_link_create_from_user(self.user);
-		if (link != NULL) {
-			[self setSpotifyURL:[NSURL urlWithSpotifyLink:link]];
-			sp_link_release(link);
+		BOOL userLoaded = sp_user_is_loaded(self.user);
+		NSURL *url = nil;
+		NSString *canonicalString = nil;
+		NSString *displayString = nil;
+		
+		if (userLoaded) {
+			
+			sp_link *link = sp_link_create_from_user(self.user);
+			if (link != NULL) {
+				url = [NSURL urlWithSpotifyLink:link];
+				sp_link_release(link);
+			}
+			
+			const char *canonical = sp_user_canonical_name(self.user);
+			if (canonical != NULL) {
+				canonicalString = [NSString stringWithUTF8String:canonical];
+			}
+			
+			const char *display = sp_user_display_name(self.user);
+			if (display != NULL) {
+				displayString = [NSString stringWithUTF8String:display];
+			}
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.loaded = userLoaded;
+				self.canonicalName = [canonicalString length] > 0 ? canonicalString : nil;
+				self.displayName = [displayString length] > 0 ? displayString : nil;
+				self.spotifyURL = url;
+			});
 		}
-     
-        const char *canonical = sp_user_canonical_name(self.user);
-        if (canonical != NULL) {
-            NSString *canonicalString = [NSString stringWithUTF8String:canonical];
-            [self setCanonicalName:[canonicalString length] > 0 ? canonicalString : nil];
-        }
-        
-        const char *display = sp_user_display_name(self.user);
-        if (display != NULL) {
-            NSString *displayString = [NSString stringWithUTF8String:display];
-            [self setDisplayName:[displayString length] > 0 ? displayString : nil];
-		}
-    }
+	});
 }
 
 @synthesize spotifyURL;
@@ -124,7 +146,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize session;
 
 -(void)dealloc {
-    sp_user_release(user);
+    dispatch_sync([SPSession libSpotifyQueue], ^() { sp_user_release(user); });
 }
 
 @end
