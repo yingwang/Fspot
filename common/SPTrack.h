@@ -43,7 +43,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPTrack : NSObject <SPPlaylistableItem> {
 	BOOL _starred;
-	sp_track *track;
 }
 
 

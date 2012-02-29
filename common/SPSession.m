@@ -442,7 +442,6 @@ static NSString * const kSPSessionKVOContext = @"kSPSessionKVOContext";
 
 @implementation SPSession {
 	BOOL _playing;
-	sp_session *session;
 	sp_connectionstate _connectionState;
 }
 
@@ -589,7 +588,7 @@ static SPSession *sharedSession;
 			config.userdata = (__bridge void *)self;
 			config.callbacks = &_callbacks;
 			
-			sp_error createErrorCode = sp_session_create(&config, &session);
+			sp_error createErrorCode = sp_session_create(&config, &_session);
 			if (createErrorCode != SP_ERROR_OK) {
 				self.session = NULL;
 				creationError = [NSError spotifyErrorWithCode:createErrorCode];
@@ -1067,7 +1066,15 @@ static SPSession *sharedSession;
 @synthesize delegate;
 @synthesize playbackDelegate;
 @synthesize audioDeliveryDelegate;
-@synthesize session;
+@synthesize session = _session;
+
+-(sp_session *)session {
+	
+#if DEBUG 
+	//NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+#endif
+	return _session;
+}
 
 #pragma mark Playback
 
@@ -1079,7 +1086,7 @@ static SPSession *sharedSession;
 		NSError *error = nil;
 		
 		if (aTrack != nil && self.session != NULL)
-			errorCode = sp_session_player_prefetch(session, aTrack.track);
+			errorCode = sp_session_player_prefetch(self.session, aTrack.track);
 			
 		if (errorCode != SP_ERROR_OK)
 			error = [NSError spotifyErrorWithCode:errorCode];
@@ -1096,7 +1103,7 @@ static SPSession *sharedSession;
 		NSError *error = nil;
 		
 		if (aTrack != nil && self.session != NULL)
-			errorCode = sp_session_player_load(session, aTrack.track);
+			errorCode = sp_session_player_load(self.session, aTrack.track);
 		
 		if (errorCode == SP_ERROR_OK) {
 			dispatch_async(dispatch_get_main_queue(), ^{ self.playing = YES; });
@@ -1109,15 +1116,15 @@ static SPSession *sharedSession;
 }
 
 -(void)seekPlaybackToOffset:(NSTimeInterval)offset {
-    if (session != NULL) {
+    if (self.session != NULL) {
 		dispatch_sync([SPSession libSpotifyQueue], ^() {
-			sp_session_player_seek(session, (int)offset * 1000);
+			sp_session_player_seek(self.session, (int)offset * 1000);
 		});
 	}
 }
 
 -(void)setPlaying:(BOOL)nowPlaying {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_play(session, nowPlaying); });
+	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
 	if (![self libSpotifySessionIsNULL]) _playing = nowPlaying;
 }
 
@@ -1137,7 +1144,7 @@ static SPSession *sharedSession;
 
 -(void)unloadPlayback {
 	self.playing = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_unload(session); });
+	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_unload(self.session); });
 }
 
 
@@ -1151,7 +1158,7 @@ static SPSession *sharedSession;
                                                object:nil];
     
     int timeout = 0;
-    sp_session_process_events(session, &timeout);
+    sp_session_process_events(self.session, &timeout);
     
     [self performSelector:_cmd
                withObject:nil
@@ -1165,7 +1172,7 @@ static SPSession *sharedSession;
     
     [self removeObserver:self forKeyPath:@"connectionState"];
 	[self removeObserver:self forKeyPath:@"starredPlaylist.items"];
-	if (session != NULL) {
+	if (self.session != NULL) {
 		[self unloadPlayback];
         [self logout];
     }
