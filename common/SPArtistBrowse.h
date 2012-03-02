@@ -93,7 +93,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param browseMode The type of artist browse to perform.
  @return Returns the created SPArtistBrowse object. 
  */
-+(SPArtistBrowse *)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode;
++(void)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode callback:(void (^)(SPArtistBrowse *artistBrowse))block;
 
 /** Initializes a new SPArtistBrowse from the given SPArtist. 
  

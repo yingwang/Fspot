@@ -657,7 +657,7 @@ static SPSession *sharedSession;
 }
 
 -(void)forgetStoredCredentials {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_forget_me(self.session); });
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_forget_me(self.session); });
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -700,7 +700,7 @@ static SPSession *sharedSession;
 				if (self.inboxPlaylist == nil) {
 					dispatch_async([SPSession libSpotifyQueue], ^() {
 						sp_playlist *pl = sp_session_inbox_create(self.session);
-						SPPlaylist *playlist = nil; //[self playlistForPlaylistStruct:pl];
+						SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
 						dispatch_async(dispatch_get_main_queue(), ^() { self.inboxPlaylist = playlist; });
 						sp_playlist_release(pl);
 					});
@@ -709,7 +709,7 @@ static SPSession *sharedSession;
                 if (self.starredPlaylist == nil) {
 					dispatch_async([SPSession libSpotifyQueue], ^() {
 						sp_playlist *pl = sp_session_starred_create(self.session);
-						SPPlaylist *playlist = nil; // [self playlistForPlaylistStruct:pl];
+						SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
 						dispatch_async(dispatch_get_main_queue(), ^() { self.starredPlaylist = playlist; });
 						sp_playlist_release(pl);
 					});
@@ -885,16 +885,17 @@ static SPSession *sharedSession;
 	return (SPUnknownPlaylist*) [self playlistForPlaylistStruct:playlist];
 }
 
--(SPTrack *)trackForURL:(NSURL *)url {
+-(void)trackForURL:(NSURL *)url callback:(void (^)(SPTrack *track))block {
 	
 	sp_linktype linkType = [url spotifyLinkType];
 	
-	if (!(linkType == SP_LINKTYPE_TRACK || linkType == SP_LINKTYPE_LOCALTRACK))
-		return nil;
+	if (!(linkType == SP_LINKTYPE_TRACK || linkType == SP_LINKTYPE_LOCALTRACK)) {
+		if (block) block(nil);
+		return;
+	}
 	
-	__block SPTrack *trackObj = nil;
-	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		SPTrack *trackObj = nil;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_track *track = sp_link_as_track(link);
@@ -903,19 +904,20 @@ static SPSession *sharedSession;
 			sp_track_release(track);
 			sp_link_release(link);
 		}
+		
+		if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(trackObj); });
 	});
-	
-	return trackObj;
 }
 
--(SPUser *)userForURL:(NSURL *)url {
+-(void)userForURL:(NSURL *)url callback:(void (^)(SPUser *user))block {
 	
-	if ([url spotifyLinkType] != SP_LINKTYPE_PROFILE)
-		return nil;
+	if ([url spotifyLinkType] != SP_LINKTYPE_PROFILE) {
+		if (block) block(nil);
+		return;
+	}
 	
-	__block SPUser *userObj = nil;
-	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		SPUser *userObj = nil;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_user *aUser = sp_link_as_user(link);
@@ -924,19 +926,20 @@ static SPSession *sharedSession;
 			sp_link_release(link);
 			sp_user_release(aUser);
 		}
+		
+		if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(userObj); });
 	});
-	
-	return userObj;
 }
 
--(SPPlaylist *)playlistForURL:(NSURL *)url {
+-(void)playlistForURL:(NSURL *)url callback:(void (^)(SPPlaylist *playlist))block {
 	
-	if ([url spotifyLinkType] != SP_LINKTYPE_PLAYLIST)
-		return nil;
+	if ([url spotifyLinkType] != SP_LINKTYPE_PLAYLIST) {
+		if (block) block(nil);
+		return;
+	}
 	
-	__block SPPlaylist *playlist = nil;
-	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		SPPlaylist *playlist = nil;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
 			sp_playlist *aPlaylist = sp_playlist_create(self.session, link);
@@ -944,66 +947,64 @@ static SPSession *sharedSession;
 			playlist = [self playlistForPlaylistStruct:aPlaylist];
 			sp_playlist_release(aPlaylist);
 		}
+		
+		if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(playlist); });
 	});
+}
+
+-(void)searchForURL:(NSURL *)url callback:(void (^)(SPSearch *search))block {
+	if (block) block([SPSearch searchWithURL:url inSession:self]);
+}
+
+-(void)albumForURL:(NSURL *)url callback:(void (^)(SPAlbum *album))block {
+	[SPAlbum albumWithAlbumURL:url inSession:self callback:block];
+}
+
+-(void)artistForURL:(NSURL *)url callback:(void (^)(SPArtist *artist))block {
+	[SPArtist artistWithArtistURL:url inSession:self callback:block];
+}
+
+-(void)imageForURL:(NSURL *)url callback:(void (^)(SPImage *image))block {
+	[SPImage imageWithImageURL:url inSession:self callback:block];
+}
+
+-(void)objectRepresentationForSpotifyURL:(NSURL *)aSpotifyUrlOfSomeKind callback:(void (^)(sp_linktype linkType, id objectRepresentation))block {
 	
-	return playlist;
-}
-
--(SPSearch *)searchForURL:(NSURL *)url {
-	return [SPSearch searchWithURL:url inSession:self];
-}
-
--(SPAlbum *)albumForURL:(NSURL *)url {
-	return [SPAlbum albumWithAlbumURL:url inSession:self];
-}
-
--(SPArtist *)artistForURL:(NSURL *)url {
-	return [SPArtist artistWithArtistURL:url inSession:self];
-}
-
--(SPImage *)imageForURL:(NSURL *)url {
-	return [SPImage imageWithImageURL:url inSession:self];
-}
-
--(id)objectRepresentationForSpotifyURL:(NSURL *)aSpotifyUrlOfSomeKind linkType:(sp_linktype *)outLinkType {
-	
-	if (aSpotifyUrlOfSomeKind == nil)
-		return nil;
+	if (aSpotifyUrlOfSomeKind == nil || block == nil) {
+		if (block) block(SP_LINKTYPE_INVALID, nil);
+		return;
+	}
 	
 	sp_linktype linkType = [aSpotifyUrlOfSomeKind spotifyLinkType];
-	
-	if (outLinkType != NULL) 
-		*outLinkType = linkType;
 	
 	switch (linkType) {
 		case SP_LINKTYPE_TRACK:
 		case SP_LINKTYPE_LOCALTRACK:
-			return [self trackForURL:aSpotifyUrlOfSomeKind];
+			[self trackForURL:aSpotifyUrlOfSomeKind callback:^(SPTrack *track) { block(linkType, track); }];
 			break;
 		case SP_LINKTYPE_ALBUM:
-			return [self albumForURL:aSpotifyUrlOfSomeKind];
+			[self albumForURL:aSpotifyUrlOfSomeKind callback:^(SPAlbum *album) { block(linkType, album); }];
 			break;
 		case SP_LINKTYPE_ARTIST:
-			return [SPArtist artistWithArtistURL:aSpotifyUrlOfSomeKind inSession:self];
+			[self artistForURL:aSpotifyUrlOfSomeKind callback:^(SPArtist *artist) { block(linkType, artist); }];
 			break;
 		case SP_LINKTYPE_SEARCH:
-			return [self searchForURL:aSpotifyUrlOfSomeKind];
+			[self searchForURL:aSpotifyUrlOfSomeKind callback:^(SPSearch *search) { block(linkType, search); }];
 			break;
 		case SP_LINKTYPE_PLAYLIST:
-			return [self playlistForURL:aSpotifyUrlOfSomeKind];
+			[self playlistForURL:aSpotifyUrlOfSomeKind callback:^(SPPlaylist *playlist) { block(linkType, playlist); }];
 			break;
 		case SP_LINKTYPE_PROFILE:
-			return [self userForURL:aSpotifyUrlOfSomeKind];
+			[self userForURL:aSpotifyUrlOfSomeKind callback:^(SPUser *createdUser) { block(linkType, createdUser); }];
 			break;
 		case SP_LINKTYPE_STARRED:
-			return [self starredPlaylist];
+			block(linkType, self.starredPlaylist);
 			break;
 		case SP_LINKTYPE_IMAGE:
-			return [self imageForURL:aSpotifyUrlOfSomeKind];
+			[self imageForURL:aSpotifyUrlOfSomeKind callback:^(SPImage *image) { block(linkType, image); }];
 			break;
 			
 		default:
-			return nil;
 			break;
 	}	
 }
@@ -1045,11 +1046,11 @@ static SPSession *sharedSession;
 #pragma mark Properties
 
 -(void)setPreferredBitrate:(sp_bitrate)bitrate {
-    dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_preferred_bitrate(self.session, bitrate); });
+    dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_preferred_bitrate(self.session, bitrate); });
 }
 
 -(void)setMaximumCacheSizeMB:(size_t)maximumCacheSizeMB {
-    dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_set_cache_size(self.session, maximumCacheSizeMB); });
+    dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_set_cache_size(self.session, maximumCacheSizeMB); });
 }
 
 -(NSTimeInterval)offlineKeyTimeRemaining {
@@ -1116,7 +1117,7 @@ static SPSession *sharedSession;
 }
 
 -(void)seekPlaybackToOffset:(NSTimeInterval)offset {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session != NULL) sp_session_player_seek(self.session, (int)offset * 1000); });
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session != NULL) sp_session_player_seek(self.session, (int)offset * 1000); });
 }
 
 -(void)setPlaying:(BOOL)nowPlaying {
@@ -1140,7 +1141,7 @@ static SPSession *sharedSession;
 
 -(void)unloadPlayback {
 	self.playing = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_unload(self.session); });
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_unload(self.session); });
 }
 
 

@@ -69,7 +69,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param aSession The SPSession the user should exist in.
  @return Returns the created SPUser object, or `nil` if given an invalid user URL. 
  */
-+(SPUser *)userWithURL:(NSURL *)userUrl inSession:(SPSession *)aSession;
++(void)userWithURL:(NSURL *)userUrl inSession:(SPSession *)aSession callback:(void (^)(SPUser *user))block;
 
 /** Initializes a new SPUser from the given opaque sp_user struct. 
  

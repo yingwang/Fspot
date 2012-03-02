@@ -79,14 +79,15 @@ static NSMutableDictionary *albumCache;
     return cachedAlbum;
 }
 
-+(SPAlbum *)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession {
++(void)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession callback:(void (^)(SPAlbum *album))block {
 	
-	if ([aURL spotifyLinkType] != SP_LINKTYPE_ALBUM)
-		return nil;
+	if ([aURL spotifyLinkType] != SP_LINKTYPE_ALBUM) {
+		if (block) block(nil);
+		return;
+	}
 	
-	__block SPAlbum *newAlbum = nil;
-	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		SPAlbum *newAlbum = nil;
 		sp_link *link = [aURL createSpotifyLink];
 		if (link != NULL) {
 			sp_album *album = sp_link_as_album(link);
@@ -95,9 +96,8 @@ static NSMutableDictionary *albumCache;
 			sp_link_release(link);
 			sp_album_release(album);
 		}
+		if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(newAlbum); });
 	});
-	
-	return newAlbum;
 }
 
 -(id)initWithAlbumStruct:(sp_album *)anAlbum inSession:(SPSession *)aSession {

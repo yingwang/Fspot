@@ -92,8 +92,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     return [aSession trackForTrackStruct:spTrack];
 }
 
-+(SPTrack *)trackForTrackURL:(NSURL *)trackURL inSession:(SPSession *)aSession {
-	return [aSession trackForURL:trackURL];
++(void)trackForTrackURL:(NSURL *)trackURL inSession:(SPSession *)aSession callback:(void (^)(SPTrack *track))block {
+	[aSession trackForURL:trackURL callback:block];
 }
 
 -(id)initWithTrackStruct:(sp_track *)tr inSession:(SPSession *)aSession {

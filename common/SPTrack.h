@@ -73,7 +73,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param aSession The SPSession the track should exist in.
  @return Returns the created SPTrack object, or `nil` if given an invalid track URL. 
  */
-+(SPTrack *)trackForTrackURL:(NSURL *)trackURL inSession:(SPSession *)aSession;
++(void)trackForTrackURL:(NSURL *)trackURL inSession:(SPSession *)aSession callback:(void (^)(SPTrack *track))block;
 
 /** Initializes a new SPTrack from the given opaque sp_track struct. 
  

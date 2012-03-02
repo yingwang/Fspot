@@ -149,10 +149,11 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 											 type:browseMode];
 }
 
-+(SPArtistBrowse *)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {
-	return [[SPArtistBrowse alloc] initWithArtist:[SPArtist artistWithArtistURL:artistURL inSession:aSession]
-										inSession:aSession
-											 type:browseMode];
++(void)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode callback:(void (^)(SPArtistBrowse *artistBrowse))block {
+	
+	[SPArtist artistWithArtistURL:artistURL inSession:aSession callback:^(SPArtist *artist) {
+		if (block) block([[SPArtistBrowse alloc] initWithArtist:artist inSession:aSession type:browseMode]);
+	}];
 }
 
 -(id)initWithArtist:(SPArtist *)anArtist inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode {

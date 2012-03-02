@@ -69,14 +69,15 @@ static NSMutableDictionary *artistCache;
     return cachedArtist;
 }
 
-+(SPArtist *)artistWithArtistURL:(NSURL *)aURL inSession:(SPSession *)aSession {
++(void)artistWithArtistURL:(NSURL *)aURL inSession:(SPSession *)aSession callback:(void (^)(SPArtist *artist))block {
 	
-	if ([aURL spotifyLinkType] != SP_LINKTYPE_ARTIST)
-		return nil;
+	if ([aURL spotifyLinkType] != SP_LINKTYPE_ARTIST) {
+		if (block) block(nil);
+		return;
+	}
 	
-	__block SPArtist *newArtist = nil;
-	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		SPArtist *newArtist = nil;
 		sp_link *link = [aURL createSpotifyLink];
 		if (link != NULL) {
 			sp_artist *artist = sp_link_as_artist(link);
@@ -85,9 +86,8 @@ static NSMutableDictionary *artistCache;
 			sp_artist_release(artist);
 			sp_link_release(link);
 		}
+		if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(newArtist); });
 	});
-	
-	return newArtist;
 }
 
 #pragma mark -
