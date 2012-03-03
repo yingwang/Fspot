@@ -74,13 +74,14 @@ static void playlist_moved(sp_playlistcontainer *pc, sp_playlist *playlist, int 
 
 static void container_loaded(sp_playlistcontainer *pc, void *userdata) {
 	SPPlaylistContainer *container = (__bridge SPPlaylistContainer *)userdata;
-	[container rebuildPlaylists];
-	
 	SPUser *user = [SPUser userWithUserStruct:sp_playlistcontainer_owner(container.container) inSession:container.session];
 	
-	dispatch_async(dispatch_get_main_queue(), ^() { 
+	dispatch_async(dispatch_get_main_queue(), ^() {
 		container.loaded = YES;
 		container.owner = user;
+		dispatch_async([SPSession libSpotifyQueue], ^{
+			[container rebuildPlaylists];
+		});
 	});
 }
 

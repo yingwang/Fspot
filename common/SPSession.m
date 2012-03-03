@@ -682,11 +682,11 @@ static SPSession *sharedSession;
 				for (SPPlaylistItem *playlistItem in someItems) {
 					if (playlistItem.itemClass == [SPTrack class]) {
 						
-						__block BOOL starred = NO;
 						SPTrack *track = playlistItem.item;
-						dispatch_sync([SPSession libSpotifyQueue], ^() { starred = sp_track_is_starred(self.session, track.track); });
-						
-						[track setStarredFromLibSpotifyUpdate:starred];
+						dispatch_async([SPSession libSpotifyQueue], ^() { 
+							BOOL starred = sp_track_is_starred(self.session, track.track);
+							dispatch_async(dispatch_get_main_queue(), ^() { [track setStarredFromLibSpotifyUpdate:starred]; });
+						});
 					}
 				}
 			});
