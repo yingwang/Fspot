@@ -324,7 +324,7 @@
 		5028EC7E13092B7B00BF0B22 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = Spotify;
 			};
 			buildConfigurationList = 5028EC8113092B7B00BF0B22 /* Build configuration list for PBXProject "CocoaLibSpotify Mac Framework" */;
