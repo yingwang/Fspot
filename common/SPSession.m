@@ -700,6 +700,7 @@ static SPSession *sharedSession;
 				if (self.inboxPlaylist == nil) {
 					dispatch_async([SPSession libSpotifyQueue], ^() {
 						sp_playlist *pl = sp_session_inbox_create(self.session);
+						if (pl == NULL) return;
 						SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
 						dispatch_async(dispatch_get_main_queue(), ^() { self.inboxPlaylist = playlist; });
 						sp_playlist_release(pl);
@@ -709,6 +710,7 @@ static SPSession *sharedSession;
                 if (self.starredPlaylist == nil) {
 					dispatch_async([SPSession libSpotifyQueue], ^() {
 						sp_playlist *pl = sp_session_starred_create(self.session);
+						if (pl == NULL) return;
 						SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
 						dispatch_async(dispatch_get_main_queue(), ^() { self.starredPlaylist = playlist; });
 						sp_playlist_release(pl);
@@ -718,6 +720,7 @@ static SPSession *sharedSession;
                 if (self.userPlaylists == nil) {
 					dispatch_async([SPSession libSpotifyQueue], ^() {
 						sp_playlistcontainer *plc = sp_session_playlistcontainer(self.session);
+						if (plc == NULL) return;
 						SPPlaylistContainer *container = nil; //[[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self];
 						dispatch_async(dispatch_get_main_queue(), ^() { self.userPlaylists = container; });
 					});
@@ -975,38 +978,31 @@ static SPSession *sharedSession;
 		return;
 	}
 	
-	sp_linktype linkType = [aSpotifyUrlOfSomeKind spotifyLinkType];
+	__block sp_linktype linkType = [aSpotifyUrlOfSomeKind spotifyLinkType];
 	
-	switch (linkType) {
-		case SP_LINKTYPE_TRACK:
-		case SP_LINKTYPE_LOCALTRACK:
-			[self trackForURL:aSpotifyUrlOfSomeKind callback:^(SPTrack *track) { block(linkType, track); }];
-			break;
-		case SP_LINKTYPE_ALBUM:
-			[self albumForURL:aSpotifyUrlOfSomeKind callback:^(SPAlbum *album) { block(linkType, album); }];
-			break;
-		case SP_LINKTYPE_ARTIST:
-			[self artistForURL:aSpotifyUrlOfSomeKind callback:^(SPArtist *artist) { block(linkType, artist); }];
-			break;
-		case SP_LINKTYPE_SEARCH:
-			[self searchForURL:aSpotifyUrlOfSomeKind callback:^(SPSearch *search) { block(linkType, search); }];
-			break;
-		case SP_LINKTYPE_PLAYLIST:
-			[self playlistForURL:aSpotifyUrlOfSomeKind callback:^(SPPlaylist *playlist) { block(linkType, playlist); }];
-			break;
-		case SP_LINKTYPE_PROFILE:
-			[self userForURL:aSpotifyUrlOfSomeKind callback:^(SPUser *createdUser) { block(linkType, createdUser); }];
-			break;
-		case SP_LINKTYPE_STARRED:
-			block(linkType, self.starredPlaylist);
-			break;
-		case SP_LINKTYPE_IMAGE:
-			[self imageForURL:aSpotifyUrlOfSomeKind callback:^(SPImage *image) { block(linkType, image); }];
-			break;
-			
-		default:
-			break;
-	}	
+	if (linkType == SP_LINKTYPE_TRACK || linkType == SP_LINKTYPE_LOCALTRACK)
+		[self trackForURL:aSpotifyUrlOfSomeKind callback:^(SPTrack *track) { block(linkType, track); }];
+	
+	else if (linkType == SP_LINKTYPE_ALBUM)
+		[self albumForURL:aSpotifyUrlOfSomeKind callback:^(SPAlbum *album) { block(linkType, album); }];
+	
+	else if (linkType == SP_LINKTYPE_ARTIST)
+		[self artistForURL:aSpotifyUrlOfSomeKind callback:^(SPArtist *artist) { block(linkType, artist); }];
+	
+	else if (linkType == SP_LINKTYPE_SEARCH)
+		[self searchForURL:aSpotifyUrlOfSomeKind callback:^(SPSearch *search) { block(linkType, search); }];
+	
+	else if (linkType == SP_LINKTYPE_PLAYLIST)
+		[self playlistForURL:aSpotifyUrlOfSomeKind callback:^(SPPlaylist *playlist) { block(linkType, playlist); }];
+	
+	else if (linkType == SP_LINKTYPE_PROFILE)
+		[self userForURL:aSpotifyUrlOfSomeKind callback:^(SPUser *createdUser) { block(linkType, createdUser); }];
+	
+	else if (linkType == SP_LINKTYPE_STARRED)
+		block(linkType, self.starredPlaylist);
+	
+	else if (linkType == SP_LINKTYPE_IMAGE)
+		[self imageForURL:aSpotifyUrlOfSomeKind callback:^(SPImage *image) { block(linkType, image); }];
 }
 
 -(SPPostTracksToInboxOperation *)postTracks:(NSArray *)tracks 
