@@ -71,7 +71,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param aSession The SPSession the album should exist in.
  @return Returns the created SPAlbum object, or `nil` if given an invalid album URL. 
  */
-+(SPAlbum *)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession;
++(void)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession callback:(void (^)(SPAlbum *album))block;
 
 /** Initializes a new SPAlbum from the given opaque sp_album struct. 
  

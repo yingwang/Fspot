@@ -69,7 +69,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param aSession The session to create the artist in.
  @return Returns the created SPArtist object, or `nil` if given an invalid artist URL. 
  */
-+(SPArtist *)artistWithArtistURL:(NSURL *)aURL inSession:(SPSession *)aSession;
++(void)artistWithArtistURL:(NSURL *)aURL inSession:(SPSession *)aSession callback:(void (^)(SPArtist *artist))block;
 
 /** Initializes a new SPArtist from the given opaque sp_artist struct. 
  

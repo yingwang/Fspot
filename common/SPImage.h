@@ -65,7 +65,7 @@ static NSUInteger const SPImageIdLength = 20;
  @param aSession The SPSession the image should exist in.
  @return Returns the created SPImage object. 
  */
-+(SPImage *)imageWithImageURL:(NSURL *)imageURL inSession:(SPSession *)aSession;
++(void)imageWithImageURL:(NSURL *)imageURL inSession:(SPSession *)aSession callback:(void (^)(SPImage *image))block;
 
 /** Initializes a new SPImage from the given struct and ID. 
  

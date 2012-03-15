@@ -86,14 +86,16 @@ static NSMutableDictionary *imageCache;
 	return cachedImage;
 }
 
-+(SPImage *)imageWithImageURL:(NSURL *)imageURL inSession:(SPSession *)aSession {
++(void)imageWithImageURL:(NSURL *)imageURL inSession:(SPSession *)aSession callback:(void (^)(SPImage *image))block {
 	
-	if ([imageURL spotifyLinkType] != SP_LINKTYPE_IMAGE)
-		return nil;
+	if ([imageURL spotifyLinkType] != SP_LINKTYPE_IMAGE) {
+		if (block) block(nil);
+		return;
+	}
 	
-	__block SPImage *spImage = nil;
-	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		SPImage *spImage = nil;
 		sp_link *link = [imageURL createSpotifyLink];
 		sp_image *image = sp_image_create_from_link(aSession.session, link);
 		
@@ -104,9 +106,9 @@ static NSMutableDictionary *imageCache;
 			spImage = [self imageWithImageId:sp_image_image_id(image) inSession:aSession];
 			sp_image_release(image);
 		}
-	});
 		
-	return spImage;
+		if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(spImage); });
+	});
 }
 
 #pragma mark -

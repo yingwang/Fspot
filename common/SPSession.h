@@ -307,43 +307,43 @@ Playback
  
  @param url The URL of the album.
  */
--(SPAlbum *)albumForURL:(NSURL *)url;
+-(void)albumForURL:(NSURL *)url callback:(void (^)(SPAlbum *album))block;
 
 /** Returns an SPArtist object representing the given URL, or `nil` if the URL is not a valid artist URL.
  
  @param url The URL of the artist.
  */
--(SPArtist *)artistForURL:(NSURL *)url;
+-(void)artistForURL:(NSURL *)url callback:(void (^)(SPArtist *artist))block;
 
 /** Returns an SPImage object representing the given URL, or `nil` if the URL is not a valid image URL.
  
  @param url The URL of the image.
  */
--(SPImage *)imageForURL:(NSURL *)url;
+-(void)imageForURL:(NSURL *)url callback:(void (^)(SPImage *image))block;
 
 /** Returns an SPPlaylist object representing the given URL, or `nil` if the URL is not a valid playlist URL.
  
  @param url The URL of the playlist.
  */
--(SPPlaylist *)playlistForURL:(NSURL *)url;
+-(void)playlistForURL:(NSURL *)url callback:(void (^)(SPPlaylist *playlist))block;
 
 /** Returns an SPSearch object representing the given URL, or `nil` if the URL is not a valid search URL. 
  
  @param url The URL of the search query.
  */
--(SPSearch *)searchForURL:(NSURL *)url;
+-(void)searchForURL:(NSURL *)url callback:(void (^)(SPSearch *search))block;
 
 /** Returns an SPTrack object representing the given URL, or `nil` if the URL is not a valid track URL. 
  
  @param url The URL of the track.
  */
--(SPTrack *)trackForURL:(NSURL *)url;
+-(void)trackForURL:(NSURL *)url callback:(void (^)(SPTrack *track))block;
 
 /** Returns an SPUser object representing the given URL, or `nil` if the URL is not a valid user URL. 
  
  @param url The URL of the user.
  */
--(SPUser *)userForURL:(NSURL *)url;
+-(void)userForURL:(NSURL *)url callback:(void (^)(SPUser *user))block;
 
 /** Returns an object representation of the given Spotify URL.
 
@@ -354,7 +354,7 @@ Playback
  @param linkType A pointer to an sp_linktype variable, which will be filled with the link type if not NULL.
  @return Returns an SPAlbum, SPArtist, SPPlaylist, SPSearch, SPTrack or SPUser object for the given URL, or `nil` if the URL is invalid.
  */
--(id)objectRepresentationForSpotifyURL:(NSURL *)aSpotifyUrlOfSomeKind linkType:(sp_linktype *)linkType;
+-(void)objectRepresentationForSpotifyURL:(NSURL *)aSpotifyUrlOfSomeKind callback:(void (^)(sp_linktype linkType, id objectRepresentation))block;
 
 ///----------------------------
 /// @name Accessing Arbitrary Content

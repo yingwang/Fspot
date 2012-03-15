@@ -54,8 +54,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     return [aSession userForUserStruct:spUser];
 }
 
-+(SPUser *)userWithURL:(NSURL *)userUrl inSession:(SPSession *)aSession {
-	return [aSession userForURL:userUrl];
++(void)userWithURL:(NSURL *)userUrl inSession:(SPSession *)aSession callback:(void (^)(SPUser *user))block {
+	[aSession userForURL:userUrl callback:block];
 }
 
 -(id)initWithUserStruct:(sp_user *)aUser inSession:(SPSession *)aSession {

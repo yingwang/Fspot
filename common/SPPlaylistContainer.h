@@ -85,14 +85,14 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param error An error pointer that will be filled with an NSError if the operation fails.
  @return Returns the created folder (which will also be added to the start of the playlists property), or `nil` if the operation failed.
  */
--(SPPlaylistFolder *)createFolderWithName:(NSString *)name error:(NSError **)error;
+-(void)createFolderWithName:(NSString *)name callback:(void (^)(SPPlaylistFolder *createdFolder, NSError *error))block;
 
 /** Create a new, empty playlist. 
  
  @param name The name of the new playlist. Must be shorter than 256 characters and not consist of only whitespace.
  @return Returns the created playlist (which will also be added to the end of the playlists property), or `nil` if the operation failed.
  */
--(SPPlaylist *)createPlaylistWithName:(NSString *)name;
+-(void)createPlaylistWithName:(NSString *)name callback:(void (^)(SPPlaylist *createdPlaylist))block;
 
 /** Move a playlist or folder to another location in the list. 
  
@@ -106,9 +106,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param err An NSError pointer to be filled if the operation fails.
  @return Returns `YES` if the operation succeeded, otherwise `NO`. 
  */
--(BOOL)movePlaylistOrFolderAtIndex:(NSUInteger)aPlaylistOrFolder 
+-(void)movePlaylistOrFolderAtIndex:(NSUInteger)aPlaylistOrFolder 
 						  ofParent:(SPPlaylistFolder *)existingParentFolderOrNil
 						   toIndex:(NSUInteger)newIndex 
 					   ofNewParent:(SPPlaylistFolder *)aParentFolderOrNil
-							 error:(NSError **)err;
+						  callback:(SPErrorableOperationCallback)block;
 @end

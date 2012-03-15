@@ -117,9 +117,13 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 	return [[SPAlbumBrowse alloc] initWithAlbum:anAlbum inSession:aSession];
 }
 
-+(SPAlbumBrowse *)browseAlbumAtURL:(NSURL *)albumURL inSession:(SPSession *)aSession {
-	return [[SPAlbumBrowse alloc] initWithAlbum:[SPAlbum albumWithAlbumURL:albumURL inSession:aSession] 
-										 inSession:aSession];
++(void)browseAlbumAtURL:(NSURL *)albumURL inSession:(SPSession *)aSession callback:(void (^)(SPAlbumBrowse *albumBrowse))block {
+	
+	[SPAlbum albumWithAlbumURL:albumURL 
+					 inSession:aSession 
+					  callback:^(SPAlbum *album) {
+						  if (block) block([SPAlbumBrowse browseAlbum:album inSession:aSession]);
+					  }];
 
 }
 
