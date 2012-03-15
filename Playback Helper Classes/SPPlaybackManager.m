@@ -112,7 +112,7 @@ static NSUInteger const kUpdateTrackPositionHz = 5;
 
 @synthesize currentTrack;
 
--(BOOL)playTrack:(SPTrack *)trackToPlay error:(NSError **)error {
+-(void)playTrack:(SPTrack *)trackToPlay callback:(SPErrorableOperationCallback)block {
 	
 	self.playbackSession.playing = NO;
 	[self.playbackSession unloadPlayback];
@@ -120,20 +120,24 @@ static NSUInteger const kUpdateTrackPositionHz = 5;
 	[self.audioBuffer clear];
 	
 	if (trackToPlay.availability != SP_TRACK_AVAILABILITY_AVAILABLE) {
-		if (error != NULL) *error = [NSError spotifyErrorWithCode:SP_ERROR_TRACK_NOT_PLAYABLE];
+		if (block) {
+			block([NSError spotifyErrorWithCode:SP_ERROR_TRACK_NOT_PLAYABLE]);
+		}
 		self.currentTrack = nil;
-		return NO;
+		return;
 	}
 		
 	self.currentTrack = trackToPlay;
 	self.trackPosition = 0.0;
-	BOOL result = [self.playbackSession playTrack:self.currentTrack error:error];
-	if (result)
-		self.playbackSession.playing = YES;
-	else
-		self.currentTrack = nil;
+	[self.playbackSession playTrack:self.currentTrack callback:^(NSError *error) {
+		
+		if (error)
+			self.currentTrack = nil;
+		else
+			self.playbackSession.playing = YES;
 	
-	return result;
+		if (block) block(error);
+	}];
 }
 
 -(void)seekToTrackPosition:(NSTimeInterval)newPosition {

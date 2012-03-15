@@ -100,7 +100,7 @@
  @param error An `NSError` pointer reference that, if not `NULL`, will be filled with an error describing any failure. 
  @return Returns `YES` is playback started successfully, `NO` if not.
  */
--(BOOL)playTrack:(SPTrack *)trackToPlay error:(NSError **)error;
+-(void)playTrack:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block;
 
 /** Seek the current playback position to the given time. 
  
