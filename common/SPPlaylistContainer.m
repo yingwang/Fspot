@@ -231,7 +231,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
     
     self.session = nil;
     
-    dispatch_async([SPSession libSpotifyQueue], ^{
+    SPDispatchSyncIfNeeded(^{
 		sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
 		sp_playlistcontainer_release(self.container);
     });
