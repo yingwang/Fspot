@@ -119,7 +119,7 @@ static NSMutableDictionary *artistCache;
 
 -(BOOL)checkLoaded {
 	__block BOOL isLoaded = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^{ isLoaded = sp_artist_is_loaded(self.artist); });
+	SPDispatchSyncIfNeeded(^{ isLoaded = sp_artist_is_loaded(self.artist); });
 	if (isLoaded) [self loadArtistData];
 	return isLoaded;
 }
@@ -159,7 +159,7 @@ static NSMutableDictionary *artistCache;
 @synthesize name;
 
 -(void)dealloc {
-    dispatch_sync([SPSession libSpotifyQueue], ^{ sp_artist_release(self.artist); });
+	SPDispatchSyncIfNeeded(^{ sp_artist_release(_artist); });
 }
 
 @end

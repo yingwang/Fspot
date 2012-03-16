@@ -425,7 +425,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 @synthesize trackChangesAreFromLibSpotifyCallback;
 
 -(void)setMarkedForOfflinePlayback:(BOOL)isMarkedForOfflinePlayback {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { sp_playlist_set_offline_mode(self.session.session, self.playlist, isMarkedForOfflinePlayback); });
+	SPDispatchSyncIfNeeded(^() { sp_playlist_set_offline_mode(self.session.session, self.playlist, isMarkedForOfflinePlayback); });
 }
 
 -(BOOL)isMarkedForOfflinePlayback {
@@ -636,7 +636,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	__block sp_error errorCode = SP_ERROR_OK;
 	const int *indexArrayPtr = (const int *)&indexArray;
 	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
+	SPDispatchSyncIfNeeded(^{
 		errorCode = sp_playlist_reorder_tracks(self.playlist, indexArrayPtr, count, (int)newLocation);
 	});
 	
@@ -743,10 +743,10 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     self.delegate = nil;
     self.session = nil;
     
-	dispatch_sync([SPSession libSpotifyQueue], ^{
-		if (self.playlist != NULL) {
-			sp_playlist_remove_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self);
-			sp_playlist_release(self.playlist);
+	SPDispatchSyncIfNeeded(^{
+		if (_playlist != NULL) {
+			sp_playlist_remove_callbacks(_playlist, &_playlistCallbacks, (__bridge void *)self);
+			sp_playlist_release(_playlist);
 		}
 	});
 }

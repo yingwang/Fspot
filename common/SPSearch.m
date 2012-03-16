@@ -405,7 +405,7 @@ void search_complete(sp_search *result, void *userdata) {
 #pragma mark -
 
 -(void)dealloc {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { self.activeSearch = NULL; });
+	SPDispatchSyncIfNeeded(^() { self.activeSearch = NULL; });
 }
 
 @end

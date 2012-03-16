@@ -126,7 +126,7 @@ static NSMutableDictionary *albumCache;
 -(BOOL)checkLoaded {
 	
 	__block BOOL isLoaded = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { isLoaded = sp_album_is_loaded(self.album); });
+	SPDispatchSyncIfNeeded(^() { isLoaded = sp_album_is_loaded(self.album); });
 	
     if (isLoaded) {
         [self loadAlbumData];
@@ -198,7 +198,7 @@ static NSMutableDictionary *albumCache;
 @synthesize name;
 
 -(void)dealloc {
-    dispatch_sync([SPSession libSpotifyQueue], ^() { sp_album_release(self.album); });
+	SPDispatchSyncIfNeeded(^() { sp_album_release(_album); });
 }
 
 @end

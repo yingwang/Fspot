@@ -121,7 +121,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(BOOL)checkLoaded {
 	
     __block BOOL isLoaded = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { isLoaded = sp_track_is_loaded(self.track); });
+	SPDispatchSyncIfNeeded(^() { isLoaded = sp_track_is_loaded(self.track); });
 	
     if (isLoaded)
         [self loadTrackData];
@@ -246,7 +246,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)dealloc {
-    dispatch_sync([SPSession libSpotifyQueue], ^() { sp_track_release(self.track); });
+    SPDispatchSyncIfNeeded(^() { sp_track_release(_track); });
     session = nil;
 }
 

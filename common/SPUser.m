@@ -93,7 +93,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(BOOL)checkLoaded {
 	
 	__block BOOL userLoaded = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^{ userLoaded = sp_user_is_loaded(self.user); });
+	SPDispatchSyncIfNeeded(^{ userLoaded = sp_user_is_loaded(self.user); });
 
     if (userLoaded)
         [self loadUserData];
@@ -153,7 +153,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)dealloc {
-    dispatch_sync([SPSession libSpotifyQueue], ^() { sp_user_release(self.user); });
+	SPDispatchSyncIfNeeded(^() { sp_user_release(_user); });
 }
 
 @end

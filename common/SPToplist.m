@@ -327,15 +327,15 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 
 - (void)dealloc {
 	
-	dispatch_sync([SPSession libSpotifyQueue], ^{
-		if (self.artistBrowseOperation != NULL)
-			sp_toplistbrowse_release(self.artistBrowseOperation);
+	SPDispatchSyncIfNeeded(^{
+		if (_artistBrowseOperation != NULL)
+			sp_toplistbrowse_release(_artistBrowseOperation);
 		
-		if (self.albumBrowseOperation != NULL)
-			sp_toplistbrowse_release(self.albumBrowseOperation);
+		if (_albumBrowseOperation != NULL)
+			sp_toplistbrowse_release(_albumBrowseOperation);
 		
-		if (self.trackBrowseOperation != NULL)
-			sp_toplistbrowse_release(self.trackBrowseOperation);
+		if (_trackBrowseOperation != NULL)
+			sp_toplistbrowse_release(_trackBrowseOperation);
 	});
 }
 

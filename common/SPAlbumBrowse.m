@@ -170,7 +170,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 }
 
 - (void)dealloc {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.albumBrowse) sp_albumbrowse_release(self.albumBrowse); });
+	SPDispatchSyncIfNeeded(^() { if (_albumBrowse) sp_albumbrowse_release(_albumBrowse); });
 }
 
 @end

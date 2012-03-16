@@ -460,7 +460,7 @@ static dispatch_queue_t libspotify_global_queue;
 
 -(BOOL)libSpotifySessionIsNULL {
 	__block BOOL sessionIsNull = YES;
-	dispatch_sync([SPSession libSpotifyQueue], ^{ sessionIsNull = (self.session == NULL); });
+	SPDispatchSyncIfNeeded(^{ sessionIsNull = (self.session == NULL); });
 	return sessionIsNull;
 }
 
@@ -481,7 +481,7 @@ static SPSession *sharedSession;
 
 +(NSString *)libSpotifyBuildId {
 	__block NSString *buildId = nil;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { buildId = [NSString stringWithUTF8String:sp_build_id()]; });
+	SPDispatchSyncIfNeeded(^() { buildId = [NSString stringWithUTF8String:sp_build_id()]; });
 	return buildId;
 }
 
@@ -574,7 +574,7 @@ static SPSession *sharedSession;
 		
 		__block NSError *creationError = nil;
 		
-		dispatch_sync([SPSession libSpotifyQueue], ^{
+		SPDispatchSyncIfNeeded(^{
 			
 			sp_session_config config;
 			memset(&config, 0, sizeof(config));
@@ -600,7 +600,7 @@ static SPSession *sharedSession;
 			if (*error != NULL)
 				*error = creationError;
 			
-			dispatch_sync([SPSession libSpotifyQueue], ^{ self.session = NULL; });
+			SPDispatchSyncIfNeeded(^{ self.session = NULL; });
 			return nil;
 		}
 	}
@@ -640,7 +640,7 @@ static SPSession *sharedSession;
 	
 	__block NSString *name = nil;
 	
-	dispatch_sync([SPSession libSpotifyQueue], ^() {
+	SPDispatchSyncIfNeeded(^() {
 		if (self.session != NULL) {
 			char userNameBuffer[300];
 			int userNameLength = sp_session_remembered_user(self.session, (char *)&userNameBuffer, sizeof(userNameBuffer));
@@ -769,24 +769,22 @@ static SPSession *sharedSession;
 	self.locale = nil;
 	self.connectionState = SP_CONNECTION_STATE_LOGGED_OUT;
 	
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_logout(self.session); });
+	SPDispatchSyncIfNeeded(^() { if (self.session) sp_session_logout(self.session); });
 }
 
 -(sp_connectionstate)connectionState {
 	// This is AWFUL. Will fix when libspotify has proper callbacks
 	// for the connection state changing.
 	// OH GOD IT'S WORSE
-#warning WTF is this shit
 	
-	dispatch_async([SPSession libSpotifyQueue], ^() { 
+	SPDispatchSyncIfNeeded(^() { 
 		if (self.session != nil) {
 			sp_connectionstate newState = sp_session_connectionstate(self.session);
 			if (newState != _connectionState) {
-				dispatch_async(dispatch_get_main_queue(), ^() { self.connectionState = newState; });
+				dispatch_sync(dispatch_get_main_queue(), ^() { self.connectionState = newState; });
 			}
 		}
 	});
-
 	
 	return _connectionState;
 }
@@ -1051,7 +1049,7 @@ static SPSession *sharedSession;
 
 -(NSTimeInterval)offlineKeyTimeRemaining {
 	__block NSTimeInterval interval = 0.0;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) interval = sp_offline_time_left(self.session); });
+	SPDispatchSyncIfNeeded(^() { if (self.session) interval = sp_offline_time_left(self.session); });
 	return interval;
 }
 
@@ -1117,7 +1115,7 @@ static SPSession *sharedSession;
 }
 
 -(void)setPlaying:(BOOL)nowPlaying {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
+	SPDispatchSyncIfNeeded(^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
 	if (![self libSpotifySessionIsNULL]) _playing = nowPlaying;
 }
 
@@ -1126,12 +1124,12 @@ static SPSession *sharedSession;
 }
 
 -(void)setUsingVolumeNormalization:(BOOL)usingVolumeNormalization {
-	dispatch_sync([SPSession libSpotifyQueue], ^() { sp_session_set_volume_normalization(self.session, usingVolumeNormalization); });
+	SPDispatchSyncIfNeeded(^() { sp_session_set_volume_normalization(self.session, usingVolumeNormalization); });
 }
 
 -(BOOL)isUsingVolumeNormalization {
 	__block BOOL normed = NO;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { normed = sp_session_get_volume_normalization(self.session); });
+	SPDispatchSyncIfNeeded(^() { normed = sp_session_get_volume_normalization(self.session); });
 	return normed;
 }
 
