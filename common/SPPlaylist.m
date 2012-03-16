@@ -396,7 +396,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 }
 
 -(NSString *)description {
-    return [NSString stringWithFormat:@"%@: %@ (%d items)", [super description], [self name], [[self valueForKey:@"items"] count]];
+    return [NSString stringWithFormat:@"%@: %@ (%@ items)", [super description], [self name], [NSNumber numberWithUnsignedInteger:[[self valueForKey:@"items"] count]]];
 }
 
 -(sp_playlist *)playlist {
