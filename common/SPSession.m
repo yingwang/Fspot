@@ -775,14 +775,12 @@ static SPSession *sharedSession;
 -(sp_connectionstate)connectionState {
 	// This is AWFUL. Will fix when libspotify has proper callbacks
 	// for the connection state changing.
-	// OH GOD IT'S WORSE
 	
 	SPDispatchSyncIfNeeded(^() { 
 		if (self.session != nil) {
 			sp_connectionstate newState = sp_session_connectionstate(self.session);
-			if (newState != _connectionState) {
-				dispatch_sync(dispatch_get_main_queue(), ^() { self.connectionState = newState; });
-			}
+			if (newState != _connectionState)
+				self.connectionState = newState;
 		}
 	});
 	
