@@ -721,7 +721,7 @@ static SPSession *sharedSession;
 					dispatch_async([SPSession libSpotifyQueue], ^() {
 						sp_playlistcontainer *plc = sp_session_playlistcontainer(self.session);
 						if (plc == NULL) return;
-						SPPlaylistContainer *container = nil; //[[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self];
+						SPPlaylistContainer *container = [[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self];
 						dispatch_async(dispatch_get_main_queue(), ^() { self.userPlaylists = container; });
 					});
                 }

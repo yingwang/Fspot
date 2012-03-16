@@ -120,14 +120,14 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		return 0;
 	
 	NSUInteger lastChildIndex = children.location + (children.length - 1);
-	NSUInteger __block currentIndex = children.location;
+	__block NSUInteger currentIndex = children.location;
 	NSUInteger virtualCount = 0;
 	NSUInteger folderStackCount = 0;
 	
 	while (currentIndex <= lastChildIndex) {
 		
 		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		dispatch_sync([SPSession libSpotifyQueue], ^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, (int)currentIndex); });
+		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, (int)currentIndex); });
 		
 		if (type == SP_PLAYLIST_TYPE_PLAYLIST && folderStackCount == 0) {
 			// Normal playlist, increment as normal if it's not in a folder
@@ -144,7 +144,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		
 		currentIndex++;
 	}
-
+	
 	return virtualCount;
 }
 
@@ -152,20 +152,20 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	__block int flattenedIndex = (int)[self flattenedIndexForVirtualChildIndex:virtualIndex];
 	__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
+	SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
 	
 	__block id playlistOrFolder = nil;
 	
 	if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
-		dispatch_sync([SPSession libSpotifyQueue], ^() { playlistOrFolder = [self.parentContainer.session playlistForPlaylistStruct:sp_playlistcontainer_playlist(self.parentContainer.container, flattenedIndex)]; });
+		SPDispatchSyncIfNeeded(^() { playlistOrFolder = [self.parentContainer.session playlistForPlaylistStruct:sp_playlistcontainer_playlist(self.parentContainer.container, flattenedIndex)]; });
 	} else if (type == SP_PLAYLIST_TYPE_START_FOLDER || type == SP_PLAYLIST_TYPE_END_FOLDER) {
-		dispatch_sync([SPSession libSpotifyQueue], ^() { playlistOrFolder = [self.parentContainer.session playlistFolderForFolderId:sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, flattenedIndex)
-																												inContainer:self.parentContainer]; });
+		SPDispatchSyncIfNeeded(^() { playlistOrFolder = [self.parentContainer.session playlistFolderForFolderId:sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, flattenedIndex)
+																									inContainer:self.parentContainer]; });
 	} else {
-//		[NSException raise:@"Invalid index!" format:@""];
-//		return nil;
+		//		[NSException raise:@"Invalid index!" format:@""];
+		//		return nil;
 		// the index seems invalid, but be sure to return an SPUnknownPlaylist object to let clients deal with the issue
-		dispatch_sync([SPSession libSpotifyQueue], ^() { playlistOrFolder = [self.parentContainer.session unknownPlaylistForPlaylistStruct:sp_playlistcontainer_playlist(self.parentContainer.container, flattenedIndex)]; });
+		SPDispatchSyncIfNeeded(^() { playlistOrFolder = [self.parentContainer.session unknownPlaylistForPlaylistStruct:sp_playlistcontainer_playlist(self.parentContainer.container, flattenedIndex)]; });
 	}
 	
 	return  playlistOrFolder;
@@ -179,13 +179,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	__block int flattenedIndex = (int)[self flattenedIndexForVirtualChildIndex:virtualIndex];
 	__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-	dispatch_sync([SPSession libSpotifyQueue], ^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
+	SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
 	
 	if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
-		dispatch_sync([SPSession libSpotifyQueue], ^() { sp_playlistcontainer_remove_playlist(self.parentContainer.container, (int)flattenedIndex); });
+		SPDispatchSyncIfNeeded(^() { sp_playlistcontainer_remove_playlist(self.parentContainer.container, (int)flattenedIndex); });
 		
 	} else if (type == SP_PLAYLIST_TYPE_START_FOLDER || type == SP_PLAYLIST_TYPE_END_FOLDER) {
-		dispatch_sync([SPSession libSpotifyQueue], ^() {
+		SPDispatchSyncIfNeeded(^() {
 			sp_uint64 childFolderId = sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, (int)flattenedIndex);
 			SPPlaylistFolder *folderToBeRemoved = [self.parentContainer.session playlistFolderForFolderId:childFolderId
 																							  inContainer:self.parentContainer]; 
@@ -206,13 +206,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	for (__block NSUInteger flattenedIndex = self.containerPlaylistRange.location - 1; flattenedIndex > 0; flattenedIndex--) {
 		
 		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		dispatch_sync([SPSession libSpotifyQueue], ^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
+		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
 		
 		if (type == SP_PLAYLIST_TYPE_START_FOLDER && folderStackCount == 0) {
 			
 			__block SPPlaylistFolder *parent = nil;
 			
-			dispatch_sync([SPSession libSpotifyQueue], ^() {
+			SPDispatchSyncIfNeeded(^() {
 				sp_uint64 currentFolderId = sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, (int)flattenedIndex);
 				parent = [self.parentContainer.session playlistFolderForFolderId:currentFolderId
 																	 inContainer:self.parentContainer];
@@ -281,11 +281,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(NSRange)containerPlaylistRange {
-	return containerPlaylistRange;
+	//NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	return _containerPlaylistRange;
 }
 
 -(void)setContainerPlaylistRange:(NSRange)range {
-	containerPlaylistRange = range;
+	_containerPlaylistRange = range;
 }
 
 -(void)rangeMayHaveChanged {
@@ -340,13 +341,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		}
 	}
 	
-	dispatch_sync(dispatch_get_main_queue(), ^{
-		if (!NSEqualRanges(self.containerPlaylistRange, newRange))
-			self.containerPlaylistRange = newRange;
-		
-		if (![self.name isEqualToString:newName])
-			self.name = newName;
-	});
+	if (!NSEqualRanges(self.containerPlaylistRange, newRange))
+		self.containerPlaylistRange = newRange;
 	
 	// Update subfolders
 	for (id currentPlaylist in [self mutableArrayValueForKey:@"playlists"]) {
@@ -357,6 +353,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	[self performIntegrityCheck];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
+		if (![self.name isEqualToString:newName])
+			self.name = newName;
 		[self willChangeValueForKey:@"playlists"];
 		[self didChangeValueForKey:@"playlists"];
 	});
@@ -383,7 +381,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	while (currentIndex <= lastChildIndex) {
 		
 		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		dispatch_sync([SPSession libSpotifyQueue], ^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentIndex); });
+		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentIndex); });
 		
 		if (type == SP_PLAYLIST_TYPE_PLAYLIST && folderStackCount == 0) {
 			// Normal playlist, increment as normal if it's not in a folder
@@ -423,7 +421,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	while (currentFlattenedIndex <= lastChildIndex) {
 		
 		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		dispatch_sync([SPSession libSpotifyQueue], ^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentFlattenedIndex); });
+		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentFlattenedIndex); });
 		
 		if (type == SP_PLAYLIST_TYPE_PLAYLIST && folderStackCount == 0) {
 			// Normal playlist, increment as normal if it's not in a folder
