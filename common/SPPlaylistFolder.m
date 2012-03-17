@@ -110,7 +110,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 +(NSSet *)keyPathsForValuesAffectingPlaylists {
-	return [NSSet setWithObjects:@"containerPlaylistRange", @"parentContainer.isLoaded", nil];
+	return [NSSet setWithObjects:@"parentContainer.isLoaded", nil];
 }
 
 -(NSInteger)countOfPlaylists {
