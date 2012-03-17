@@ -228,8 +228,8 @@ static NSMutableDictionary *imageCache;
     [self removeObserver:self forKeyPath:@"loaded"];
     
     SPDispatchSyncIfNeeded(^{
-		sp_image_remove_load_callback(_spImage, &image_loaded, (__bridge void *)(self));
-		sp_image_release(_spImage);
+		if (_spImage) sp_image_remove_load_callback(_spImage, &image_loaded, (__bridge void *)(self));
+		if (_spImage) sp_image_release(_spImage);
 	});
 }
 
