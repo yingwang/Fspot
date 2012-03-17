@@ -246,7 +246,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)dealloc {
-    SPDispatchSyncIfNeeded(^() { sp_track_release(_track); });
+    SPDispatchSyncIfNeeded(^() { if (_track) sp_track_release(_track); });
     session = nil;
 }
 

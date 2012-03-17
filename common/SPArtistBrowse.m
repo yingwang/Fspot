@@ -212,7 +212,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 }
 
 - (void)dealloc {
-	SPDispatchSyncIfNeeded(^() { sp_artistbrowse_release(_artistBrowse); });
+	SPDispatchSyncIfNeeded(^() { if (_artistBrowse) sp_artistbrowse_release(_artistBrowse); });
 }
 
 @end

@@ -153,7 +153,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^() { sp_user_release(_user); });
+	SPDispatchSyncIfNeeded(^() { if (_user) sp_user_release(_user); });
 }
 
 @end

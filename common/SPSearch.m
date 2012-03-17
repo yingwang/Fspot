@@ -405,7 +405,7 @@ void search_complete(sp_search *result, void *userdata) {
 #pragma mark -
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^() { self.activeSearch = NULL; });
+	SPDispatchSyncIfNeeded(^() { if (_activeSearch) sp_search_release(_activeSearch); });
 }
 
 @end

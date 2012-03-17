@@ -198,7 +198,7 @@ static NSMutableDictionary *albumCache;
 @synthesize name;
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^() { sp_album_release(_album); });
+	SPDispatchSyncIfNeeded(^() { if (_album) sp_album_release(_album); });
 }
 
 @end

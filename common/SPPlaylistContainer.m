@@ -232,8 +232,8 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
     self.session = nil;
     
     SPDispatchSyncIfNeeded(^{
-		sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
-		sp_playlistcontainer_release(self.container);
+		if (_container) sp_playlistcontainer_remove_callbacks(_container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		if (_container) sp_playlistcontainer_release(_container);
     });
 }
 

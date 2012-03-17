@@ -159,7 +159,7 @@ static NSMutableDictionary *artistCache;
 @synthesize name;
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^{ sp_artist_release(_artist); });
+	SPDispatchSyncIfNeeded(^{ if (_artist) sp_artist_release(_artist); });
 }
 
 @end
