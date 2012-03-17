@@ -70,7 +70,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @see movePlaylistOrFolderAtIndex:ofParent:toIndex:ofNewParent:error:
 */
-@property (nonatomic, readonly) NSMutableArray *playlists;
+@property (nonatomic, readonly, strong) NSArray *playlists;
 
 /** Returns the session the list is loaded in. */
 @property (nonatomic, readonly) __weak SPSession *session;

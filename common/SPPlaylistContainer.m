@@ -44,11 +44,14 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(void)rebuildPlaylists;
 
 @property (nonatomic, readwrite, strong) SPUser *owner;
-@property (nonatomic, readwrite, strong) SPPlaylistFolder *rootFolder;
 @property (nonatomic, readwrite) __weak SPSession *session;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
+@property (nonatomic, readwrite, strong) NSArray *playlists;
+@property (nonatomic, readwrite, strong) NSMutableDictionary *folderCache;
 
 @property (nonatomic, readwrite) sp_playlistcontainer *container;
+
+-(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder;
 
 @end
 
@@ -100,11 +103,30 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	return [NSString stringWithFormat:@"%@: %@", [super description], [self playlists]];
 }
 
+-(SPPlaylistFolder *)folderWithId:(sp_uint64)folderId {
+    
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+    if (self.folderCache == nil)
+        self.folderCache = [[NSMutableDictionary alloc] init];
+    
+    NSNumber *idvalue = [NSNumber numberWithUnsignedLongLong:folderId];
+    SPPlaylistFolder *folder = [self.folderCache objectForKey:idvalue];
+    
+    if (folder != nil)
+        return folder;
+    
+    folder = [[SPPlaylistFolder alloc] initWithPlaylistFolderId:folderId container:self inSession:self.session];
+    
+    [self.folderCache setObject:folder forKey:idvalue];
+    return folder;
+}
+
 @synthesize owner;
 @synthesize session;
 @synthesize container = _container;
-@synthesize rootFolder;
 @synthesize loaded;
+@synthesize folderCache;
 
 -(sp_playlistcontainer *)container {
 #if DEBUG
@@ -116,15 +138,95 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 -(void)rebuildPlaylists {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
-	[self.rootFolder rangeMayHaveChanged]; 
+	
+	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	NSMutableArray *rootPlaylistList = [NSMutableArray arrayWithCapacity:itemCount];
+	SPPlaylistFolder *folderAtTopOfStack = nil;
+	
+	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+		
+		sp_playlist_type type = sp_playlistcontainer_playlist_type(self.container, currentItem);
+		
+		if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
+			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
+			SPPlaylistFolder *folder = [self folderWithId:folderId];
+			
+			char nameChars[256];
+			sp_error nameError = sp_playlistcontainer_playlist_folder_name(self.container, currentItem, nameChars, sizeof(nameChars));
+			if (nameError == SP_ERROR_OK)
+				folder.name = [NSString stringWithUTF8String:nameChars];
+			
+			if (folderAtTopOfStack) {
+				[folderAtTopOfStack addObject:folder];
+				folder.parentFolder = folderAtTopOfStack;
+			} else {
+				[rootPlaylistList addObject:folder];
+				folder.parentFolder = nil;
+			}
+			
+			folderAtTopOfStack = folder;
+			
+		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
+			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
+			folderAtTopOfStack = folderAtTopOfStack.parentFolder;
+			
+			if (folderAtTopOfStack.folderId != folderId)
+				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"WARNING: Root list is insane!");
+			
+		} else if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
+			
+			SPPlaylist *playlist = [SPPlaylist playlistWithPlaylistStruct:sp_playlistcontainer_playlist(self.container, currentItem)
+																inSession:self.session];
+			
+			if (folderAtTopOfStack)
+				[folderAtTopOfStack addObject:playlist];
+			else
+				[rootPlaylistList addObject:playlist];
+			
+		} else if (type == SP_PLAYLIST_TYPE_PLACEHOLDER) {
+			SPUnknownPlaylist *playlist = [self.session unknownPlaylistForPlaylistStruct:sp_playlistcontainer_playlist(self.container, currentItem)];
+			
+			if (folderAtTopOfStack)
+				[folderAtTopOfStack addObject:playlist];
+			else
+				[rootPlaylistList addObject:playlist];
+		}
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^() {
+		self.playlists = [NSArray arrayWithArray:rootPlaylistList];
+	});
 }
 
-+(NSSet *)keyPathsForValuesAffectingPlaylists {
-	return [NSSet setWithObject:@"rootFolder.playlists"];
-}
+-(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder {
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 
--(NSMutableArray *)playlists {
-	return [self.rootFolder mutableArrayValueForKey:@"playlists"];
+	NSRange folderRange = NSMakeRange(NSNotFound, 0);
+	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	
+	if (!folder) return folderRange;
+	
+	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+		
+		sp_playlist_type type = sp_playlistcontainer_playlist_type(self.container, currentItem);
+		
+		if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
+			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
+			if (folderId == folder.folderId)
+				folderRange.location = currentItem;
+			
+		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
+			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
+			if (folderId == folder.folderId)
+				folderRange.length = currentItem - folderRange.location;
+			
+			if (folderRange.location == NSNotFound)
+				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"WARNING: Root list is insane!");
+		}
+	}
+	
+	return folderRange;
 }
 
 #pragma mark -
@@ -176,7 +278,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 					   ofNewParent:(SPPlaylistFolder *)aParentFolderOrNil
 						  callback:(SPErrorableOperationCallback)block {
 	
-
+	/*
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		
 		SPPlaylistFolder *oldParentFolder = (existingParentFolderOrNil == nil || (id)existingParentFolderOrNil == self) ? rootFolder : existingParentFolderOrNil;
@@ -225,6 +327,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			return;
 		}
 	});
+	 */
 }
 
 -(void)dealloc {
@@ -250,7 +353,6 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         sp_playlistcontainer_add_ref(self.container);
         self.session = aSession;
 		
-		self.rootFolder = [[SPPlaylistFolder alloc] initWithPlaylistFolderId:0 container:self inSession:self.session];
 		[self rebuildPlaylists];
         
         sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
@@ -260,16 +362,19 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 
 -(void)removeFolderFromTree:(SPPlaylistFolder *)aFolder {
 	
+	if (aFolder == nil) return;
+	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
 	// Remove callbacks, since we have to remove two playlists and reacting to list change notifications halfway through would be bad.
 	sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
 	
-	NSUInteger folderIndex = aFolder.containerPlaylistRange.location;
-	NSUInteger entriesToRemove = aFolder.containerPlaylistRange.length;
+	
+	NSRange folderRange = [self rangeOfFolderInRootList:aFolder];
+	NSUInteger entriesToRemove = folderRange.length;
 	
 	while (entriesToRemove > 0) {
-		sp_playlistcontainer_remove_playlist(self.container, (int)folderIndex);
+		sp_playlistcontainer_remove_playlist(self.container, folderRange.location);
 		entriesToRemove--;
 	}
 	

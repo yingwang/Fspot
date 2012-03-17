@@ -41,11 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPPlaylistContainer;
 @class SPSession;
 
-@interface SPPlaylistFolder : NSObject {
-	NSRange _containerPlaylistRange;
-	// ^ For performance and integrity checking - the first item should be the folder marker, 
-	// the last the end folder marker. 
-}
+@interface SPPlaylistFolder : NSObject
 
 ///----------------------------
 /// @name Properties
@@ -66,7 +62,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readonly) __weak SPPlaylistContainer *parentContainer;
 
 /* Returns the folder's parent folder, or `nil` if the folder is at the top level of its container. */
--(SPPlaylistFolder *)parentFolder;
+@property (nonatomic, readonly) __weak SPPlaylistFolder *parentFolder;
 
 /* Returns the folder's parent folder stack, or `nil` if the folder is at the top level of its container. */
 -(NSArray *)parentFolders;
@@ -80,7 +76,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @see [SPPlaylistContainer movePlaylistOrFolderAtIndex:ofParent:toIndex:ofNewParent:error:]
  */
-@property (nonatomic, readonly) NSMutableArray *playlists;
+@property (nonatomic, readonly, strong) NSArray *playlists;
 
 /** Returns the session the folder is loaded in. */
 @property (nonatomic, readonly) __weak SPSession *session;

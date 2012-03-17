@@ -45,223 +45,14 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @interface SPPlaylistFolder ()
 
 @property (nonatomic, readwrite) __weak SPPlaylistContainer *parentContainer;
-@property (readwrite, nonatomic, copy) NSString *name;
 @property (nonatomic, readwrite) __weak SPSession *session;
-
--(void)performIntegrityCheck;
--(NSRange)rangeOfChildObjects;
+@property (nonatomic, readwrite, strong) NSArray *playlists;
 
 @end
 
 @implementation SPPlaylistFolder
 
-@synthesize parentContainer;
-@dynamic playlists;
-@synthesize name;
-@synthesize session;
-@synthesize folderId;
-
--(void)performIntegrityCheck {
-	
-	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
-	
-	if (folderId == 0)
-		return; // We're a special folder!
-	
-	sp_playlist_type firstItemType = sp_playlistcontainer_playlist_type(self.parentContainer.container, (int)self.containerPlaylistRange.location);
-	sp_playlist_type lastItemType = sp_playlistcontainer_playlist_type(self.parentContainer.container, (int)(self.containerPlaylistRange.location + (self.containerPlaylistRange.length - 1)));
-	
-	NSAssert(firstItemType == SP_PLAYLIST_TYPE_START_FOLDER, @"Integrity check: First item is not SP_PLAYLIST_TYPE_START_FOLDER!");
-	NSAssert(lastItemType == SP_PLAYLIST_TYPE_END_FOLDER, @"Integrity check: Last item is not SP_PLAYLIST_TYPE_END_FOLDER!");
-	
-	sp_uint64 firstItemId = sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, (int)self.containerPlaylistRange.location);
-	sp_uint64 lastItemId = sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, (int)(self.containerPlaylistRange.location + (self.containerPlaylistRange.length - 1)));
-	
-	NSAssert(firstItemId == lastItemId, @"Integrity check: START_FOLDER and END_FOLDER IDs don't match!");
-}
-
--(NSRange)rangeOfChildObjects {
-	
-	if (self.parentContainer.isLoaded == NO)
-		return NSMakeRange(0, 0);
-	
-	if (folderId == 0) {
-		return NSMakeRange(self.containerPlaylistRange.location, self.containerPlaylistRange.length);
-	} else {
-		return NSMakeRange(self.containerPlaylistRange.location + 1, self.containerPlaylistRange.length - 2);
-	}
-}
-
-#pragma mark -
-
--(NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
-	if (sel == @selector(playlists)) {
-		return [super methodSignatureForSelector:@selector(mutableArrayValueForKey:)];
-	} else {
-		return [super methodSignatureForSelector:sel];
-	}
-}
-
--(void)forwardInvocation:(NSInvocation *)invocation {
-	if ([invocation selector] == @selector(playlists)) {
-		__unsafe_unretained id value = [self mutableArrayValueForKey:@"playlists"];
-		[invocation setReturnValue:&value];
-	}
-}
-
-+(NSSet *)keyPathsForValuesAffectingPlaylists {
-	return [NSSet setWithObjects:@"parentContainer.isLoaded", nil];
-}
-
--(NSInteger)countOfPlaylists {
-	
-	NSRange children = [self rangeOfChildObjects];
-	if (children.length == 0)
-		return 0;
-	
-	NSUInteger lastChildIndex = children.location + (children.length - 1);
-	__block NSUInteger currentIndex = children.location;
-	NSUInteger virtualCount = 0;
-	NSUInteger folderStackCount = 0;
-	
-	while (currentIndex <= lastChildIndex) {
-		
-		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, (int)currentIndex); });
-		
-		if (type == SP_PLAYLIST_TYPE_PLAYLIST && folderStackCount == 0) {
-			// Normal playlist, increment as normal if it's not in a folder
-			virtualCount++;
-		} else if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
-			// Folder start, increment if it's not in a folder.
-			if (folderStackCount == 0)
-				virtualCount++;
-			folderStackCount++;
-		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
-			// Reduce stack count.
-			folderStackCount--;
-		}
-		
-		currentIndex++;
-	}
-	
-	return virtualCount;
-}
-
--(id)objectInPlaylistsAtIndex:(NSInteger)virtualIndex {
-	
-	__block int flattenedIndex = (int)[self flattenedIndexForVirtualChildIndex:virtualIndex];
-	__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-	SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
-	
-	__block id playlistOrFolder = nil;
-	
-	if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
-		SPDispatchSyncIfNeeded(^() { playlistOrFolder = [self.parentContainer.session playlistForPlaylistStruct:sp_playlistcontainer_playlist(self.parentContainer.container, flattenedIndex)]; });
-	} else if (type == SP_PLAYLIST_TYPE_START_FOLDER || type == SP_PLAYLIST_TYPE_END_FOLDER) {
-		SPDispatchSyncIfNeeded(^() { playlistOrFolder = [self.parentContainer.session playlistFolderForFolderId:sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, flattenedIndex)
-																									inContainer:self.parentContainer]; });
-	} else {
-		//		[NSException raise:@"Invalid index!" format:@""];
-		//		return nil;
-		// the index seems invalid, but be sure to return an SPUnknownPlaylist object to let clients deal with the issue
-		SPDispatchSyncIfNeeded(^() { playlistOrFolder = [self.parentContainer.session unknownPlaylistForPlaylistStruct:sp_playlistcontainer_playlist(self.parentContainer.container, flattenedIndex)]; });
-	}
-	
-	return  playlistOrFolder;
-}
-
--(void)insertObject:(id)aPlaylistOrFolder inPlaylistsAtIndex:(NSInteger)virtualIndex {
-	// TODO: This
-}
-
--(void)removeObjectFromPlaylistsAtIndex:(NSInteger)virtualIndex {
-	
-	__block int flattenedIndex = (int)[self flattenedIndexForVirtualChildIndex:virtualIndex];
-	__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-	SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
-	
-	if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
-		SPDispatchSyncIfNeeded(^() { sp_playlistcontainer_remove_playlist(self.parentContainer.container, (int)flattenedIndex); });
-		
-	} else if (type == SP_PLAYLIST_TYPE_START_FOLDER || type == SP_PLAYLIST_TYPE_END_FOLDER) {
-		SPDispatchSyncIfNeeded(^() {
-			sp_uint64 childFolderId = sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, (int)flattenedIndex);
-			SPPlaylistFolder *folderToBeRemoved = [self.parentContainer.session playlistFolderForFolderId:childFolderId
-																							  inContainer:self.parentContainer]; 
-			[self.parentContainer removeFolderFromTree:folderToBeRemoved];
-		});
-	}
-}
-
-#pragma mark -
-
--(SPPlaylistFolder *)parentFolder {
-	
-	if (self.containerPlaylistRange.location == 0)
-		return nil;
-	
-	NSUInteger folderStackCount = 0;
-	
-	for (__block NSUInteger flattenedIndex = self.containerPlaylistRange.location - 1; flattenedIndex > 0; flattenedIndex--) {
-		
-		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, flattenedIndex); });
-		
-		if (type == SP_PLAYLIST_TYPE_START_FOLDER && folderStackCount == 0) {
-			
-			__block SPPlaylistFolder *parent = nil;
-			
-			SPDispatchSyncIfNeeded(^() {
-				sp_uint64 currentFolderId = sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, (int)flattenedIndex);
-				parent = [self.parentContainer.session playlistFolderForFolderId:currentFolderId
-																	 inContainer:self.parentContainer];
-			});
-			
-			return parent;
-						  
-		} else if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
-			folderStackCount--;
-		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
-			folderStackCount++;
-		}
-	}
-	
-	return nil;
-}
-
--(NSArray *)parentFolders {
-	
-	NSMutableArray *parents = [NSMutableArray array];
-	SPPlaylistFolder *parent = self;
-	
-	while ((parent = [parent parentFolder])) {
-		[parents addObject:parent];
-	}
-	
-	if ([parents count] > 0) {
-		return [NSArray arrayWithArray:parents];
-	} else {
-		return nil;
-	}
-}
-
--(id)childAtFlattenedIndex:(NSUInteger)index {
-
-	// Our direct child that contains the given index
-	NSUInteger virtualIndex = [self virtualChildIndexForFlattenedIndex:index];
-	
-	if (virtualIndex != NSNotFound)
-		return [[self mutableArrayValueForKey:@"playlists"] objectAtIndex:virtualIndex];
-	
-	return nil;
-}				
-                     
-@end
-
-@implementation SPPlaylistFolder (SPPlaylistFolderInternal)
-
--(id)initWithPlaylistFolderId:(sp_uint64)anId 
+-(id)initWithPlaylistFolderId:(sp_uint64)anId
 					container:(SPPlaylistContainer *)aContainer
 					inSession:(SPSession *)aSession {
     
@@ -270,8 +61,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     if ((self = [super init])) {
         self.session = aSession;
 		self.parentContainer = aContainer;
+		self.playlists = [NSArray array];
 		folderId = anId;
-		[self rangeMayHaveChanged];
     }
     return self;
 }
@@ -280,170 +71,31 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	return [NSString stringWithFormat:@"%@: %@ %@", [super description], self.name, [self valueForKey:@"playlists"]];
 }
 
--(NSRange)containerPlaylistRange {
-	//NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
-	return _containerPlaylistRange;
+@synthesize parentContainer;
+@synthesize playlists;
+@synthesize name;
+@synthesize session;
+@synthesize folderId;
+
+-(void)addObject:(id)playlistOrFolder {
+	if (playlistOrFolder) self.playlists = [self.playlists arrayByAddingObject:playlistOrFolder];
 }
 
--(void)setContainerPlaylistRange:(NSRange)range {
-	_containerPlaylistRange = range;
-}
-
--(void)rangeMayHaveChanged {
+-(NSArray *)parentFolders {
 	
-	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	NSMutableArray *folders = [NSMutableArray array];
+	SPPlaylistFolder *currentParent = self.parentFolder;
 	
-	__block NSRange newRange = {0,0};
-	NSString *newName = nil;
-	
-	if (folderId == 0) {
-		// Root folder! 
-		newRange = NSMakeRange(0, sp_playlistcontainer_num_playlists(self.parentContainer.container));
-	} else {
-		BOOL startWasFound = NO;
-		int playlistCount = sp_playlistcontainer_num_playlists(self.parentContainer.container);
-		NSUInteger relativeFolderStackCount = 0;
-		
-		for (int currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
-			
-			sp_playlist_type currentPlaylistType = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentIndex);
-			
-			if (currentPlaylistType == SP_PLAYLIST_TYPE_START_FOLDER &&
-				sp_playlistcontainer_playlist_folder_id(self.parentContainer.container, currentIndex) == folderId) {
-				// Take this opportunity to take the name.
-				if (self.name == nil) {
-					char nameChars[256];
-					sp_error nameError = sp_playlistcontainer_playlist_folder_name(self.parentContainer.container, (int)currentIndex, nameChars, sizeof(nameChars));
-					if (nameError == SP_ERROR_OK) {
-						newName = [NSString stringWithUTF8String:nameChars];
-					}
-				}
-				startWasFound = YES;
-				newRange.location = currentIndex;
-				newRange.length = 1;
-				continue;
-			}
-			
-			if (currentPlaylistType == SP_PLAYLIST_TYPE_START_FOLDER && startWasFound) {
-				relativeFolderStackCount++;
-				continue;
-			}
-			
-			if (currentPlaylistType == SP_PLAYLIST_TYPE_END_FOLDER && startWasFound) {
-				if (relativeFolderStackCount == 0) {
-					newRange.length = (currentIndex - newRange.location) + 1;
-					break;
-				} else {
-					relativeFolderStackCount--;
-					continue;
-				}
-			}
-		}
+	while (currentParent != nil) {
+		[folders addObject:currentParent];
+		currentParent = currentParent.parentFolder;
 	}
 	
-	if (!NSEqualRanges(self.containerPlaylistRange, newRange))
-		self.containerPlaylistRange = newRange;
-	
-	// Update subfolders
-	for (id currentPlaylist in [self mutableArrayValueForKey:@"playlists"]) {
-		if ([currentPlaylist isKindOfClass:[SPPlaylistFolder class]])
-			[(SPPlaylistFolder *)currentPlaylist rangeMayHaveChanged];
-	}
-	
-	[self performIntegrityCheck];
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		if (![self.name isEqualToString:newName])
-			self.name = newName;
-		[self willChangeValueForKey:@"playlists"];
-		[self didChangeValueForKey:@"playlists"];
-	});
-}
-
-
--(NSUInteger)virtualChildIndexForFlattenedIndex:(NSUInteger)flattenedIndex {
-	
-	NSRange children = [self rangeOfChildObjects];
-	NSUInteger lastChildIndex = children.location + (children.length - 1);
-	
-	if (flattenedIndex < children.location ||
-		flattenedIndex > lastChildIndex) {
-		return NSNotFound;
-	}
-	
-	NSUInteger currentIndex = children.location;
-	NSUInteger virtualIndex = 0;
-	NSUInteger folderStackCount = 0;
-	
-	if (currentIndex == flattenedIndex)
-		return virtualIndex;
-	
-	while (currentIndex <= lastChildIndex) {
-		
-		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentIndex); });
-		
-		if (type == SP_PLAYLIST_TYPE_PLAYLIST && folderStackCount == 0) {
-			// Normal playlist, increment as normal if it's not in a folder
-			virtualIndex++;
-		} else if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
-			// Folder start, increment if it's not in a folder.
-			if (folderStackCount == 0)
-				virtualIndex++;
-			folderStackCount++;
-		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
-			// Reduce stack count.
-			folderStackCount--;
-		}
-		
-		if (currentIndex == flattenedIndex)
-			return virtualIndex;
-		
-		currentIndex++;
-	}
-	
-	return NSNotFound;
-}
-
--(NSUInteger)flattenedIndexForVirtualChildIndex:(NSUInteger)virtualIndex {
-	
-	NSRange children = [self rangeOfChildObjects];
-	
-	if (virtualIndex == 0)
-		return children.location;
-	
-	NSUInteger lastChildIndex = children.location + (children.length - 1);
-	
-	NSUInteger currentFlattenedIndex = children.location;
-	NSInteger virtualIndexOfCurrentFlattenedIndex = -1;
-	NSUInteger folderStackCount = 0;
-	
-	while (currentFlattenedIndex <= lastChildIndex) {
-		
-		__block sp_playlist_type type = SP_PLAYLIST_TYPE_PLACEHOLDER;
-		SPDispatchSyncIfNeeded(^() { type = sp_playlistcontainer_playlist_type(self.parentContainer.container, currentFlattenedIndex); });
-		
-		if (type == SP_PLAYLIST_TYPE_PLAYLIST && folderStackCount == 0) {
-			// Normal playlist, increment as normal if it's not in a folder
-			virtualIndexOfCurrentFlattenedIndex++;
-		} else if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
-			// Folder start, increment if it's not in a folder.
-			if (folderStackCount == 0)
-				virtualIndexOfCurrentFlattenedIndex++;
-			folderStackCount++;
-		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
-			// Reduce stack count.
-			folderStackCount--;
-		}
-		
-		if (virtualIndexOfCurrentFlattenedIndex == virtualIndex)
-			return currentFlattenedIndex;
-		
-		currentFlattenedIndex++;
-	}
-	
-	return NSNotFound;
+	return folders.count == 0 ? nil : [NSArray arrayWithArray:folders];
 }
 
 @end
+
+
+
 
