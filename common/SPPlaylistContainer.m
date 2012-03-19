@@ -337,11 +337,10 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	
 }
 
--(void)movePlaylistOrFolderAtIndex:(NSUInteger)aVirtualPlaylistOrFolderIndex
-						  ofParent:(SPPlaylistFolder *)existingParentFolderOrNil
-						   toIndex:(NSUInteger)newVirtualIndex 
-					   ofNewParent:(SPPlaylistFolder *)aParentFolderOrNil
-						  callback:(SPErrorableOperationCallback)block {
+-(void)moveItem:(id)playlistOrFolder
+		toIndex:(NSUInteger)newIndex 
+	ofNewParent:(SPPlaylistFolder *)aParentFolderOrNil
+	   callback:(SPErrorableOperationCallback)block {
 	
 	/*
 	dispatch_async([SPSession libSpotifyQueue], ^{
@@ -418,10 +417,11 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         sp_playlistcontainer_add_ref(self.container);
         self.session = aSession;
 		
+        sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		
 		NSArray *newTree = [self createPlaylistTree];
 		dispatch_async(dispatch_get_main_queue(), ^{ self.playlists = newTree; });
         
-        sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
     }
     return self;
 }
