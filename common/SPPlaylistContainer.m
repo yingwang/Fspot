@@ -52,6 +52,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite) sp_playlistcontainer *container;
 
 -(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder;
+-(NSInteger)indexInFlattenedListForIndex:(NSUInteger)virtualIndex inFolder:(SPPlaylistFolder *)parentFolder;
 -(void)removeFolderFromTree:(SPPlaylistFolder *)aPlaylistOrFolderIndex callback:(void (^)())block;
 -(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(void (^)())block;
 
@@ -195,6 +196,15 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	}
 	
 	return [NSArray arrayWithArray:rootPlaylistList];
+}
+
+
+-(NSInteger)indexInFlattenedListForIndex:(NSUInteger)virtualIndex inFolder:(SPPlaylistFolder *)parentFolder {
+	return NSNotFound;
+}
+
+-(NSInteger)virtualIndexForFlattenedIndex:(NSUInteger)flattenedIndex parentFolder:(SPPlaylistFolder **)parent {
+	return NSNotFound;
 }
 
 -(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder {
