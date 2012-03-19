@@ -94,6 +94,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 -(void)createPlaylistWithName:(NSString *)name callback:(void (^)(SPPlaylist *createdPlaylist))block;
 
+/** Remove the given playlist or folder. 
+ 
+ @param playlistOrFolder The Playlist or Folder to remove.
+ @param block The callback block to execute when the operation has completed.
+ */
+-(void)removeItem:(id)playlistOrFolder callback:(void (^)())block;
+
 /** Move a playlist or folder to another location in the list. 
  
  @warning *Important:* This operation can fail, for example if you give invalid indexes or try to move 

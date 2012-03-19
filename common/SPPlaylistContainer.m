@@ -41,7 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPPlaylistContainer ()
 
--(void)rebuildPlaylists;
+-(NSArray *)createPlaylistTree;
 
 @property (nonatomic, readwrite, strong) SPUser *owner;
 @property (nonatomic, readwrite) __weak SPSession *session;
@@ -52,6 +52,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite) sp_playlistcontainer *container;
 
 -(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder;
+-(void)removeFolderFromTree:(SPPlaylistFolder *)aPlaylistOrFolderIndex callback:(void (^)())block;
+-(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(void (^)())block;
 
 @end
 
@@ -78,13 +80,12 @@ static void playlist_moved(sp_playlistcontainer *pc, sp_playlist *playlist, int 
 static void container_loaded(sp_playlistcontainer *pc, void *userdata) {
 	SPPlaylistContainer *container = (__bridge SPPlaylistContainer *)userdata;
 	SPUser *user = [SPUser userWithUserStruct:sp_playlistcontainer_owner(container.container) inSession:container.session];
+	NSArray *newTree = [container createPlaylistTree];
 	
 	dispatch_async(dispatch_get_main_queue(), ^() {
 		container.loaded = YES;
 		container.owner = user;
-		dispatch_async([SPSession libSpotifyQueue], ^{
-			[container rebuildPlaylists];
-		});
+		dispatch_async(dispatch_get_main_queue(), ^{ container.playlists = newTree; });
 	});
 }
 
@@ -135,7 +136,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	return _container;
 }
 
--(void)rebuildPlaylists {
+-(NSArray *)createPlaylistTree {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
@@ -193,9 +194,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		}
 	}
 	
-	dispatch_async(dispatch_get_main_queue(), ^() {
-		self.playlists = [NSArray arrayWithArray:rootPlaylistList];
-	});
+	return [NSArray arrayWithArray:rootPlaylistList];
 }
 
 -(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder {
@@ -270,6 +269,72 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(folder, error); });
 		
 	});
+}
+
+-(void)removeItem:(id)playlistOrFolder callback:(void (^)())block {
+	
+	if ([playlistOrFolder isKindOfClass:[SPPlaylistFolder class]])
+		[self removeFolderFromTree:playlistOrFolder callback:block];
+	else if ([playlistOrFolder isKindOfClass:[SPPlaylist class]])
+		[self removePlaylist:playlistOrFolder callback:block];
+	else if (block)
+		block();
+	
+}
+
+-(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(void (^)())block {
+	
+	if (aPlaylist == nil)
+		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block(); });
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		NSUInteger playlistCount = sp_playlistcontainer_num_playlists(self.container);
+		
+		for (NSUInteger currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
+			sp_playlist *playlist = sp_playlistcontainer_playlist(self.container, currentIndex);
+			if (playlist == aPlaylist.playlist) {
+				sp_playlistcontainer_remove_playlist(self.container, currentIndex);
+				break;
+			}
+		}
+		
+		NSArray *newTree = [self createPlaylistTree];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.playlists = newTree;
+			if (block) block();
+		});
+	});
+}
+
+-(void)removeFolderFromTree:(SPPlaylistFolder *)aFolder callback:(void (^)())block {
+	
+	if (aFolder == nil)
+		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block(); });
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		// Remove callbacks, since we have to remove two playlists and reacting to list change notifications halfway through would be bad.
+		sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		
+		
+		NSRange folderRange = [self rangeOfFolderInRootList:aFolder];
+		NSUInteger entriesToRemove = folderRange.length;
+		
+		while (entriesToRemove > 0) {
+			sp_playlistcontainer_remove_playlist(self.container, folderRange.location);
+			entriesToRemove--;
+		}
+		
+		sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		
+		NSArray *newTree = [self createPlaylistTree];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.playlists = newTree;
+			if (block) block();
+		});
+	});
+	
 }
 
 -(void)movePlaylistOrFolderAtIndex:(NSUInteger)aVirtualPlaylistOrFolderIndex
@@ -353,32 +418,12 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         sp_playlistcontainer_add_ref(self.container);
         self.session = aSession;
 		
-		[self rebuildPlaylists];
+		NSArray *newTree = [self createPlaylistTree];
+		dispatch_async(dispatch_get_main_queue(), ^{ self.playlists = newTree; });
         
         sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
     }
     return self;
-}
-
--(void)removeFolderFromTree:(SPPlaylistFolder *)aFolder {
-	
-	if (aFolder == nil) return;
-	
-	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
-	
-	// Remove callbacks, since we have to remove two playlists and reacting to list change notifications halfway through would be bad.
-	sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
-	
-	
-	NSRange folderRange = [self rangeOfFolderInRootList:aFolder];
-	NSUInteger entriesToRemove = folderRange.length;
-	
-	while (entriesToRemove > 0) {
-		sp_playlistcontainer_remove_playlist(self.container, folderRange.location);
-		entriesToRemove--;
-	}
-	
-	sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
 }
 
 @end
