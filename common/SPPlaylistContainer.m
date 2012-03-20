@@ -4,31 +4,31 @@
 //
 //  Created by Daniel Kennett on 2/19/11.
 /*
-Copyright (c) 2011, Spotify AB
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of Spotify AB nor the names of its contributors may 
-      be used to endorse or promote products derived from this software 
-      without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL SPOTIFY AB BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ Copyright (c) 2011, Spotify AB
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of Spotify AB nor the names of its contributors may 
+ be used to endorse or promote products derived from this software 
+ without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL SPOTIFY AB BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+ OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #import "SPPlaylistContainer.h"
 #import "SPPlaylistFolder.h"
@@ -105,25 +105,6 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	return [NSString stringWithFormat:@"%@: %@", [super description], [self playlists]];
 }
 
--(SPPlaylistFolder *)folderWithId:(sp_uint64)folderId {
-    
-	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
-	
-    if (self.folderCache == nil)
-        self.folderCache = [[NSMutableDictionary alloc] init];
-    
-    NSNumber *idvalue = [NSNumber numberWithUnsignedLongLong:folderId];
-    SPPlaylistFolder *folder = [self.folderCache objectForKey:idvalue];
-    
-    if (folder != nil)
-        return folder;
-    
-    folder = [[SPPlaylistFolder alloc] initWithPlaylistFolderId:folderId container:self inSession:self.session];
-    
-    [self.folderCache setObject:folder forKey:idvalue];
-    return folder;
-}
-
 @synthesize owner;
 @synthesize session;
 @synthesize container = _container;
@@ -151,7 +132,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		
 		if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
 			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
-			SPPlaylistFolder *folder = [self folderWithId:folderId];
+			SPPlaylistFolder *folder = [self.session playlistFolderForFolderId:folderId inContainer:self];
 			
 			char nameChars[256];
 			sp_error nameError = sp_playlistcontainer_playlist_folder_name(self.container, currentItem, nameChars, sizeof(nameChars));
@@ -200,7 +181,37 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 
 
 -(NSInteger)indexInFlattenedListForIndex:(NSUInteger)virtualIndex inFolder:(SPPlaylistFolder *)parentFolder {
-	return NSNotFound;
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	NSMutableArray *indexes = [NSMutableArray arrayWithCapacity:self.playlists.count];
+	NSRange folderRangeInRootList = [self rangeOfFolderInRootList:parentFolder];
+	
+	if (folderRangeInRootList.location == NSNotFound) return NSNotFound;
+	
+	NSRange rangeOfPlaylists = parentFolder == nil ? folderRangeInRootList : NSMakeRange(folderRangeInRootList.location + 1, folderRangeInRootList.length - 2);
+	NSUInteger currentRootlistIndex = rangeOfPlaylists.location;
+	
+	for (NSUInteger currentIndex = 0; currentIndex <= self.playlists.count; currentIndex++) {
+		// For each index in our items, we want the rootlist index that'd replace it.
+		
+		[indexes addObject:[NSNumber numberWithInteger:currentRootlistIndex]];
+		
+		id item = [self.playlists objectAtIndex:currentIndex];
+		
+		if ([item isKindOfClass:[SPPlaylist class]])
+			currentRootlistIndex++;
+		else if ([item isKindOfClass:[SPPlaylistFolder class]])
+			currentRootlistIndex += [self rangeOfFolderInRootList:item].length;
+	}
+	
+	// The indexes array now contains the root list index for the item at the virtual index
+	if (virtualIndex == self.playlists.count)
+		return folderRangeInRootList.location + folderRangeInRootList.length; // Why did we just do that loop?
+	else if (virtualIndex > self.playlists.count)
+		return NSNotFound;
+	else
+		return [[indexes objectAtIndex:virtualIndex] integerValue];
 }
 
 -(NSInteger)virtualIndexForFlattenedIndex:(NSUInteger)flattenedIndex parentFolder:(SPPlaylistFolder **)parent {
@@ -210,11 +221,11 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 -(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
-
+	
+	if (!folder) return NSMakeRange(0, sp_playlistcontainer_num_playlists(self.container));
+	
 	NSRange folderRange = NSMakeRange(NSNotFound, 0);
 	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
-	
-	if (!folder) return folderRange;
 	
 	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
 		
@@ -344,7 +355,6 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			if (block) block();
 		});
 	});
-	
 }
 
 -(void)moveItem:(id)playlistOrFolder
@@ -352,55 +362,113 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	ofNewParent:(SPPlaylistFolder *)aParentFolderOrNil
 	   callback:(SPErrorableOperationCallback)block {
 	
-	/*
-	dispatch_async([SPSession libSpotifyQueue], ^{
+	if ([playlistOrFolder isKindOfClass:[SPPlaylist class]]) {
 		
-		SPPlaylistFolder *oldParentFolder = (existingParentFolderOrNil == nil || (id)existingParentFolderOrNil == self) ? rootFolder : existingParentFolderOrNil;
-		SPPlaylistFolder *newParentFolder = (aParentFolderOrNil == nil || (id)aParentFolderOrNil == nil) ? rootFolder : aParentFolderOrNil;
-		NSUInteger oldFlattenedIndex = [oldParentFolder flattenedIndexForVirtualChildIndex:aVirtualPlaylistOrFolderIndex];
-		NSUInteger newFlattenedIndex = [newParentFolder flattenedIndexForVirtualChildIndex:newVirtualIndex];
-		sp_playlist_type playlistType = sp_playlistcontainer_playlist_type(self.container, (int)oldFlattenedIndex);
-		
-		if (playlistType == SP_PLAYLIST_TYPE_PLAYLIST) {
+		dispatch_async([SPSession libSpotifyQueue], ^{
 			
-			sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)oldFlattenedIndex, (int)newFlattenedIndex, false);
-			NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
+			NSInteger sourceIndex = NSNotFound;
+			SPPlaylist *sourcePlaylist = playlistOrFolder;
 			
-			dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
+			NSUInteger playlistCount = sp_playlistcontainer_num_playlists(self.container);
 			
-		} else if (playlistType == SP_PLAYLIST_TYPE_START_FOLDER) {
-			
-			SPPlaylistFolder *folderToMove = [self.session playlistFolderForFolderId:sp_playlistcontainer_playlist_folder_id(self.container, (int)oldFlattenedIndex)
-																		 inContainer:self];
-			NSUInteger targetIndex = newFlattenedIndex;
-			NSUInteger sourceIndex = oldFlattenedIndex;
-			
-			sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
-			
-			for (NSUInteger entriesToMove = folderToMove.containerPlaylistRange.length; entriesToMove > 0; entriesToMove--) {
-				
-				sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)sourceIndex, (int)targetIndex, false);
-				NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
-				
-				if (error) {
-					dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
-					return;
-				}
-				
-				if (targetIndex < sourceIndex) {
-					targetIndex++;
-					sourceIndex++;
+			for (NSUInteger currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
+				sp_playlist *playlist = sp_playlistcontainer_playlist(self.container, currentIndex);
+				if (playlist == sourcePlaylist.playlist) {
+					sourceIndex = currentIndex;
+					break;
 				}
 			}
+					   
+			if (sourceIndex == NSNotFound) {
+				if (block) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						block([NSError errorWithDomain:kCocoaLibSpotifyErrorDomain
+												  code:0
+											  userInfo:[NSDictionary dictionaryWithObject:@"Source playlist not found."
+																				   forKey:NSLocalizedDescriptionKey]]);
+					});
+				}
+				return;
+			}
 			
-			sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
-			if (sp_playlistcontainer_is_loaded(self.container))
-				container_loaded(self.container, (__bridge void *)(self));
+			NSInteger destinationIndex = [self indexInFlattenedListForIndex:newIndex inFolder:aParentFolderOrNil];
 			
-			dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(nil); });
-			return;
-		}
-	});
+			if (destinationIndex == NSNotFound) {
+				if (block) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						block([NSError spotifyErrorWithCode:SP_ERROR_INDEX_OUT_OF_RANGE]);
+					});
+				}
+				return;
+			}
+			
+			sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, sourceIndex, destinationIndex, false);
+			
+			if (errorCode != SP_ERROR_OK) {
+				if (block) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						block([NSError spotifyErrorWithCode:errorCode]);
+					});
+				}
+			} else if (block) {
+				dispatch_async(dispatch_get_main_queue(), ^{ block(nil); });
+			}
+		});
+		
+		
+		
+	}
+	
+	
+	/*
+	 dispatch_async([SPSession libSpotifyQueue], ^{
+	 
+	 SPPlaylistFolder *oldParentFolder = (existingParentFolderOrNil == nil || (id)existingParentFolderOrNil == self) ? rootFolder : existingParentFolderOrNil;
+	 SPPlaylistFolder *newParentFolder = (aParentFolderOrNil == nil || (id)aParentFolderOrNil == nil) ? rootFolder : aParentFolderOrNil;
+	 NSUInteger oldFlattenedIndex = [oldParentFolder flattenedIndexForVirtualChildIndex:aVirtualPlaylistOrFolderIndex];
+	 NSUInteger newFlattenedIndex = [newParentFolder flattenedIndexForVirtualChildIndex:newVirtualIndex];
+	 sp_playlist_type playlistType = sp_playlistcontainer_playlist_type(self.container, (int)oldFlattenedIndex);
+	 
+	 if (playlistType == SP_PLAYLIST_TYPE_PLAYLIST) {
+	 
+	 sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)oldFlattenedIndex, (int)newFlattenedIndex, false);
+	 NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
+	 
+	 dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
+	 
+	 } else if (playlistType == SP_PLAYLIST_TYPE_START_FOLDER) {
+	 
+	 SPPlaylistFolder *folderToMove = [self.session playlistFolderForFolderId:sp_playlistcontainer_playlist_folder_id(self.container, (int)oldFlattenedIndex)
+	 inContainer:self];
+	 NSUInteger targetIndex = newFlattenedIndex;
+	 NSUInteger sourceIndex = oldFlattenedIndex;
+	 
+	 sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+	 
+	 for (NSUInteger entriesToMove = folderToMove.containerPlaylistRange.length; entriesToMove > 0; entriesToMove--) {
+	 
+	 sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)sourceIndex, (int)targetIndex, false);
+	 NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
+	 
+	 if (error) {
+	 dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
+	 return;
+	 }
+	 
+	 if (targetIndex < sourceIndex) {
+	 targetIndex++;
+	 sourceIndex++;
+	 }
+	 }
+	 
+	 sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+	 if (sp_playlistcontainer_is_loaded(self.container))
+	 container_loaded(self.container, (__bridge void *)(self));
+	 
+	 dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(nil); });
+	 return;
+	 }
+	 });
 	 */
 }
 
