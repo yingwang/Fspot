@@ -40,6 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					inSession:(SPSession *)aSession;
 
 -(void)addObject:(id)playlistOrFolder;
+-(void)clearAllItems;
 
 @property (nonatomic, readonly, readwrite) __weak SPPlaylistFolder *parentFolder;
 @property (readwrite, nonatomic, copy) NSString *name;

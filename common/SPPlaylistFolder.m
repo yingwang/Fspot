@@ -81,6 +81,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	if (playlistOrFolder) self.playlists = [self.playlists arrayByAddingObject:playlistOrFolder];
 }
 
+-(void)clearAllItems {
+	self.playlists = [NSArray array];
+}
+
 -(NSArray *)parentFolders {
 	
 	NSMutableArray *folders = [NSMutableArray array];

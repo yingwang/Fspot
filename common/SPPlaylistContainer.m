@@ -133,6 +133,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
 			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
 			SPPlaylistFolder *folder = [self.session playlistFolderForFolderId:folderId inContainer:self];
+			[folder clearAllItems];
 			
 			char nameChars[256];
 			sp_error nameError = sp_playlistcontainer_playlist_folder_name(self.container, currentItem, nameChars, sizeof(nameChars));
@@ -192,7 +193,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	NSRange rangeOfPlaylists = parentFolder == nil ? folderRangeInRootList : NSMakeRange(folderRangeInRootList.location + 1, folderRangeInRootList.length - 2);
 	NSUInteger currentRootlistIndex = rangeOfPlaylists.location;
 	
-	for (NSUInteger currentIndex = 0; currentIndex <= self.playlists.count; currentIndex++) {
+	for (NSUInteger currentIndex = 0; currentIndex < self.playlists.count; currentIndex++) {
 		// For each index in our items, we want the rootlist index that'd replace it.
 		
 		[indexes addObject:[NSNumber numberWithInteger:currentRootlistIndex]];
@@ -378,98 +379,79 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 					break;
 				}
 			}
-					   
+			
 			if (sourceIndex == NSNotFound) {
-				if (block) {
-					dispatch_async(dispatch_get_main_queue(), ^{
-						block([NSError errorWithDomain:kCocoaLibSpotifyErrorDomain
-												  code:0
-											  userInfo:[NSDictionary dictionaryWithObject:@"Source playlist not found."
-																				   forKey:NSLocalizedDescriptionKey]]);
-					});
-				}
+				dispatch_async(dispatch_get_main_queue(), ^{ if (block) block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]); });
 				return;
 			}
 			
 			NSInteger destinationIndex = [self indexInFlattenedListForIndex:newIndex inFolder:aParentFolderOrNil];
 			
 			if (destinationIndex == NSNotFound) {
-				if (block) {
-					dispatch_async(dispatch_get_main_queue(), ^{
-						block([NSError spotifyErrorWithCode:SP_ERROR_INDEX_OUT_OF_RANGE]);
-					});
-				}
+				dispatch_async(dispatch_get_main_queue(), ^{ if (block) block([NSError spotifyErrorWithCode:SP_ERROR_INDEX_OUT_OF_RANGE]); });
 				return;
 			}
 			
 			sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, sourceIndex, destinationIndex, false);
 			
-			if (errorCode != SP_ERROR_OK) {
-				if (block) {
-					dispatch_async(dispatch_get_main_queue(), ^{
-						block([NSError spotifyErrorWithCode:errorCode]);
-					});
-				}
-			} else if (block) {
+			if (errorCode != SP_ERROR_OK)
+				dispatch_async(dispatch_get_main_queue(), ^{ if (block) block([NSError spotifyErrorWithCode:errorCode]); });
+			else if (block)
 				dispatch_async(dispatch_get_main_queue(), ^{ block(nil); });
-			}
 		});
 		
 		
 		
+	} else if ([playlistOrFolder isKindOfClass:[SPPlaylistFolder class]]) {
+		
+		dispatch_async([SPSession libSpotifyQueue], ^{
+			
+			sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+			
+			NSInteger sourceIndex = NSNotFound;
+			SPPlaylistFolder *folder = playlistOrFolder;
+			NSRange folderRange = [self rangeOfFolderInRootList:folder];
+			sourceIndex = folderRange.location;
+			
+			if (sourceIndex == NSNotFound) {
+				dispatch_async(dispatch_get_main_queue(), ^{ if (block) block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]); });
+				return;
+			}
+			
+			NSInteger destinationIndex = [self indexInFlattenedListForIndex:newIndex inFolder:aParentFolderOrNil];
+			
+			if (destinationIndex == NSNotFound) {
+				dispatch_async(dispatch_get_main_queue(), ^{ if (block) block([NSError spotifyErrorWithCode:SP_ERROR_INDEX_OUT_OF_RANGE]); });
+				return;
+			}
+			
+			for (NSUInteger entriesToMove = folderRange.length; entriesToMove > 0; entriesToMove--) {
+				
+				sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)sourceIndex, (int)destinationIndex, false);
+				NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
+				
+				if (error) {
+					dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
+					return;
+				}
+				
+				if (destinationIndex < sourceIndex) {
+					destinationIndex++;
+					sourceIndex++;
+				}
+			}
+			
+			sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+			if (sp_playlistcontainer_is_loaded(self.container))
+				container_loaded(self.container, (__bridge void *)(self));
+			
+			dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(nil); });
+			
+		});
+		
+	} else if (block) {
+		block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]);
 	}
-	
-	
-	/*
-	 dispatch_async([SPSession libSpotifyQueue], ^{
-	 
-	 SPPlaylistFolder *oldParentFolder = (existingParentFolderOrNil == nil || (id)existingParentFolderOrNil == self) ? rootFolder : existingParentFolderOrNil;
-	 SPPlaylistFolder *newParentFolder = (aParentFolderOrNil == nil || (id)aParentFolderOrNil == nil) ? rootFolder : aParentFolderOrNil;
-	 NSUInteger oldFlattenedIndex = [oldParentFolder flattenedIndexForVirtualChildIndex:aVirtualPlaylistOrFolderIndex];
-	 NSUInteger newFlattenedIndex = [newParentFolder flattenedIndexForVirtualChildIndex:newVirtualIndex];
-	 sp_playlist_type playlistType = sp_playlistcontainer_playlist_type(self.container, (int)oldFlattenedIndex);
-	 
-	 if (playlistType == SP_PLAYLIST_TYPE_PLAYLIST) {
-	 
-	 sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)oldFlattenedIndex, (int)newFlattenedIndex, false);
-	 NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
-	 
-	 dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
-	 
-	 } else if (playlistType == SP_PLAYLIST_TYPE_START_FOLDER) {
-	 
-	 SPPlaylistFolder *folderToMove = [self.session playlistFolderForFolderId:sp_playlistcontainer_playlist_folder_id(self.container, (int)oldFlattenedIndex)
-	 inContainer:self];
-	 NSUInteger targetIndex = newFlattenedIndex;
-	 NSUInteger sourceIndex = oldFlattenedIndex;
-	 
-	 sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
-	 
-	 for (NSUInteger entriesToMove = folderToMove.containerPlaylistRange.length; entriesToMove > 0; entriesToMove--) {
-	 
-	 sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)sourceIndex, (int)targetIndex, false);
-	 NSError *error = errorCode == SP_ERROR_OK ? nil : [NSError spotifyErrorWithCode:errorCode];
-	 
-	 if (error) {
-	 dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(error); });
-	 return;
-	 }
-	 
-	 if (targetIndex < sourceIndex) {
-	 targetIndex++;
-	 sourceIndex++;
-	 }
-	 }
-	 
-	 sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
-	 if (sp_playlistcontainer_is_loaded(self.container))
-	 container_loaded(self.container, (__bridge void *)(self));
-	 
-	 dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(nil); });
-	 return;
-	 }
-	 });
-	 */
 }
 
 -(void)dealloc {
