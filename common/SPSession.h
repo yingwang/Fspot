@@ -158,10 +158,26 @@ Playback
  
  @param userName The username of the user who wishes to log in.
  @param password The password for the user who wishes to log in.
- @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, otherwise `NO`.
+ @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
  */
 -(void)attemptLoginWithUserName:(NSString *)userName 
 					   password:(NSString *)password
+			rememberCredentials:(BOOL)rememberMe;
+
+/** Attempt to login to the Spotify service using an existing login credentials blob. 
+ 
+ Login success or fail methods will be called on the session's delegate.
+ 
+ @warning *Important:* You must have successfully logged in to the Spotify service before using 
+ most other API methods.
+ 
+ @param userName The username of the user who wishes to log in.
+ @param blob A login credential string previously provided by the `-session:didGenerateLoginCredentials:forUserName:` delegate method.
+ @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
+ 
+ */
+-(void)attemptLoginWithUserName:(NSString *)userName
+			 existingCredential:(NSString *)credential
 			rememberCredentials:(BOOL)rememberMe;
 
 /** Attempt to login to the Spotify service using previously stored credentials.
@@ -186,6 +202,13 @@ Playback
  Called automatically when the instance is deallocated. 
  */
 -(void)forgetStoredCredentials;
+
+/** Manually flush libSpotify's caches.
+ 
+ This method will force libSpotify to flush its caches. If you're writing an iOS application, call
+ this when your application is put into the background to ensure correct operation.
+ */
+-(void)fushCaches;
 
 /** Log out from the Spotify service.
  
@@ -510,6 +533,20 @@ Playback
  @param aSession The session that logged in. 
  */
 -(void)sessionDidLoginSuccessfully:(SPSession *)aSession;
+
+/** Called when a set of login credentials has been generated for the user, typically just after login.
+ 
+ If you wish to store login credentials for multiple users, store the credentials given by this
+ delegate method rather than their passwords (it's against the libSpotify Terms and Conditions to store
+ Spotify passwords yourself). These credentials are safe to store without encryption, such as in `NSUserDefaults`.
+ 
+ To use these credentials to log in, use `-attemptLoginWithUserName:existingCredential:rememberCredentials:`.
+ 
+ @param aSession The session that logged in. 
+ @param credential The login credential.
+ @param userName The username for the given credential.
+ */
+-(void)session:(SPSession *)aSession didGenerateLoginCredentials:(NSString *)credential forUserName:(NSString *)userName;
 
 /** Called when the given session could not log in successfully.
  

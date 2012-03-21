@@ -51,6 +51,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, retain) NSArray *portraits;
 
 @property (nonatomic, readwrite, retain) NSArray *tracks;
+@property (nonatomic, readwrite, retain) NSArray *topTracks;
 @property (nonatomic, readwrite, retain) NSArray *albums;
 @property (nonatomic, readwrite, retain) NSArray *relatedArtists;
 
@@ -88,6 +89,17 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 		}
 		
 		artistBrowse.tracks = [NSArray arrayWithArray:tracks];
+		
+		int topTrackCount = sp_artistbrowse_num_tophit_tracks(result);
+		NSMutableArray *topTracks = [NSMutableArray arrayWithCapacity:topTrackCount];
+		for (int currentTopTrack =  0; currentTopTrack < trackCount; currentTopTrack++) {
+			sp_track *track = sp_artistbrowse_tophit_track(result, currentTopTrack);
+			if (track != NULL) {
+				[topTracks addObject:[SPTrack trackForTrackStruct:track inSession:artistBrowse.session]];
+			}
+		}
+		
+		artistBrowse.topTracks = [NSArray arrayWithArray:topTracks];
 		
 		int albumCount = sp_artistbrowse_num_albums(result);
 		NSMutableArray *albums = [NSMutableArray arrayWithCapacity:albumCount];
@@ -175,6 +187,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 @synthesize session;
 @synthesize portraits;
 @synthesize tracks;
+@synthesize topTracks;
 @synthesize albums;
 @synthesize relatedArtists;
 @synthesize biography;
