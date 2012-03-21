@@ -170,6 +170,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     }
 }
 
+-(void)albumBrowseDidLoad {
+	if (self.track) self.discNumber = sp_track_disc(self.track);
+}
+
 -(SPTrack *)playableTrack {
 	
 	if (!self.track) return nil;

@@ -40,6 +40,14 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // IMPORTANT: This class was implemented while enjoying a lovely spring afternoon by a lake 
 // in Sweden. This is my view right now:  http://twitpic.com/4oy9zn
 
+@interface SPAlbum (SPAlbumBrowseExtensions)
+-(void)albumBrowseDidLoad;
+@end
+
+@interface SPTrack (SPAlbumBrowseExtensions)
+-(void)albumBrowseDidLoad;
+@end
+
 @interface SPAlbumBrowse ()
 
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
@@ -81,7 +89,9 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		for (int currentTrack =  0; currentTrack < trackCount; currentTrack++) {
 			sp_track *track = sp_albumbrowse_track(result, currentTrack);
 			if (track != NULL) {
-				[tracks addObject:[SPTrack trackForTrackStruct:track inSession:albumBrowse.session]];
+				SPTrack *aTrack = [SPTrack trackForTrackStruct:track inSession:albumBrowse.session];
+				[aTrack albumBrowseDidLoad];
+				[tracks addObject:aTrack];
 			}
 		}
 		
@@ -95,6 +105,8 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		}
 		
 		albumBrowse.copyrights = [NSArray arrayWithArray:copyrights];
+		
+		[albumBrowse.album albumBrowseDidLoad];
 	}
 	
 	albumBrowse.loaded = loaded;
