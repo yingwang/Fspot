@@ -4,13 +4,13 @@ CocoaLibSpotify is an Objective-C wrapper around our libspotify library. It prov
 
 CocoaLibSpotify requires libspotify.framework, which isn't included in the repository. The Mac Framework and iOS Library  Xcode projects include a build step to download and unpack it from developer.spotify.com automatically. If this fails for some reason, download it manually from developer.spotify.com and unpack it into the project folder.
 
-## Note for CocoaLibSpotify Users Prior To LibSpotify 10 ##
+## Release Notes ##
 
-The playlist API changed in CocoaLibSpotify for libspotify 10. `SPPlaylist` no longer has a `tracks` property, but instead has `items`, which can contain tracks, albums, artists or playlists. Please consult the documentation for more information. 
+You can find the latest release notes in the [CHANGELOG.markdown](https://github.com/spotify/cocoalibspotify/blob/master/CHANGELOG.markdown) file.
 
 ## Building -  Mac OS X ##
 
-The Xcode project was built in Xcode 4.0, but should also work fine in Xcode 3.2.x.
+The Xcode project requires Xcode 4.0 or higher. Building using the latest version of Xcode is always recommended.
 
 The built CocoaLibSpotify.framework contains libspotify.framework as a child framework. Sometimes, Xcode gives build errors complaining it can't find <libspotify/api.h>. If you get this, manually add the directory libspotify.framework is in to your project's "Framework Search Paths" build setting. For example, if you're building the CocoaLibSpotify project alongside your application as an embedded Xcode project then copying it into your bundle, you'd have this:
 
@@ -18,9 +18,12 @@ The built CocoaLibSpotify.framework contains libspotify.framework as a child fra
 
 Otherwise, you'd point to the downloaded libspotify.framework manually, something like this:
 
-`../../libspotify-10.1.16-Darwin-universal`
+`../../libspotify-11.1.45-Darwin-universal`
 
 ## Building - iOS ##
+
+The Xcode project requires Xcode 4.0 or higher. Building using the latest version of Xcode is always recommended.
+
 
 The built libCocoaLibSpotify contains libspotify internally as a static library, as well as all of the required header files in a directory called "include".
 
