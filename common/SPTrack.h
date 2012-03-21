@@ -88,6 +88,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 -(id)initWithTrackStruct:(sp_track *)tr inSession:(SPSession *)aSession;
 
+
+/** Gets the track that would be played if the receiver is a "linked" track.
+ 
+ Linked tracks are redirect from an unplayable track to a track on a 
+ different album (which is available in the currently logged in user's region)
+ Normally, your application does not need to worry about this but the function
+ is here for completeness.
+ */
+-(SPTrack *)playableTrack;
+
 ///----------------------------
 /// @name Properties
 ///----------------------------

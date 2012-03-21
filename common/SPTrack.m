@@ -171,6 +171,17 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     }
 }
 
+-(SPTrack *)playableTrack {
+	
+	if (!self.track) return nil;
+
+	sp_track *linked = sp_track_get_playable(self.session.session, self.track);
+	if (!linked) return nil;
+	
+	return [SPTrack trackForTrackStruct:linked inSession:self.session];
+	
+}
+
 #pragma mark -
 #pragma mark Properties 
 

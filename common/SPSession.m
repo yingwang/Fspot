@@ -377,6 +377,22 @@ static void offline_error(sp_session *session, sp_error error) {
 	sess.offlineSyncError = [NSError spotifyErrorWithCode:error];
 }
 
+static void credentials_blob_updated(sp_session *session, const char *blob) {
+	
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	
+	@autoreleasepool {
+		SEL selector = @selector(session:didGenerateLoginCredentials:forUserName:);
+		
+		if ([[sess delegate] respondsToSelector:selector]) {
+			[(id <SPSessionDelegate>)[sess delegate] session:sess
+								 didGenerateLoginCredentials:[NSString stringWithUTF8String:blob]
+												 forUserName:sess.user.canonicalName];
+			
+		}
+	}
+}
+
 static sp_session_callbacks _callbacks = {
 	&logged_in,
 	&logged_out,
@@ -394,7 +410,8 @@ static sp_session_callbacks _callbacks = {
 	NULL, //stop_playback
 	NULL, //get_audio_buffer_stats
 	&offline_status_updated,
-	&offline_error
+	&offline_error,
+	&credentials_blob_updated
 };
 
 #pragma mark -
@@ -548,7 +565,19 @@ static SPSession *sharedSession;
 	
 	[self logout];
     
-    sp_session_login(self.session, [userName UTF8String], [password UTF8String], rememberMe);
+    sp_session_login(session, [userName UTF8String], [password UTF8String], rememberMe, NULL);
+}
+
+-(void)attemptLoginWithUserName:(NSString *)userName
+			 existingCredential:(NSString *)credential
+			rememberCredentials:(BOOL)rememberMe {
+	
+	if ([userName length] == 0 || [credential length] == 0 || session == NULL)
+		return;
+	
+	[self logout];
+	
+	sp_session_login(session, [userName UTF8String], NULL, rememberMe, [credential UTF8String]);
 }
 
 -(BOOL)attemptLoginWithStoredCredentials:(NSError **)error {
@@ -588,6 +617,11 @@ static SPSession *sharedSession;
 -(void)forgetStoredCredentials {
     if (self.session)
         sp_session_forget_me(self.session);
+}
+
+-(void)fushCaches {
+	if (session)
+		sp_session_flush_caches(session);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {

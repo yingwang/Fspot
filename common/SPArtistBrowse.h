@@ -61,8 +61,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @warning *Important:* It is strongly recommended that you don't use `SP_ARTISTBROWSE_FULL`
  as the browse type, as this will download metadata for every single album and track from the given
  artist, which is both a lengthy and memory-intensive operation. Please use 
- `SP_ARTISTBROWSE_NO_TRACKS` (which only downloads artist information and their albums) or
- `SP_ARTISTBROWSE_NO_ALBUMS` (which only downloads artist information) instead.
+ `SP_ARTISTBROWSE_NO_TRACKS` (which downloads artist information, their albums and top tracks) or
+ `SP_ARTISTBROWSE_NO_ALBUMS` (which only downloads artist information and top tracks) instead.
  
  @warning *Important:* If you pass in an invalid artist URL (i.e., any URL not
  starting `spotify:artist:`, this method will return `nil`.
@@ -82,8 +82,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @warning *Important:* It is strongly recommended that you don't use `SP_ARTISTBROWSE_FULL`
  as the browse type, as this will download metadata for every single album and track from the given
  artist, which is both a lengthy and memory-intensive operation. Please use 
- `SP_ARTISTBROWSE_NO_TRACKS` (which only downloads artist information and their albums) or
- `SP_ARTISTBROWSE_NO_ALBUMS` (which only downloads artist information) instead.
+ `SP_ARTISTBROWSE_NO_TRACKS` (which downloads artist information, their albums and top tracks) or
+ `SP_ARTISTBROWSE_NO_ALBUMS` (which only downloads artist information and top tracks) instead.
  
  @warning *Important:* If you pass in an invalid artist URL (i.e., any URL not
  starting `spotify:artist:`, this method will return `nil`.
@@ -100,8 +100,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @warning *Important:* It is strongly recommended that you don't use `SP_ARTISTBROWSE_FULL`
  as the browse type, as this will download metadata for every single album and track from the given
  artist, which is both a lengthy and memory-intensive operation. Please use 
- `SP_ARTISTBROWSE_NO_TRACKS` (which only downloads artist information and their albums) or
- `SP_ARTISTBROWSE_NO_ALBUMS` (which only downloads artist information) instead.
+ `SP_ARTISTBROWSE_NO_TRACKS` (which downloads artist information, their albums and top tracks) or
+ `SP_ARTISTBROWSE_NO_ALBUMS` (which only downloads artist information and top tracks) instead.
  
  @warning *Important:* If you pass in an invalid artist URL (i.e., any URL not
  starting `spotify:artist:`, this method will return `nil`.
@@ -148,7 +148,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Returns a list of related artists for this artist, or `nil` if the metadata isn't loaded yet. */
 @property (nonatomic, readonly, strong) NSArray *relatedArtists;
 
-/** Returns a list of tracks by this artist, or `nil` if the metadata isn't loaded yet. */
+/** Returns a list of tracks by this artist, or `nil` if the metadata isn't loaded yet. 
+ @deprecated 
+ @warning *Important:* This property is deprecated.
+ */
 @property (nonatomic, readonly, strong) NSArray *tracks;
+
+/** Returns a list of "top hit" tracks by this artist, or `nil` if the metadata isn't loaded yet. */
+@property (nonatomic, readonly, strong) NSArray *topTracks;
 
 @end

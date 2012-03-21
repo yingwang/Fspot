@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		500EC8B51439D02A00E8A60C /* CocoaLibSpotify iOS Library-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 500EC8B41439D02A00E8A60C /* CocoaLibSpotify iOS Library-Prefix.pch */; };
-		50984021146043EC00C0FC18 /* api.h in Headers */ = {isa = PBXBuildFile; fileRef = 50984020146043EC00C0FC18 /* api.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		50984023146043F500C0FC18 /* libspotify in Frameworks */ = {isa = PBXBuildFile; fileRef = 50984022146043F500C0FC18 /* libspotify */; };
 		509840251460442600C0FC18 /* SPCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 509840241460442600C0FC18 /* SPCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		509840291460444100C0FC18 /* SPPlaylistItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 509840261460444100C0FC18 /* SPPlaylistItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5098402A1460444100C0FC18 /* SPPlaylistItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 509840271460444100C0FC18 /* SPPlaylistItem.m */; };
 		5098402B1460444100C0FC18 /* SPPlaylistItemInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 509840281460444100C0FC18 /* SPPlaylistItemInternal.h */; };
 		509E6A8014DAE15E009874C9 /* SPUnknownPlaylist.h in Headers */ = {isa = PBXBuildFile; fileRef = 509E6A7F14DAE15E009874C9 /* SPUnknownPlaylist.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		50A16D2C150F8C480047F579 /* libspotify in Frameworks */ = {isa = PBXBuildFile; fileRef = 50A16D2B150F8C480047F579 /* libspotify */; };
+		50A16D2E150F8C4E0047F579 /* api.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A16D2D150F8C4E0047F579 /* api.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50AF49E01439CBFE00E4A5EF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50AF49DF1439CBFE00E4A5EF /* Foundation.framework */; };
 		50AF4A501439CF4700E4A5EF /* CocoaLibSpotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50AF4A511439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AF4A4F1439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -58,13 +58,13 @@
 
 /* Begin PBXFileReference section */
 		500EC8B41439D02A00E8A60C /* CocoaLibSpotify iOS Library-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CocoaLibSpotify iOS Library-Prefix.pch"; sourceTree = "<group>"; };
-		50984020146043EC00C0FC18 /* api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = api.h; path = "libspotify-10.1.16-iOS-universal/libspotify.framework/Versions/10.1.16/Headers/api.h"; sourceTree = "<group>"; };
-		50984022146043F500C0FC18 /* libspotify */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspotify; path = "libspotify-10.1.16-iOS-universal/libspotify.framework/Versions/10.1.16/libspotify"; sourceTree = "<group>"; };
 		509840241460442600C0FC18 /* SPCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPCommon.h; path = ../common/SPCommon.h; sourceTree = "<group>"; };
 		509840261460444100C0FC18 /* SPPlaylistItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItem.h; path = ../common/SPPlaylistItem.h; sourceTree = "<group>"; };
 		509840271460444100C0FC18 /* SPPlaylistItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPPlaylistItem.m; path = ../common/SPPlaylistItem.m; sourceTree = "<group>"; };
 		509840281460444100C0FC18 /* SPPlaylistItemInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItemInternal.h; path = ../common/SPPlaylistItemInternal.h; sourceTree = "<group>"; };
 		509E6A7F14DAE15E009874C9 /* SPUnknownPlaylist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPUnknownPlaylist.h; path = ../common/SPUnknownPlaylist.h; sourceTree = "<group>"; };
+		50A16D2B150F8C480047F579 /* libspotify */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspotify; path = "libspotify-11.1.21-iOS-universal/libspotify.framework/Versions/11.1.21/libspotify"; sourceTree = "<group>"; };
+		50A16D2D150F8C4E0047F579 /* api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = api.h; path = "libspotify-11.1.21-iOS-universal/libspotify.framework/Versions/11.1.21/Headers/api.h"; sourceTree = "<group>"; };
 		50AF49DC1439CBFE00E4A5EF /* libCocoaLibSpotify.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLibSpotify.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		50AF49DF1439CBFE00E4A5EF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CocoaLibSpotify.h; path = ../common/CocoaLibSpotify.h; sourceTree = "<group>"; };
@@ -113,7 +113,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				50AF49E01439CBFE00E4A5EF /* Foundation.framework in Frameworks */,
-				50984023146043F500C0FC18 /* libspotify in Frameworks */,
+				50A16D2C150F8C480047F579 /* libspotify in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,7 +123,7 @@
 		50AF49D11439CBFE00E4A5EF = {
 			isa = PBXGroup;
 			children = (
-				50984020146043EC00C0FC18 /* api.h */,
+				50A16D2D150F8C4E0047F579 /* api.h */,
 				50AF49E11439CBFE00E4A5EF /* CocoaLibSpotify */,
 				50AF49DE1439CBFE00E4A5EF /* Frameworks */,
 				50AF49DD1439CBFE00E4A5EF /* Products */,
@@ -141,7 +141,7 @@
 		50AF49DE1439CBFE00E4A5EF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				50984022146043F500C0FC18 /* libspotify */,
+				50A16D2B150F8C480047F579 /* libspotify */,
 				50AF49DF1439CBFE00E4A5EF /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -253,12 +253,12 @@
 				50AF4A8E1439CF8600E4A5EF /* SPPlaylistFolderInternal.h in Headers */,
 				50AF4A8F1439CF8600E4A5EF /* SPPostTracksToInboxOperation.h in Headers */,
 				50AF4A911439CF8600E4A5EF /* SPSearch.h in Headers */,
+				50A16D2E150F8C4E0047F579 /* api.h in Headers */,
 				50AF4A931439CF8600E4A5EF /* SPSession.h in Headers */,
 				50AF4A951439CF8600E4A5EF /* SPToplist.h in Headers */,
 				50AF4A971439CF8600E4A5EF /* SPTrack.h in Headers */,
 				50AF4A991439CF8600E4A5EF /* SPUser.h in Headers */,
 				500EC8B51439D02A00E8A60C /* CocoaLibSpotify iOS Library-Prefix.pch in Headers */,
-				50984021146043EC00C0FC18 /* api.h in Headers */,
 				509E6A8014DAE15E009874C9 /* SPUnknownPlaylist.h in Headers */,
 				509840251460442600C0FC18 /* SPCommon.h in Headers */,
 				509840291460444100C0FC18 /* SPPlaylistItem.h in Headers */,
@@ -295,7 +295,7 @@
 		50AF49D31439CBFE00E4A5EF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 50AF49D61439CBFE00E4A5EF /* Build configuration list for PBXProject "CocoaLibSpotify iOS Library" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -327,7 +327,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /usr/bin/python;
-			shellScript = "import urllib\nimport zipfile\nimport os\nimport sys\nimport commands\n\nlibspotifyFileName = \"libspotify-10.1.16-iOS-universal.zip\"\nlibspotifyRemoteLocation = \"http://developer.spotify.com/download/libspotify/\"\nprojectDir = os.environ.get('PROJECT_DIR')\nlibspotifyDirectoryDir = os.path.join(projectDir, \"libspotify-10.1.16-iOS-universal\")\nlibspotifyZipDir = os.path.join(projectDir, libspotifyFileName)\n\nif (os.path.exists(libspotifyDirectoryDir)):\n    print \"LibSpotify is present, no download needed.\"\n    sys.exit(0)\n\nprint \"LibSpotify not present, downloading...\"\n\ntry:\n    urllib.urlretrieve(libspotifyRemoteLocation + libspotifyFileName, libspotifyZipDir)\nexcept OSError:\n    print \"Could not download \" + libspotifyRemoteLocation + libspotifyFileName + \".\"\n    sys.exit(1)\n\nunzipCommand = 'unzip -q \"' + libspotifyZipDir + '\"' + ' -d \"' + projectDir + '\"'\nunzipResult = commands.getstatusoutput(unzipCommand)\n\nif (unzipResult[0] != 0):\n    print \"Could not untar \" + libspotifyFileName + \".\"\n    sys.exit(1)\n\ncommands.getstatusoutput('rm -rf \"' + projectDir + '/__MACOSX\"') \n\ntry:\n    os.remove(libspotifyZipDir)\nexcept OSError:\n    print \"Could not remove downloaded file.\"\n\nprint \"Complete.\"";
+			shellScript = "import urllib\nimport zipfile\nimport os\nimport sys\nimport commands\n\nlibspotifyFileName = \"libspotify-11.1.21-iOS-universal.zip\"\nlibspotifyRemoteLocation = \"http://developer.spotify.com/download/libspotify/\"\nprojectDir = os.environ.get('PROJECT_DIR')\nlibspotifyDirectoryDir = os.path.join(projectDir, \"libspotify-11.1.21-iOS-universal\")\nlibspotifyZipDir = os.path.join(projectDir, libspotifyFileName)\n\nif (os.path.exists(libspotifyDirectoryDir)):\n    print \"LibSpotify is present, no download needed.\"\n    sys.exit(0)\n\nprint \"LibSpotify not present, downloading...\"\n\ntry:\n    urllib.urlretrieve(libspotifyRemoteLocation + libspotifyFileName, libspotifyZipDir)\nexcept OSError:\n    print \"Could not download \" + libspotifyRemoteLocation + libspotifyFileName + \".\"\n    sys.exit(1)\n\nunzipCommand = 'unzip -q \"' + libspotifyZipDir + '\"' + ' -d \"' + projectDir + '\"'\nunzipResult = commands.getstatusoutput(unzipCommand)\n\nif (unzipResult[0] != 0):\n    print \"Could not untar \" + libspotifyFileName + \".\"\n    sys.exit(1)\n\ncommands.getstatusoutput('rm -rf \"' + projectDir + '/__MACOSX\"') \n\ntry:\n    os.remove(libspotifyZipDir)\nexcept OSError:\n    print \"Could not remove downloaded file.\"\n\nprint \"Complete.\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -408,7 +408,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/libspotify-10.1.16-iOS-universal/libspotify.framework/Versions/10.1.16\"",
+					"\"$(SRCROOT)/libspotify-11.1.21-iOS-universal/libspotify.framework/Versions/11.1.21\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = include;
@@ -429,7 +429,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/libspotify-10.1.16-iOS-universal/libspotify.framework/Versions/10.1.16\"",
+					"\"$(SRCROOT)/libspotify-11.1.21-iOS-universal/libspotify.framework/Versions/11.1.21\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = include;
