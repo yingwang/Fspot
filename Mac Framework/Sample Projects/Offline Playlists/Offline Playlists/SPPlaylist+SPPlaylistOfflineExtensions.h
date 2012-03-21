@@ -32,3 +32,10 @@
 -(NSString *)offlineStatusString;
 
 @end
+
+
+@interface SPPlaylistFolder (SPPlaylistFolderOfflineExtensions)
+
+-(NSString *)offlineStatusString;
+
+@end

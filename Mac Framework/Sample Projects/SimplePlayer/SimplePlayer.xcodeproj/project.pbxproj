@@ -200,7 +200,7 @@
 		5006F146137161D800AF4418 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = Spotify;
 			};
 			buildConfigurationList = 5006F149137161D800AF4418 /* Build configuration list for PBXProject "SimplePlayer" */;

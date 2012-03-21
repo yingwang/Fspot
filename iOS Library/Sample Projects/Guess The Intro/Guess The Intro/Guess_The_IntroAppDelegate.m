@@ -26,7 +26,7 @@
 											   userAgent:@"com.spotify.GuessTheIntro"
 												   error:nil];
 	
-	[SPSession sharedSession].delegate = self.viewController;
+	[SPSession sharedSession].delegate = (id)self.viewController;
 	
 	self.viewController.playbackManager = [[[SPPlaybackManager alloc] 
 							 initWithPlaybackSession:[SPSession sharedSession]] autorelease];

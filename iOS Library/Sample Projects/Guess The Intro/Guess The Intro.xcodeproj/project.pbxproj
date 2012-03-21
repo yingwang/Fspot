@@ -228,6 +228,9 @@
 /* Begin PBXProject section */
 		50A0D81B143AF62100458686 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
 			buildConfigurationList = 50A0D81E143AF62100458686 /* Build configuration list for PBXProject "Guess The Intro" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -386,6 +389,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Guess The Intro/Guess The Intro-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = $CONFIGURATION_BUILD_DIR/include;
 				INFOPLIST_FILE = "Guess The Intro/Guess The Intro-Info.plist";
 				OTHER_LDFLAGS = (
@@ -402,6 +406,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Guess The Intro/Guess The Intro-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = $CONFIGURATION_BUILD_DIR/include;
 				INFOPLIST_FILE = "Guess The Intro/Guess The Intro-Info.plist";
 				OTHER_LDFLAGS = (
