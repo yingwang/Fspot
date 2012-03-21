@@ -1,15 +1,21 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
 		<title>SPUser Class Reference</title>
-		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
 		<meta id="xcode-display" name="xcode-display" content="render"/>
 		<meta name="viewport" content="width=550" />
-		<link rel="stylesheet" type="text/css" href="../css/styles.css" />
-		<meta name="generator" content="appledoc 2.0.3 (build 684)" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
+		<link rel="stylesheet" type="text/css" media="print" href="../css/stylesPrint.css" />
+		<meta name="generator" content="appledoc 2.0.5 (build 789)" />
 	</head>
 	<body>
 		<header id="top_header">
+			<div id="library" class="hideInXcode">
+				<h1><a id="libraryTitle" href="../index.html">CocoaLibSpotify </a></h1>
+				<a id="developerHome" href="../index.html">Spotify AB</a>
+			</div>
+			
 			<div id="title" role="banner">
 				<h1 class="hideInXcode">SPUser Class Reference</h1>
 			</div>
@@ -155,7 +161,7 @@
 						<h2 class="subtitle subtitle-overview">Overview</h2>
 						<p>Represents a <a href="#//api/name/user">user</a> of the Spotify service.</p>
 
-<p><a href="SPUser.html">SPUser</a>  is roughly analogous to the sp_<a href="#//api/name/user">user</a> struct in the C LibSpotify API.</p>
+<p>SPUser  is roughly analogous to the sp_<a href="#//api/name/user">user</a> struct in the C LibSpotify API.</p>
 					</div>
 					
 					
@@ -174,21 +180,21 @@
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/userWithUserStruct:inSession:">+&nbsp;userWithUserStruct:inSession:</a></code>
-		<span class="tooltip"><p>Creates an <a href="SPUser.html">SPUser</a> from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p></span>
+		<span class="tooltip"><p>Creates an SPUser from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/userWithURL:inSession:">+&nbsp;userWithURL:inSession:</a></code>
-		<span class="tooltip"><p>Creates an <a href="SPUser.html">SPUser</a> from the given Spotify <a href="#//api/name/user">user</a> URL.</p></span>
+		<span class="tooltip"><p>Creates an SPUser from the given Spotify <a href="#//api/name/user">user</a> URL.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/initWithUserStruct:inSession:">&ndash;&nbsp;initWithUserStruct:inSession:</a></code>
-		<span class="tooltip"><p>Initializes a new <a href="SPUser.html">SPUser</a> from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p></span>
+		<span class="tooltip"><p>Initializes a new SPUser from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p></span>
 	</span>
 	
 	
@@ -259,7 +265,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSString *canonicalName</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSString *canonicalName</code></div>
+	
+	
 	
 	
 	
@@ -291,7 +299,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSString *displayName</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSString *displayName</code></div>
+	
+	
 	
 	
 	
@@ -323,7 +333,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, getter=isLoaded) BOOL loaded</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, getter=isLoaded) BOOL loaded</code></div>
+	
+	
 	
 	
 	
@@ -355,7 +367,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSURL *spotifyURL</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSURL *spotifyURL</code></div>
+	
+	
 	
 	
 	
@@ -387,7 +401,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) sp_user *user</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) sp_user *user</code></div>
+	
+	
 	
 	
 	
@@ -396,7 +412,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> This should only be used if you plan to directly use the
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This should only be used if you plan to directly use the
 C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
 API directly on items that have CocoaLibSpotify objects associated with them.</p></div>
 	</div>
@@ -430,7 +446,7 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Creates an <a href="SPUser.html">SPUser</a> from the given Spotify <a href="#//api/name/user">user</a> URL.</p>
+		<p>Creates an SPUser from the given Spotify <a href="#//api/name/user">user</a> URL.</p>
 	</div>		
 	
 	
@@ -442,7 +458,7 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>userUrl</em></dt>
-			<dd><p>The <a href="#//api/name/user">user</a> URL to create an <a href="SPUser.html">SPUser</a> for.</p></dd>
+			<dd><p>The <a href="#//api/name/user">user</a> URL to create an SPUser for.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -456,15 +472,17 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPUser.html">SPUser</a> object, or <code>nil</code> if given an invalid <a href="#//api/name/user">user</a> URL.</p>
+		<p>Returns the created SPUser object, or <code>nil</code> if given an invalid <a href="#//api/name/user">user</a> URL.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This convenience method creates an <a href="SPUser.html">SPUser</a> object if one doesn&rsquo;t exist, or
-returns a cached <a href="SPUser.html">SPUser</a> if one already exists for the given URL.</p><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/user">user</a> URL (i.e., any URL not
+		<p>This convenience method creates an SPUser object if one doesn&rsquo;t exist, or
+returns a cached SPUser if one already exists for the given URL.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> If you pass in an invalid <a href="#//api/name/user">user</a> URL (i.e., any URL not
 starting <code>spotify:user:</code>, this method will return <code>nil</code>.</p></div>
 	</div>
 	
@@ -489,7 +507,7 @@ starting <code>spotify:user:</code>, this method will return <code>nil</code>.</
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Creates an <a href="SPUser.html">SPUser</a> from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p>
+		<p>Creates an SPUser from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p>
 	</div>		
 	
 	
@@ -501,7 +519,7 @@ starting <code>spotify:user:</code>, this method will return <code>nil</code>.</
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>spUser</em></dt>
-			<dd><p>The sp_<a href="#//api/name/user">user</a> struct to create an <a href="SPUser.html">SPUser</a> for.</p></dd>
+			<dd><p>The sp_<a href="#//api/name/user">user</a> struct to create an SPUser for.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -515,15 +533,17 @@ starting <code>spotify:user:</code>, this method will return <code>nil</code>.</
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPUser.html">SPUser</a> object.</p>
+		<p>Returns the created SPUser object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This convenience method creates an <a href="SPUser.html">SPUser</a> object if one doesn&rsquo;t exist, or
-returns a cached <a href="SPUser.html">SPUser</a> if one already exists for the given struct.</p>
+		<p>This convenience method creates an SPUser object if one doesn&rsquo;t exist, or
+returns a cached SPUser if one already exists for the given struct.</p>
 	</div>
 	
 	
@@ -555,7 +575,7 @@ returns a cached <a href="SPUser.html">SPUser</a> if one already exists for the 
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Initializes a new <a href="SPUser.html">SPUser</a> from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p>
+		<p>Initializes a new SPUser from the given opaque sp_<a href="#//api/name/user">user</a> struct.</p>
 	</div>		
 	
 	
@@ -567,7 +587,7 @@ returns a cached <a href="SPUser.html">SPUser</a> if one already exists for the 
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>aUser</em></dt>
-			<dd><p>The sp_<a href="#//api/name/user">user</a> struct to create an <a href="SPUser.html">SPUser</a> for.</p></dd>
+			<dd><p>The sp_<a href="#//api/name/user">user</a> struct to create an SPUser for.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -581,14 +601,16 @@ returns a cached <a href="SPUser.html">SPUser</a> if one already exists for the 
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPUser.html">SPUser</a> object.</p>
+		<p>Returns the created SPUser object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> For better performance and built-in caching, it is recommended
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> For better performance and built-in caching, it is recommended
 you create SPUser objects using <a href="#//api/name/userWithUserStruct:inSession:">[SPUser userWithUserStruct:inSession:]</a>,
 <a href="#//api/name/userWithURL:inSession:">[SPUser userWithURL:inSession:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
 	</div>
@@ -620,9 +642,9 @@ you create SPUser objects using <a href="#//api/name/userWithUserStruct:inSessio
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-21)</span><br />
 						
-						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
+						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						
 					</div>
 				</div>
@@ -710,6 +732,14 @@ you create SPUser objects using <a href="#//api/name/userWithUserStruct:inSessio
 			}
 			
 			window.onload = init;
+			
+			// If showing in Xcode, hide the TOC and Header
+			if (navigator.userAgent.match(/xcode/i)) {
+				document.getElementById("contents").className = "hideInXcode"
+				document.getElementById("tocContainer").className = "hideInXcode"
+				document.getElementById("top_header").className = "hideInXcode"
+			}
+			
 		</script>
 	</body>
 </html>

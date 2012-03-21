@@ -172,7 +172,7 @@ Playback
  most other API methods.
  
  @param userName The username of the user who wishes to log in.
- @param blob A login credential string previously provided by the `-session:didGenerateLoginCredentials:forUserName:` delegate method.
+ @param credential A login credential string previously provided by the `-session:didGenerateLoginCredentials:forUserName:` delegate method.
  @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
  
  */
@@ -664,6 +664,11 @@ Playback
 -(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount format:(const sp_audioformat *)audioFormat;
 
 @end
+
+/**
+ Delegate callbacks from SPSession specifically to do with delivering audio to the audio device. 
+ This protocol replaces the audio delivery method in `SPSessionPlaybackDelegate`.
+ */
 
 @protocol SPSessionAudioDeliveryDelegate <NSObject>
 

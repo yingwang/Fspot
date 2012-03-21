@@ -79,8 +79,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Initializes a new SPArtist from the given opaque sp_artist struct. 
  
  @warning *Important:* For better performance and built-in caching, it is recommended
- you create SPArtist objects using +[SPArtist artistWithArtistStruct:], 
- +[SPArtist artistWithArtistURL:] or the instance methods on SPSession.
+ you create SPArtist objects using +[SPArtist artistWithArtistStruct:inSession:], 
+ +[SPArtist artistWithArtistURL:inSession:] or the instance methods on SPSession.
  
  @param anArtist The sp_artist struct to create an SPArtist for.
  @param aSession The session to create the artist in.

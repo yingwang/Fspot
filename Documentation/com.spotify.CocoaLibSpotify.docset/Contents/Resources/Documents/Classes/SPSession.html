@@ -1,15 +1,21 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
 		<title>SPSession Class Reference</title>
-		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
 		<meta id="xcode-display" name="xcode-display" content="render"/>
 		<meta name="viewport" content="width=550" />
-		<link rel="stylesheet" type="text/css" href="../css/styles.css" />
-		<meta name="generator" content="appledoc 2.0.3 (build 684)" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
+		<link rel="stylesheet" type="text/css" media="print" href="../css/stylesPrint.css" />
+		<meta name="generator" content="appledoc 2.0.5 (build 789)" />
 	</head>
 	<body>
 		<header id="top_header">
+			<div id="library" class="hideInXcode">
+				<h1><a id="libraryTitle" href="../index.html">CocoaLibSpotify </a></h1>
+				<a id="developerHome" href="../index.html">Spotify AB</a>
+			</div>
+			
 			<div id="title" role="banner">
 				<h1 class="hideInXcode">SPSession Class Reference</h1>
 			</div>
@@ -33,6 +39,8 @@
 	
 	
 	<option value="properties">Properties</option>
+	
+	<option value="//api/name/audioDeliveryDelegate">&nbsp;&nbsp;&nbsp;&nbsp;audioDeliveryDelegate</option>
 	
 	<option value="//api/name/connectionState">&nbsp;&nbsp;&nbsp;&nbsp;connectionState</option>
 	
@@ -64,6 +72,8 @@
 	
 	<option value="//api/name/user">&nbsp;&nbsp;&nbsp;&nbsp;user</option>
 	
+	<option value="//api/name/userAgent">&nbsp;&nbsp;&nbsp;&nbsp;userAgent</option>
+	
 	<option value="//api/name/userPlaylists">&nbsp;&nbsp;&nbsp;&nbsp;userPlaylists</option>
 	
 	<option value="//api/name/usingVolumeNormalization">&nbsp;&nbsp;&nbsp;&nbsp;usingVolumeNormalization</option>
@@ -90,9 +100,13 @@
 	
 	<option value="//api/name/attemptLoginWithStoredCredentials:">&nbsp;&nbsp;&nbsp;&nbsp;- attemptLoginWithStoredCredentials:</option>
 	
+	<option value="//api/name/attemptLoginWithUserName:existingCredential:rememberCredentials:">&nbsp;&nbsp;&nbsp;&nbsp;- attemptLoginWithUserName:existingCredential:rememberCredentials:</option>
+	
 	<option value="//api/name/attemptLoginWithUserName:password:rememberCredentials:">&nbsp;&nbsp;&nbsp;&nbsp;- attemptLoginWithUserName:password:rememberCredentials:</option>
 	
 	<option value="//api/name/forgetStoredCredentials">&nbsp;&nbsp;&nbsp;&nbsp;- forgetStoredCredentials</option>
+	
+	<option value="//api/name/fushCaches">&nbsp;&nbsp;&nbsp;&nbsp;- fushCaches</option>
 	
 	<option value="//api/name/imageForURL:">&nbsp;&nbsp;&nbsp;&nbsp;- imageForURL:</option>
 	
@@ -127,6 +141,8 @@
 	<option value="//api/name/trackForTrackStruct:">&nbsp;&nbsp;&nbsp;&nbsp;- trackForTrackStruct:</option>
 	
 	<option value="//api/name/trackForURL:">&nbsp;&nbsp;&nbsp;&nbsp;- trackForURL:</option>
+	
+	<option value="//api/name/unknownPlaylistForPlaylistStruct:">&nbsp;&nbsp;&nbsp;&nbsp;- unknownPlaylistForPlaylistStruct:</option>
 	
 	<option value="//api/name/unloadPlayback">&nbsp;&nbsp;&nbsp;&nbsp;- unloadPlayback</option>
 	
@@ -172,6 +188,8 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#properties">Properties</a></span><ul>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/audioDeliveryDelegate">audioDeliveryDelegate</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/connectionState">connectionState</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/delegate">delegate</a></span></li>
@@ -202,6 +220,8 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/user">user</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/userAgent">userAgent</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/userPlaylists">userPlaylists</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/usingVolumeNormalization">usingVolumeNormalization</a></span></li>
@@ -230,9 +250,13 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attemptLoginWithStoredCredentials:">attemptLoginWithStoredCredentials:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attemptLoginWithUserName:existingCredential:rememberCredentials:">attemptLoginWithUserName:existingCredential:rememberCredentials:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attemptLoginWithUserName:password:rememberCredentials:">attemptLoginWithUserName:password:rememberCredentials:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/forgetStoredCredentials">forgetStoredCredentials</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fushCaches">fushCaches</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/imageForURL:">imageForURL:</a></span></li>
 	
@@ -268,6 +292,8 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/trackForURL:">trackForURL:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/unknownPlaylistForPlaylistStruct:">unknownPlaylistForPlaylistStruct:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/unloadPlayback">unloadPlayback</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/userForURL:">userForURL:</a></span></li>
@@ -300,6 +326,9 @@
 	<td class="specification-title">Inherits from</td>
 	<td class="specification-value">NSObject</td>
 </tr><tr>
+	<td class="specification-title">Conforms to</td>
+	<td class="specification-value">SPSessionPlaybackProvider</td>
+</tr><tr>
 	<td class="specification-title">Declared in</td>
 	<td class="specification-value">SPSession.h<br />SPSession.m</td>
 </tr>
@@ -312,7 +341,7 @@
 						<a title="Overview" name="overview"></a>
 						<h2 class="subtitle subtitle-overview">Overview</h2>
 						<p>This class provides core functionality for interacting with Spotify. You must have a valid, logged-in
-<a href="SPSession.html">SPSession</a> object before using any other part of the API.</p>
+SPSession object before using any other part of the API.</p>
 
 <p>To log in and use CocoaLibSpotify, you need two things:</p>
 
@@ -345,14 +374,14 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/sharedSession">+&nbsp;sharedSession</a></code>
-		<span class="tooltip"><p>Returns a shared <a href="SPSession.html">SPSession</a> object.</p></span>
+		<span class="tooltip"><p>Returns a shared SPSession object.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:error:">+&nbsp;initializeSharedSessionWithApplicationKey:userAgent:error:</a></code>
-		<span class="tooltip"><p>Initializes the shared <a href="SPSession.html">SPSession</a> object.</p></span>
+		<span class="tooltip"><p>Initializes the shared SPSession object.</p></span>
 	</span>
 	
 	
@@ -374,7 +403,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/initWithApplicationKey:userAgent:error:">&ndash;&nbsp;initWithApplicationKey:userAgent:error:</a></code>
-		<span class="tooltip"><p>Initialize a new <a href="SPSession.html">SPSession</a> object.</p></span>
+		<span class="tooltip"><p>Initialize a new SPSession object.</p></span>
 	</span>
 	
 	
@@ -382,6 +411,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	<span class="tooltip">
 		<code><a href="#//api/name/attemptLoginWithUserName:password:rememberCredentials:">&ndash;&nbsp;attemptLoginWithUserName:password:rememberCredentials:</a></code>
 		<span class="tooltip"><p>Attempt to login to the Spotify service.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/attemptLoginWithUserName:existingCredential:rememberCredentials:">&ndash;&nbsp;attemptLoginWithUserName:existingCredential:rememberCredentials:</a></code>
+		<span class="tooltip"><p>Attempt to login to the Spotify service using an existing login credentials blob.</p></span>
 	</span>
 	
 	
@@ -403,6 +439,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	<span class="tooltip">
 		<code><a href="#//api/name/forgetStoredCredentials">&ndash;&nbsp;forgetStoredCredentials</a></code>
 		<span class="tooltip"><p>Remove stored credentials from the encrypted store.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/fushCaches">&ndash;&nbsp;fushCaches</a></code>
+		<span class="tooltip"><p>Manually flush libSpotify&rsquo;s caches.</p></span>
 	</span>
 	
 	
@@ -445,7 +488,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/delegate">&nbsp;&nbsp;delegate</a></code>
-		<span class="tooltip"><p>Returns the current <a href="#//api/name/delegate">delegate</a> object.</p></span>
+		<span class="tooltip"><p>Returns the current delegate object.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -453,6 +496,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	<span class="tooltip">
 		<code><a href="#//api/name/session">&nbsp;&nbsp;session</a></code>
 		<span class="tooltip"><p>Returns the opaque structure used by the C LibSpotify API.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/userAgent">&nbsp;&nbsp;userAgent</a></code>
+		<span class="tooltip"><p>Returns the <a href="#//api/name/user">user</a> agent value the <a href="#//api/name/session">session</a> was initialized with.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -524,7 +574,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/locale">&nbsp;&nbsp;locale</a></code>
-		<span class="tooltip"><p>Returns the <a href="#//api/name/locale">locale</a> of the logged-in <a href="#//api/name/user">user</a>.</p></span>
+		<span class="tooltip"><p>Returns the locale of the logged-in <a href="#//api/name/user">user</a>.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -538,7 +588,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/user">&nbsp;&nbsp;user</a></code>
-		<span class="tooltip"><p>Returns the current logged in <a href="#//api/name/user">user</a>.</p></span>
+		<span class="tooltip"><p>Returns the current logged in user.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -644,6 +694,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	
 </li><li>
 	<span class="tooltip">
+		<code><a href="#//api/name/unknownPlaylistForPlaylistStruct:">&ndash;&nbsp;unknownPlaylistForPlaylistStruct:</a></code>
+		<span class="tooltip"><p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
 		<code><a href="#//api/name/trackForTrackStruct:">&ndash;&nbsp;trackForTrackStruct:</a></code>
 		<span class="tooltip"><p>Create and cache an <a href="../Classes/SPTrack.html">SPTrack</a> for the given sp_track struct from the C LibSpotify API.</p></span>
 	</span>
@@ -675,7 +732,7 @@ sound level of each track the same), otherwise <code>NO</code>.</p></span>
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/playing">&nbsp;&nbsp;playing</a></code>
-		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently <a href="#//api/name/playing">playing</a> a track, otherwise <code>NO</code>.</p></span>
+		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently playing a track, otherwise <code>NO</code>.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -683,6 +740,13 @@ sound level of each track the same), otherwise <code>NO</code>.</p></span>
 	<span class="tooltip">
 		<code><a href="#//api/name/playbackDelegate">&nbsp;&nbsp;playbackDelegate</a></code>
 		<span class="tooltip"><p>Returns the session&rsquo;s playback <a href="#//api/name/delegate">delegate</a> object.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/audioDeliveryDelegate">&nbsp;&nbsp;audioDeliveryDelegate</a></code>
+		<span class="tooltip"><p>Returns the session&rsquo;s audio delivery <a href="#//api/name/delegate">delegate</a> object.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -728,6 +792,46 @@ sound level of each track the same), otherwise <code>NO</code>.</p></span>
 						<h2 class="subtitle subtitle-methods">Properties</h2>
 						
 						<div class="section-method">
+	<a name="//api/name/audioDeliveryDelegate" title="audioDeliveryDelegate"></a>
+	<h3 class="subsubtitle method-title">audioDeliveryDelegate</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the session&rsquo;s audio delivery <a href="#//api/name/delegate">delegate</a> object.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, nonatomic, assign) __weak id&lt;&gt; audioDeliveryDelegate</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>The audio delivery <a href="#//api/name/delegate">delegate</a> is responsible for pushing raw audio data provided by the <a href="#//api/name/session">session</a>
+to the system&rsquo;s audio output. See the SimplePlayback sample project for an example of how to do this.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/connectionState" title="connectionState"></a>
 	<h3 class="subsubtitle method-title">connectionState</h3>
 	
@@ -738,7 +842,9 @@ sound level of each track the same), otherwise <code>NO</code>.</p></span>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) sp_connectionstate connectionState</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) sp_connectionstate connectionState</code></div>
+	
+	
 	
 	
 	
@@ -786,11 +892,13 @@ The connection state is undefined.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the current <a href="#//api/name/delegate">delegate</a> object.</p>
+		<p>Returns the current delegate object.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) __weak id&lt;SPSessionDelegate&gt; delegate</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) __weak id&lt;&gt; delegate</code></div>
+	
+	
 	
 	
 	
@@ -822,7 +930,9 @@ The connection state is undefined.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPPlaylist *inboxPlaylist</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPPlaylist *inboxPlaylist</code></div>
+	
+	
 	
 	
 	
@@ -856,11 +966,13 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the <a href="#//api/name/locale">locale</a> of the logged-in <a href="#//api/name/user">user</a>.</p>
+		<p>Returns the locale of the logged-in <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) NSLocale *locale</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) NSLocale *locale</code></div>
+	
+	
 	
 	
 	
@@ -892,7 +1004,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) NSTimeInterval offlineKeyTimeRemaining</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) NSTimeInterval offlineKeyTimeRemaining</code></div>
+	
+	
 	
 	
 	
@@ -924,7 +1038,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) NSUInteger offlinePlaylistsRemaining</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) NSUInteger offlinePlaylistsRemaining</code></div>
+	
+	
 	
 	
 	
@@ -956,7 +1072,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSDictionary *offlineStatistics</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSDictionary *offlineStatistics</code></div>
+	
+	
 	
 	
 	
@@ -988,7 +1106,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) NSError *offlineSyncError</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) NSError *offlineSyncError</code></div>
+	
+	
 	
 	
 	
@@ -1020,7 +1140,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, getter=isOfflineSyncing) BOOL offlineSyncing</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, getter=isOfflineSyncing) BOOL offlineSyncing</code></div>
+	
+	
 	
 	
 	
@@ -1052,7 +1174,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) NSUInteger offlineTracksRemaining</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) NSUInteger offlineTracksRemaining</code></div>
+	
+	
 	
 	
 	
@@ -1084,7 +1208,9 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) __weak id&lt;SPSessionPlaybackDelegate&gt; playbackDelegate</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, nonatomic, assign) __weak id&lt;&gt; playbackDelegate</code></div>
+	
+	
 	
 	
 	
@@ -1093,8 +1219,8 @@ updated as new tracks are sent to the <a href="#//api/name/user">user</a>.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>The playback <a href="#//api/name/delegate">delegate</a> is responsible for pushing raw audio data provided by the <a href="#//api/name/session">session</a>
-to the system&rsquo;s audio output. See the SimplePlayback sample project for an example of how to do this.</p>
+		<p>The playback <a href="#//api/name/delegate">delegate</a> is responsible for dealing with playback events from CocoaLibSpotify, such as
+playback ending or being paused because the account is being used for playback elsewhere.</p>
 	</div>
 	
 	
@@ -1118,11 +1244,13 @@ to the system&rsquo;s audio output. See the SimplePlayback sample project for an
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently <a href="#//api/name/playing">playing</a> a track, otherwise <code>NO</code>.</p>
+		<p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently playing a track, otherwise <code>NO</code>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readwrite, getter=isPlaying) BOOL playing</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readwrite, getter=isPlaying) BOOL playing</code></div>
+	
+	
 	
 	
 	
@@ -1154,7 +1282,9 @@ to the system&rsquo;s audio output. See the SimplePlayback sample project for an
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) sp_session *session</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) sp_session *session</code></div>
+	
+	
 	
 	
 	
@@ -1163,7 +1293,7 @@ to the system&rsquo;s audio output. See the SimplePlayback sample project for an
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> This should only be used if you plan to directly use the
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This should only be used if you plan to directly use the
 C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
 API directly on items that have CocoaLibSpotify objects associated with them.</p></div>
 	</div>
@@ -1193,7 +1323,9 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPPlaylist *starredPlaylist</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPPlaylist *starredPlaylist</code></div>
+	
+	
 	
 	
 	
@@ -1227,11 +1359,47 @@ starred or unstarred.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the current logged in <a href="#//api/name/user">user</a>.</p>
+		<p>Returns the current logged in user.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPUser *user</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPUser *user</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/userAgent" title="userAgent"></a>
+	<h3 class="subsubtitle method-title">userAgent</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the <a href="#//api/name/user">user</a> agent value the <a href="#//api/name/session">session</a> was initialized with.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, copy, readonly) NSString *userAgent</code></div>
+	
+	
 	
 	
 	
@@ -1263,7 +1431,9 @@ starred or unstarred.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPPlaylistContainer *userPlaylists</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPPlaylistContainer *userPlaylists</code></div>
+	
+	
 	
 	
 	
@@ -1305,7 +1475,9 @@ sound level of each track the same), otherwise <code>NO</code>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization</code></div>
+	
+	
 	
 	
 	
@@ -1314,7 +1486,7 @@ sound level of each track the same), otherwise <code>NO</code>.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> This property currently has no effect on iOS platforms.</p></div>
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This property currently has no effect on iOS platforms.</p></div>
 	</div>
 	
 	
@@ -1346,7 +1518,7 @@ sound level of each track the same), otherwise <code>NO</code>.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Initializes the shared <a href="SPSession.html">SPSession</a> object.</p>
+		<p>Initializes the shared SPSession object.</p>
 	</div>		
 	
 	
@@ -1377,12 +1549,14 @@ sound level of each track the same), otherwise <code>NO</code>.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Your application key and <a href="#//api/name/user">user</a> agent must be valid to create an <a href="SPSession.html">SPSession</a> object.</p><div class="warning"><p><strong>Important:</strong> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
+		<p>Your application key and <a href="#//api/name/user">user</a> agent must be valid to create an SPSession object.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
 support using multiple sessions in the same process. While you can either create and
 store your SPSession object using this convenience method or yourself using <a href="#//api/name/initWithApplicationKey:userAgent:error:">[SPSession initWithApplicationKey:userAgent:error:]</a>,
-make sure you only have <em>one</em> instance of <a href="SPSession.html">SPSession</a> active in your process at a time.</p></div>
+make sure you only have <em>one</em> instance of SPSession active in your process at a time.</p></div>
 	</div>
 	
 	
@@ -1422,6 +1596,8 @@ make sure you only have <em>one</em> instance of <a href="SPSession.html">SPSess
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This could be useful to display somewhere deep down in the <a href="#//api/name/user">user</a> interface in
@@ -1449,7 +1625,7 @@ case you (or Spotify) would like to know the exact version running.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns a shared <a href="SPSession.html">SPSession</a> object.</p>
+		<p>Returns a shared SPSession object.</p>
 	</div>		
 	
 	
@@ -1460,12 +1636,14 @@ case you (or Spotify) would like to know the exact version running.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This is a convenience method for creating and storing a single <a href="SPSession.html">SPSession</a> instance.</p><div class="warning"><p><strong>Important:</strong> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
+		<p>This is a convenience method for creating and storing a single SPSession instance.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
 support using multiple sessions in the same process. While you can either create and
 store your SPSession object using this convenience method or yourself using <a href="#//api/name/init">[SPSession init]</a>,
-make sure you only have <em>one</em> instance of <a href="SPSession.html">SPSession</a> active in your process at a time.</p></div><div class="warning"><p><strong>Important:</strong> This will return <code>nil</code> until <a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:error:">[SPSession initializeSharedSessionWithApplicationKey:userAgent:error:]</a> is
+make sure you only have <em>one</em> instance of SPSession active in your process at a time.</p></div><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This will return <code>nil</code> until <a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:error:">[SPSession initializeSharedSessionWithApplicationKey:userAgent:error:]</a> is
 successfully called.</p></div>
 	</div>
 	
@@ -1525,6 +1703,8 @@ successfully called.</p></div>
 	
 	
 	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -1556,6 +1736,8 @@ successfully called.</p></div>
 		</dl>
 		
 	</div>
+	
+	
 	
 	
 	
@@ -1608,9 +1790,71 @@ successfully called.</p></div>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/attemptLoginWithUserName:existingCredential:rememberCredentials:" title="attemptLoginWithUserName:existingCredential:rememberCredentials:"></a>
+	<h3 class="subsubtitle method-title">attemptLoginWithUserName:existingCredential:rememberCredentials:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Attempt to login to the Spotify service using an existing login credentials blob.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)attemptLoginWithUserName:(NSString *)<em>userName</em> existingCredential:(NSString *)<em>credential</em> rememberCredentials:(BOOL)<em>rememberMe</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userName</em></dt>
+			<dd><p>The username of the <a href="#//api/name/user">user</a> who wishes to log in.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>credential</em></dt>
+			<dd><p>A login credential string previously provided by the <code>-session:didGenerateLoginCredentials:forUserName:</code> <a href="#//api/name/delegate">delegate</a> method.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>rememberMe</em></dt>
+			<dd><p><code>YES</code> if the user&rsquo;s credentials should be saved in libspotify&rsquo;s encrypted store, replacing any previous credentials, otherwise <code>NO</code>.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> You must have successfully logged in to the Spotify service before using
+most other API methods.</p></div>
 	</div>
 	
 	
@@ -1656,7 +1900,7 @@ successfully called.</p></div>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>rememberMe</em></dt>
-			<dd><p><code>YES</code> if the user&rsquo;s credentials should be saved in libspotify&rsquo;s encrypted store, otherwise <code>NO</code>.</p></dd>
+			<dd><p><code>YES</code> if the user&rsquo;s credentials should be saved in libspotify&rsquo;s encrypted store, replacing any previous credentials, otherwise <code>NO</code>.</p></dd>
 		</dl>
 		
 	</div>
@@ -1665,9 +1909,11 @@ successfully called.</p></div>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Important:</strong> You must have successfully logged in to the Spotify service before using
+		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> You must have successfully logged in to the Spotify service before using
 most other API methods.</p></div>
 	</div>
 	
@@ -1703,10 +1949,52 @@ most other API methods.</p></div>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method will cleanly log out from the Spotify service and clear any in-memory caches.
 Called automatically when the instance is deallocated.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/fushCaches" title="fushCaches"></a>
+	<h3 class="subsubtitle method-title">fushCaches</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Manually flush libSpotify&rsquo;s caches.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)fushCaches</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method will force libSpotify to flush its caches. If you&rsquo;re writing an iOS application, call
+this when your application is put into the background to ensure correct operation.</p>
 	</div>
 	
 	
@@ -1757,6 +2045,8 @@ Called automatically when the instance is deallocated.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -1772,7 +2062,7 @@ Called automatically when the instance is deallocated.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Initialize a new <a href="SPSession.html">SPSession</a> object.</p>
+		<p>Initialize a new SPSession object.</p>
 	</div>		
 	
 	
@@ -1803,14 +2093,16 @@ Called automatically when the instance is deallocated.</p>
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns a newly initialised <a href="SPSession.html">SPSession</a> object.</p>
+		<p>Returns a newly initialised SPSession object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Your application key and <a href="#//api/name/user">user</a> agent must be valid to create an <a href="SPSession.html">SPSession</a> object. This is SPSession&rsquo;s designated initializer.</p>
+		<p>Your application key and <a href="#//api/name/user">user</a> agent must be valid to create an SPSession object. This is SPSession&rsquo;s designated initializer.</p>
 	</div>
 	
 	
@@ -1839,6 +2131,8 @@ Called automatically when the instance is deallocated.</p>
 	
 	
 	<div class="method-subsection method-declaration"><code>- (void)logout</code></div>
+	
+	
 	
 	
 	
@@ -1900,6 +2194,8 @@ Called automatically when the instance is deallocated.</p>
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
 		<p>Returns an <a href="../Classes/SPAlbum.html">SPAlbum</a>, <a href="../Classes/SPArtist.html">SPArtist</a>, <a href="../Classes/SPPlaylist.html">SPPlaylist</a>, <a href="../Classes/SPSearch.html">SPSearch</a>, <a href="../Classes/SPTrack.html">SPTrack</a> or <a href="../Classes/SPUser.html">SPUser</a> object for the given URL, or <code>nil</code> if the URL is invalid.</p>
 	</div>
+	
+	
 	
 	
 	
@@ -1967,6 +2263,8 @@ what the given URL represents and returns that for you.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -2010,6 +2308,8 @@ what the given URL represents and returns that for you.</p>
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
 		<p>Returns the created or cached <a href="../Classes/SPPlaylistFolder.html">SPPlaylistFolder</a> object.</p>
 	</div>
+	
+	
 	
 	
 	
@@ -2065,6 +2365,8 @@ what the given URL represents and returns that for you.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method caches SPPlaylist objects using the same cache the [SPPlaylist playlist&hellip;]
@@ -2108,6 +2410,8 @@ convenience methods use.</p>
 		</dl>
 		
 	</div>
+	
+	
 	
 	
 	
@@ -2175,9 +2479,11 @@ convenience methods use.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> Tracks will be posted to the given <a href="#//api/name/user">user</a> as soon as this
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> Tracks will be posted to the given <a href="#//api/name/user">user</a> as soon as this
 method is called. Be sure you want to post the tracks before doing so!</p></div>
 	</div>
 	
@@ -2244,6 +2550,8 @@ method is called. Be sure you want to post the tracks before doing so!</p></div>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>For smooth changes between tracks, you can use this method to start loading track playback
@@ -2299,6 +2607,8 @@ to the next track during normal playback.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -2330,6 +2640,8 @@ to the next track during normal playback.</p>
 		</dl>
 		
 	</div>
+	
+	
 	
 	
 	
@@ -2377,6 +2689,8 @@ to the next track during normal playback.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>Set to 0 (the default) to automatically manage the cache, using at most 10% of the free disk space.</p>
@@ -2419,6 +2733,8 @@ to the next track during normal playback.</p>
 		</dl>
 		
 	</div>
+	
+	
 	
 	
 	
@@ -2473,6 +2789,8 @@ to the next track during normal playback.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -2511,6 +2829,8 @@ to the next track during normal playback.</p>
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
 		<p>Returns the created or cached <a href="../Classes/SPTrack.html">SPTrack</a> object.</p>
 	</div>
+	
+	
 	
 	
 	
@@ -2568,6 +2888,63 @@ convenience methods use.</p>
 	
 	
 	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/unknownPlaylistForPlaylistStruct:" title="unknownPlaylistForPlaylistStruct:"></a>
+	<h3 class="subsubtitle method-title">unknownPlaylistForPlaylistStruct:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (SPUnknownPlaylist *)unknownPlaylistForPlaylistStruct:(sp_playlist *)<em>playlist</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>playlist</em></dt>
+			<dd><p>The sp_playlist struct.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p>Returns the created or cached <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> object.</p>
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method caches SPUnknownPlaylist objects using the same cache the [SPPlaylist playlist&hellip;]
+convenience methods use.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -2588,6 +2965,8 @@ convenience methods use.</p>
 	
 	
 	<div class="method-subsection method-declaration"><code>- (void)unloadPlayback</code></div>
+	
+	
 	
 	
 	
@@ -2648,6 +3027,8 @@ instance deallocation.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection declared-in-section">
 		<h4 class="method-subtitle">Declared In</h4>
 		<code class="declared-in-ref">SPSession.h</code><br />
@@ -2689,6 +3070,8 @@ instance deallocation.</p>
 	
 	
 	
+	
+	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method caches SPUser objects using the same cache the [SPUser user&hellip;]
@@ -2722,9 +3105,9 @@ convenience methods use.</p>
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-21)</span><br />
 						
-						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
+						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						
 					</div>
 				</div>
@@ -2812,6 +3195,14 @@ convenience methods use.</p>
 			}
 			
 			window.onload = init;
+			
+			// If showing in Xcode, hide the TOC and Header
+			if (navigator.userAgent.match(/xcode/i)) {
+				document.getElementById("contents").className = "hideInXcode"
+				document.getElementById("tocContainer").className = "hideInXcode"
+				document.getElementById("top_header").className = "hideInXcode"
+			}
+			
 		</script>
 	</body>
 </html>
