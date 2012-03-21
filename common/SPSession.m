@@ -347,6 +347,7 @@ static void play_token_lost(sp_session *session) {
  */
 static void end_of_track(sp_session *session) {
 	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	sess.playing = NO;
 	
     SEL selector = @selector(sessionDidEndPlayback:);
     
