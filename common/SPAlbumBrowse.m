@@ -61,7 +61,6 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	SPAlbumBrowse *albumBrowse = userdata;
 	
-	albumBrowse.loaded = sp_albumbrowse_is_loaded(result);
 	sp_error errorCode = sp_albumbrowse_error(result);
 	
 	if (errorCode != SP_ERROR_OK) {
@@ -70,7 +69,9 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		albumBrowse.loadError = nil;
 	}
 	
-	if (albumBrowse.isLoaded) {
+	BOOL loaded = sp_albumbrowse_is_loaded(result);
+	
+	if (loaded) {
 		
 		albumBrowse.review = [NSString stringWithUTF8String:sp_albumbrowse_review(result)];
 		albumBrowse.artist = [SPArtist artistWithArtistStruct:sp_albumbrowse_artist(result) inSession:albumBrowse.session];
@@ -95,6 +96,8 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		
 		albumBrowse.copyrights = [NSArray arrayWithArray:copyrights];
 	}
+	
+	albumBrowse.loaded = loaded;
 	
 	[pool drain];
 }
