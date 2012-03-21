@@ -404,8 +404,9 @@ static void offline_status_updated(sp_session *session) {
 	sess.offlineStatistics = [NSDictionary dictionaryWithDictionary:mutableStats];
 	
 		
-	for (SPPlaylist *playlist in [sess.playlistCache allValues]) {
-		[playlist offlineSyncStatusMayHaveChanged];
+	for (id playlistOrFolder in [sess.playlistCache allValues]) {
+		if ([playlistOrFolder respondsToSelector:@selector(offlineSyncStatusMayHaveChanged)])
+			[playlistOrFolder offlineSyncStatusMayHaveChanged];
 	}
 	
 	[pool drain];
