@@ -104,9 +104,9 @@
 	
 	<option value="//api/name/attemptLoginWithUserName:password:rememberCredentials:">&nbsp;&nbsp;&nbsp;&nbsp;- attemptLoginWithUserName:password:rememberCredentials:</option>
 	
-	<option value="//api/name/forgetStoredCredentials">&nbsp;&nbsp;&nbsp;&nbsp;- forgetStoredCredentials</option>
+	<option value="//api/name/flushCaches">&nbsp;&nbsp;&nbsp;&nbsp;- flushCaches</option>
 	
-	<option value="//api/name/fushCaches">&nbsp;&nbsp;&nbsp;&nbsp;- fushCaches</option>
+	<option value="//api/name/forgetStoredCredentials">&nbsp;&nbsp;&nbsp;&nbsp;- forgetStoredCredentials</option>
 	
 	<option value="//api/name/imageForURL:">&nbsp;&nbsp;&nbsp;&nbsp;- imageForURL:</option>
 	
@@ -254,9 +254,9 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attemptLoginWithUserName:password:rememberCredentials:">attemptLoginWithUserName:password:rememberCredentials:</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/forgetStoredCredentials">forgetStoredCredentials</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/flushCaches">flushCaches</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fushCaches">fushCaches</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/forgetStoredCredentials">forgetStoredCredentials</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/imageForURL:">imageForURL:</a></span></li>
 	
@@ -444,7 +444,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/fushCaches">&ndash;&nbsp;fushCaches</a></code>
+		<code><a href="#//api/name/flushCaches">&ndash;&nbsp;flushCaches</a></code>
 		<span class="tooltip"><p>Manually flush libSpotify&rsquo;s caches.</p></span>
 	</span>
 	
@@ -695,7 +695,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/unknownPlaylistForPlaylistStruct:">&ndash;&nbsp;unknownPlaylistForPlaylistStruct:</a></code>
-		<span class="tooltip"><p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
+		<span class="tooltip"><p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
 	</span>
 	
 	
@@ -1932,6 +1932,46 @@ most other API methods.</p></div>
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/flushCaches" title="flushCaches"></a>
+	<h3 class="subsubtitle method-title">flushCaches</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Manually flush libSpotify&rsquo;s caches.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)flushCaches</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method will force libSpotify to flush its caches. If you&rsquo;re writing an iOS application, call
+this when your application is put into the background to ensure correct operation.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/forgetStoredCredentials" title="forgetStoredCredentials"></a>
 	<h3 class="subsubtitle method-title">forgetStoredCredentials</h3>
 	
@@ -1955,46 +1995,6 @@ most other API methods.</p></div>
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method will cleanly log out from the Spotify service and clear any in-memory caches.
 Called automatically when the instance is deallocated.</p>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPSession.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/fushCaches" title="fushCaches"></a>
-	<h3 class="subsubtitle method-title">fushCaches</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Manually flush libSpotify&rsquo;s caches.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (void)fushCaches</code></div>
-	
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>This method will force libSpotify to flush its caches. If you&rsquo;re writing an iOS application, call
-this when your application is put into the background to ensure correct operation.</p>
 	</div>
 	
 	
@@ -2905,7 +2905,7 @@ convenience methods use.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
+		<p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
 	</div>		
 	
 	
@@ -2926,7 +2926,7 @@ convenience methods use.</p>
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created or cached <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> object.</p>
+		<p>Returns the created or cached SPUnknownPlaylist object.</p>
 	</div>
 	
 	
@@ -3105,7 +3105,7 @@ convenience methods use.</p>
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-21)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-22)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

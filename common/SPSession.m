@@ -665,7 +665,7 @@ static SPSession *sharedSession;
         sp_session_forget_me(session);
 }
 
--(void)fushCaches {
+-(void)flushCaches {
 	if (session)
 		sp_session_flush_caches(session);
 }

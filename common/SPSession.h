@@ -208,7 +208,7 @@ Playback
  This method will force libSpotify to flush its caches. If you're writing an iOS application, call
  this when your application is put into the background to ensure correct operation.
  */
--(void)fushCaches;
+-(void)flushCaches;
 
 /** Log out from the Spotify service.
  
