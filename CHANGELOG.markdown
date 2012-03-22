@@ -14,3 +14,5 @@ CocoaLibSpotify for libspotify 11, released March 21st 2012
 * Added `[SPSession -flushCaches]`, appropriate for use when iOS applications go into the background. This will ensure libspotify's caches are flushed to disk so saved logins and so on will be saved.
 
 * Added the `audioDeliveryDelegate` property to `SPSession`, which conforms to the `<SPSessionAudioDeliveryDelegate>` protocol, which allows you more freedom in your audio pipeline. The new protocol also uses standard Core Audio types to ease integration.
+
+* Added SPLoginViewController to the iOS library. This view controller provides a Spotify-designed login and signup flow.

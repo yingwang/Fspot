@@ -30,20 +30,16 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIKit.h>
+#import "CocoaLibSpotify.h"
+#import "SPLoginViewController.h"
 
-@interface SPLoginViewController : UIViewController {
-	UITextField *usernameField;
-	UITextField *passwordField;
-	UIButton *loginButton;
-	UIActivityIndicatorView *spinner;
-}
+@interface SPLoginViewController (SPLoginViewControllerInternal)
 
-@property (nonatomic, retain) IBOutlet UITextField *usernameField;
-@property (nonatomic, retain) IBOutlet UITextField *passwordField;
-@property (nonatomic, retain) IBOutlet UIButton *loginButton;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *spinner;
+-(void)handleShowSignupPage:(sp_signup_page)page loading:(BOOL)isLoading featureMask:(NSInteger)features recentUserName:(NSString *)name;
+-(void)handleShowSignupErrorPage:(sp_signup_page)page error:(NSError *)error;
+-(void)handleConnectToFacebookWithPermissions:(NSArray *)permissions;
 
-- (IBAction)performLogin:(id)sender;
+-(void)dismissLoginView:(BOOL)success;
 
 @end
+

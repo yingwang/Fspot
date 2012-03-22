@@ -18,14 +18,15 @@ The built CocoaLibSpotify.framework contains libspotify.framework as a child fra
 
 Otherwise, you'd point to the downloaded libspotify.framework manually, something like this:
 
-`../../libspotify-11.1.45-Darwin-universal`
+`../../libspotify-11.1.56-Darwin-universal`
 
 ## Building - iOS ##
 
 The Xcode project requires Xcode 4.0 or higher. Building using the latest version of Xcode is always recommended.
 
-
 The built libCocoaLibSpotify contains libspotify internally as a static library, as well as all of the required header files in a directory called "include".
+
+In addition, you MUST include SPLoginResources.bundle as a resource of your application.
 
 When including libCocoaLibSpotify in your application, you must also link to the following frameworks:
 

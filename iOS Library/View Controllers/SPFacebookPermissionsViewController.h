@@ -1,10 +1,10 @@
 //
-//  SPLoginViewController.h
-//  Simple Player
+//  SPFacebookPermissionsViewController.h
+//  CocoaLibSpotify iOS Library
 //
-//  Created by Daniel Kennett on 10/3/11.
+//  Created by Daniel Kennett on 24/03/2012.
 /*
- Copyright (c) 2011, Spotify AB
+ Copyright (c) 2012, Spotify AB
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -30,20 +30,16 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIKit.h>
+#import "SPSignupViewController.h"
+#import "CocoaLibSpotify.h"
 
-@interface SPLoginViewController : UIViewController {
-	UITextField *usernameField;
-	UITextField *passwordField;
-	UIButton *loginButton;
-	UIActivityIndicatorView *spinner;
+@interface SPFacebookPermissionsViewController : SPSignupViewController {
+	NSArray *permissions;
+	id <SPSignupPageDelegate> delegate;
 }
 
-@property (nonatomic, retain) IBOutlet UITextField *usernameField;
-@property (nonatomic, retain) IBOutlet UITextField *passwordField;
-@property (nonatomic, retain) IBOutlet UIButton *loginButton;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *spinner;
+-(id)initWithPermissions:(NSArray *)permissions inSession:(SPSession *)aSession;
 
-- (IBAction)performLogin:(id)sender;
+@property (nonatomic, readwrite, assign) id <SPSignupPageDelegate> delegate;
 
 @end

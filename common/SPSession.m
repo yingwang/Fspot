@@ -49,6 +49,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPPlaylistFolderInternal.h"
 #import "SPPlaylistItem.h"
 #import "SPUnknownPlaylist.h"
+#import "SPLoginViewControllerInternal.h"
 
 @interface NSObject (SPLoadedObject)
 -(BOOL)checkLoaded;
@@ -109,14 +110,18 @@ static void connection_error(sp_session *session, sp_error error) {
  */
 static void logged_in(sp_session *session, sp_error error) {
 	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	if (error != SP_ERROR_OK) {
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionLoginDidFailNotification
+															object:sess
+														  userInfo:[NSDictionary dictionaryWithObject:[NSError spotifyErrorWithCode:error]
+																							   forKey:SPSessionLoginDidFailErrorKey]];
     
 		SEL selector = @selector(session:didFailToLoginWithError:);
         
         if ([[sess delegate] respondsToSelector:selector]) {
-            
-            NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
             [[sess delegate] performSelector:selector
                                   withObject:sess
                                   withObject:[NSError spotifyErrorWithCode:error]];
@@ -127,16 +132,17 @@ static void logged_in(sp_session *session, sp_error error) {
     
     sess.connectionState = sp_session_connectionstate(session);
     
+	[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionLoginDidSucceedNotification object:sess];
+	
 	SEL selector = @selector(sessionDidLoginSuccessfully:);
     
     if ([[sess delegate] respondsToSelector:selector]) {
-        
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         [[sess delegate] performSelector:selector
                               withObject:sess];
-        [pool drain];
     }
-    
+ 
+	
+	[pool drain];
 }
 
 /**
@@ -151,6 +157,8 @@ static void logged_out(sp_session *session) {
 	
 	sess.connectionState = sp_session_connectionstate(session);
     
+	[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionDidLogoutNotification object:sess];
+	
     SEL selector = @selector(sessionDidLogOut:);
     
     if ([[sess delegate] respondsToSelector:selector]) {
@@ -438,6 +446,46 @@ static void credentials_blob_updated(sp_session *session, const char *blob) {
 	[pool drain];
 }
 
+#if TARGET_OS_IPHONE
+
+#import "SPLoginViewController.h"
+
+static void show_signup_page(sp_session *session, sp_signup_page page, bool pageIsLoading, int featureMask, const char *recentUserName) {
+	
+	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[[SPLoginViewController loginControllerForSession:sess] handleShowSignupPage:page
+																		 loading:pageIsLoading
+																	 featureMask:featureMask
+																  recentUserName:[NSString stringWithUTF8String:recentUserName]];
+	[pool drain];
+}
+
+static void show_signup_error_page(sp_session *session, sp_signup_page page, sp_error error) {
+	
+	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[[SPLoginViewController loginControllerForSession:sess] handleShowSignupErrorPage:page
+																				error:[NSError spotifyErrorWithCode:error]];
+	[pool drain];
+}
+
+static void connect_to_facebook(sp_session *session, const char **permissions, int permission_count) {
+	
+	SPSession *sess = (SPSession *)sp_session_userdata(session);
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSMutableArray *permissionStrs = [NSMutableArray arrayWithCapacity:permission_count];
+	for (int i = 0; i < permission_count; i++)
+		[permissionStrs addObject:[NSString stringWithUTF8String:permissions[i]]];
+	
+	[[SPLoginViewController loginControllerForSession:sess] handleConnectToFacebookWithPermissions:permissionStrs];
+	
+	[pool drain];
+}
+
+#endif
+
 static sp_session_callbacks _callbacks = {
 	&logged_in,
 	&logged_out,
@@ -456,7 +504,12 @@ static sp_session_callbacks _callbacks = {
 	NULL, //get_audio_buffer_stats
 	&offline_status_updated,
 	&offline_error,
-	&credentials_blob_updated
+	&credentials_blob_updated,
+#if TARGET_OS_IPHONE
+	&show_signup_page,
+	&show_signup_error_page,
+	&connect_to_facebook
+#endif
 };
 
 #pragma mark -

@@ -609,6 +609,21 @@ Playback
  */
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage;
 
+#if TARGET_OS_IPHONE
+
+/** Called when the session needs to present a view controller to allow the user to login, sign up
+ or confirm Facebook access permissions.
+ 
+ @warning *Important:* While this typically happens around login, it can happen at any point. When this method
+ is called, your application should make sure it's in a state appropriate for displaying a login view.
+ 
+ @param aSession The session needing to display UI.
+ @return A view controller appropriate for the given session to present a modal view controller over.
+ */
+-(UIViewController *)viewControllerToPresentLoginViewForSession:(SPSession *)aSession;
+
+#endif
+
 @end
 
 /** Delegate callbacks from SPSession specifically to do with audio playback. */
@@ -729,3 +744,19 @@ static NSString * const SPOfflineStatisticsWillNotCopyTrackCountKey = @"SPOfflin
 
 /** Whether tracks are currently being synced as a boolean `NSNumber`. */
 static NSString * const SPOfflineStatisticsIsSyncingKey = @"SPOfflineStatisticsIsSyncing";
+
+///----------------------------
+/// @name NSNotification Keys
+///----------------------------
+
+/** @constant Sent when the user failed to log into the Spotify service. */
+static NSString * const SPSessionLoginDidFailNotification = @"SPSessionLoginDidFailNotification";
+
+/** @constant The userinfo key containing the error detailing the login failure reason in `SPSessionLoginDidFailNotification`. */
+static NSString * const SPSessionLoginDidFailErrorKey = @"error";
+
+/** @constant Sent when the user successfully logged in to the Spotify service. */
+static NSString * const SPSessionLoginDidSucceedNotification = @"SPSessionLoginDidSucceedNotification";
+
+/** @constant Sent when the user logged out from the Spotify service. */
+static NSString * const SPSessionDidLogoutNotification = @"SPSessionDidLogoutNotification";

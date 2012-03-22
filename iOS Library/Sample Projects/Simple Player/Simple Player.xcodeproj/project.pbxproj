@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		5002BD6C1439DE2400FEAB3C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5002BD6B1439DE2400FEAB3C /* AudioToolbox.framework */; };
-		5002BD7A1439E49700FEAB3C /* SPLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5002BD781439E49700FEAB3C /* SPLoginViewController.m */; };
 		5002BD7D1439E8E800FEAB3C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5002BD7C1439E8E800FEAB3C /* SystemConfiguration.framework */; };
 		5002BD7F1439E8FC00FEAB3C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5002BD7E1439E8FC00FEAB3C /* CFNetwork.framework */; };
 		5002BD811439E90400FEAB3C /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5002BD801439E90400FEAB3C /* libstdc++.dylib */; };
@@ -24,8 +23,8 @@
 		50AF49BD1439CB6D00E4A5EF /* Simple_PlayerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 50AF49BC1439CB6D00E4A5EF /* Simple_PlayerAppDelegate.m */; };
 		50AF49C41439CB6D00E4A5EF /* MainWindow_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50AF49C21439CB6D00E4A5EF /* MainWindow_iPhone.xib */; };
 		50AF49CB1439CB6D00E4A5EF /* MainWindow_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50AF49C91439CB6D00E4A5EF /* MainWindow_iPad.xib */; };
-		50FAA136143A02AE00FF06D7 /* SPLoginViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50FAA138143A02AE00FF06D7 /* SPLoginViewController_iPhone.xib */; };
-		50FAA139143A02B300FF06D7 /* SPLoginViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50FAA13B143A02B300FF06D7 /* SPLoginViewController_iPad.xib */; };
+		50DBB5E11520BF6100BF516F /* SPLoginResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 50DBB5E01520BF6100BF516F /* SPLoginResources.bundle */; };
+		50DBB5E41520C2B800BF516F /* RotatableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50DBB5E31520C2B800BF516F /* RotatableViewController.m */; };
 		50FAA141143A0B1400FF06D7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FAA140143A0B1400FF06D7 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -48,8 +47,6 @@
 
 /* Begin PBXFileReference section */
 		5002BD6B1439DE2400FEAB3C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		5002BD771439E49700FEAB3C /* SPLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPLoginViewController.h; sourceTree = "<group>"; };
-		5002BD781439E49700FEAB3C /* SPLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPLoginViewController.m; sourceTree = "<group>"; };
 		5002BD7C1439E8E800FEAB3C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		5002BD7E1439E8FC00FEAB3C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5002BD801439E90400FEAB3C /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
@@ -71,8 +68,9 @@
 		50AF49BC1439CB6D00E4A5EF /* Simple_PlayerAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Simple_PlayerAppDelegate.m; sourceTree = "<group>"; };
 		50AF49C31439CB6D00E4A5EF /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = iPhone/en.lproj/MainWindow_iPhone.xib; sourceTree = "<group>"; };
 		50AF49CA1439CB6D00E4A5EF /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = iPad/en.lproj/MainWindow_iPad.xib; sourceTree = "<group>"; };
-		50FAA137143A02AE00FF06D7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SPLoginViewController_iPhone.xib; sourceTree = "<group>"; };
-		50FAA13A143A02B300FF06D7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SPLoginViewController_iPad.xib; sourceTree = "<group>"; };
+		50DBB5E01520BF6100BF516F /* SPLoginResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = SPLoginResources.bundle; path = ../../../SPLoginResources.bundle; sourceTree = "<group>"; };
+		50DBB5E21520C2B800BF516F /* RotatableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RotatableViewController.h; sourceTree = "<group>"; };
+		50DBB5E31520C2B800BF516F /* RotatableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RotatableViewController.m; sourceTree = "<group>"; };
 		50FAA140143A0B1400FF06D7 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -97,17 +95,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5002BD761439E47300FEAB3C /* Login View Controller */ = {
-			isa = PBXGroup;
-			children = (
-				5002BD771439E49700FEAB3C /* SPLoginViewController.h */,
-				5002BD781439E49700FEAB3C /* SPLoginViewController.m */,
-				50FAA138143A02AE00FF06D7 /* SPLoginViewController_iPhone.xib */,
-				50FAA13B143A02B300FF06D7 /* SPLoginViewController_iPad.xib */,
-			);
-			name = "Login View Controller";
-			sourceTree = "<group>";
-		};
 		500EC8C31439D54E00E8A60C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,9 +154,11 @@
 			children = (
 				50AF49BB1439CB6D00E4A5EF /* Simple_PlayerAppDelegate.h */,
 				50AF49BC1439CB6D00E4A5EF /* Simple_PlayerAppDelegate.m */,
+				50DBB5E21520C2B800BF516F /* RotatableViewController.h */,
+				50DBB5E31520C2B800BF516F /* RotatableViewController.m */,
 				50AF49C21439CB6D00E4A5EF /* MainWindow_iPhone.xib */,
 				50AF49C91439CB6D00E4A5EF /* MainWindow_iPad.xib */,
-				5002BD761439E47300FEAB3C /* Login View Controller */,
+				50DBB5E01520BF6100BF516F /* SPLoginResources.bundle */,
 				50A26BE31439D73F00A0C876 /* Playback Helper Classes */,
 				50AF49B31439CB6D00E4A5EF /* Supporting Files */,
 			);
@@ -258,8 +247,7 @@
 				50AF49B71439CB6D00E4A5EF /* InfoPlist.strings in Resources */,
 				50AF49C41439CB6D00E4A5EF /* MainWindow_iPhone.xib in Resources */,
 				50AF49CB1439CB6D00E4A5EF /* MainWindow_iPad.xib in Resources */,
-				50FAA136143A02AE00FF06D7 /* SPLoginViewController_iPhone.xib in Resources */,
-				50FAA139143A02B300FF06D7 /* SPLoginViewController_iPad.xib in Resources */,
+				50DBB5E11520BF6100BF516F /* SPLoginResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,7 +262,7 @@
 				50AF49BD1439CB6D00E4A5EF /* Simple_PlayerAppDelegate.m in Sources */,
 				50A26BE81439D73F00A0C876 /* SPCircularBuffer.m in Sources */,
 				50A26BE91439D73F00A0C876 /* SPPlaybackManager.m in Sources */,
-				5002BD7A1439E49700FEAB3C /* SPLoginViewController.m in Sources */,
+				50DBB5E41520C2B800BF516F /* RotatableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,22 +299,6 @@
 				50AF49CA1439CB6D00E4A5EF /* en */,
 			);
 			name = MainWindow_iPad.xib;
-			sourceTree = "<group>";
-		};
-		50FAA138143A02AE00FF06D7 /* SPLoginViewController_iPhone.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				50FAA137143A02AE00FF06D7 /* en */,
-			);
-			name = SPLoginViewController_iPhone.xib;
-			sourceTree = "<group>";
-		};
-		50FAA13B143A02B300FF06D7 /* SPLoginViewController_iPad.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				50FAA13A143A02B300FF06D7 /* en */,
-			);
-			name = SPLoginViewController_iPad.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -384,6 +356,10 @@
 				GCC_PREFIX_HEADER = "Simple Player/Simple Player-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "Simple Player/Simple Player-Info.plist";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-frtti",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",

@@ -10,7 +10,7 @@
 #import "CocoaLibSpotify.h"
 #import "SPPlaybackManager.h"
 
-@interface Guess_The_IntroViewController : UIViewController <SPSessionDelegate, SPPlaybackManagerDelegate> {
+@interface Guess_The_IntroViewController : UIViewController <SPSessionDelegate, SPPlaybackManagerDelegate, SPLoginViewControllerDelegate> {
 	UILabel *currentScoreLabel;
 	UILabel *highScoreLabel;
 	UIProgressView *roundProgressIndicator;

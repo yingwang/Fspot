@@ -31,7 +31,6 @@
  */
 
 #import "Simple_PlayerAppDelegate.h"
-#import "SPLoginViewController.h"
 
 #error Please get an appkey.c file from developer.spotify.com and remove this error before building.
 #include "appkey.c"
@@ -73,8 +72,13 @@
 }
 
 -(void)showLogin {
-	[self.mainViewController presentModalViewController:[[[SPLoginViewController alloc] init] autorelease]
+	
+	SPLoginViewController *controller = [SPLoginViewController loginControllerForSession:[SPSession sharedSession]];
+	controller.allowsCancel = NO;
+	
+	[self.mainViewController presentModalViewController:controller
 											   animated:NO];
+
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -190,29 +194,36 @@
 #pragma mark -
 #pragma mark SPSessionDelegate Methods
 
+-(UIViewController *)viewControllerToPresentLoginViewForSession:(SPSession *)aSession {
+	return self.mainViewController;
+}
+
 -(void)sessionDidLoginSuccessfully:(SPSession *)aSession; {
-	
 	// Invoked by SPSession after a successful login.
-	[self.mainViewController dismissModalViewControllerAnimated:YES];
-	
 }
 
 -(void)session:(SPSession *)aSession didFailToLoginWithError:(NSError *)error; {
-    
 	// Invoked by SPSession after a failed login.
-
-	// Forward to the login view controller
-	if ([self.mainViewController.modalViewController respondsToSelector:_cmd])
-		[self.mainViewController.modalViewController performSelector:_cmd withObject:aSession withObject:error];
 }
 
--(void)sessionDidLogOut:(SPSession *)aSession; {}
+-(void)sessionDidLogOut:(SPSession *)aSession {
+	
+	SPLoginViewController *controller = [SPLoginViewController loginControllerForSession:[SPSession sharedSession]];
+	
+	if (self.mainViewController.presentedViewController != nil) return;
+	
+	controller.allowsCancel = NO;
+	
+	[self.mainViewController presentModalViewController:controller
+											   animated:YES];
+}
+
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {}
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage; {}
 -(void)sessionDidChangeMetadata:(SPSession *)aSession; {}
 
 -(void)session:(SPSession *)aSession recievedMessageForUser:(NSString *)aMessage; {
-	
+	return;
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message from Spotify"
 													message:aMessage
 												   delegate:nil
