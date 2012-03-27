@@ -49,7 +49,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPPlaylistFolderInternal.h"
 #import "SPPlaylistItem.h"
 #import "SPUnknownPlaylist.h"
-#import "SPLoginViewControllerInternal.h"
 
 @interface NSObject (SPLoadedObject)
 -(BOOL)checkLoaded;
@@ -449,6 +448,7 @@ static void credentials_blob_updated(sp_session *session, const char *blob) {
 #if TARGET_OS_IPHONE
 
 #import "SPLoginViewController.h"
+#import "SPLoginViewControllerInternal.h"
 
 static void show_signup_page(sp_session *session, sp_signup_page page, bool pageIsLoading, int featureMask, const char *recentUserName) {
 	
