@@ -44,7 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSString *displayName;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 @property (nonatomic, readwrite) sp_user *user;
-@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, weak) SPSession *session;
 
 @end
 

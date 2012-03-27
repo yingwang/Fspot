@@ -54,6 +54,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPToplist.h"
 #import "SPUnknownPlaylist.h"
 
+#import "SPSignupViewController.h"
+#import "SPLoginViewController.h"
+
 #else
 
 #import <CocoaLibSpotify/SPErrorExtensions.h>

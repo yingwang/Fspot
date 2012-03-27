@@ -150,6 +150,10 @@ static NSMutableDictionary *albumCache;
 	self.loaded = sp_album_is_loaded(self.album);
 }
 
+-(void)albumBrowseDidLoad {
+	if (self.album) self.year = sp_album_year(self.album);
+}
+
 -(NSString *)description {
 	return [NSString stringWithFormat:@"%@: %@ by %@", [super description], self.name, self.artist.name];
 }

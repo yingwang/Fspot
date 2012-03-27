@@ -8,7 +8,7 @@
 
 #import "Guess_The_IntroAppDelegate.h"
 #import "Guess_The_IntroViewController.h"
-#import "SPLoginViewController.h"
+
 
 #error Please get an appkey.c file from developer.spotify.com and remove this error before building.
 #include "appkey.c"
@@ -26,7 +26,7 @@
 											   userAgent:@"com.spotify.GuessTheIntro"
 												   error:nil];
 	
-	[SPSession sharedSession].delegate = self.viewController;
+	[SPSession sharedSession].delegate = (id)self.viewController;
 	
 	self.viewController.playbackManager = [[SPPlaybackManager alloc] 
 							 initWithPlaybackSession:[SPSession sharedSession]];
@@ -41,7 +41,9 @@
 }
 
 -(void)showLoginView {
-	[self.viewController presentModalViewController:[[SPLoginViewController alloc] init] animated:NO];
+	SPLoginViewController *controller = [SPLoginViewController loginControllerForSession:[SPSession sharedSession]];
+	controller.allowsCancel = NO;
+	[self.viewController presentModalViewController:controller animated:NO];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

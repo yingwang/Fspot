@@ -251,25 +251,30 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 }
 
 #pragma mark -
-#pragma mark SPSession Delegates
+#pragma mark SPLoginViewController Delegate
 
--(void)sessionDidLoginSuccessfully:(SPSession *)aSession; {
-	
-	// Invoked by SPSession after a successful login.
+-(void)loginViewController:(SPLoginViewController *)controller didCompleteSuccessfully:(BOOL)didLogin {
 	
 	[self dismissModalViewControllerAnimated:YES];
 	
 	self.roundProgressIndicator.hidden = YES;
 	self.isLoadingView.hidden = !self.roundProgressIndicator.hidden;
 	
-	self.regionTopList = [SPToplist toplistForLocale:aSession.locale
-										   inSession:aSession];
-	self.userTopList = [SPToplist toplistForCurrentUserInSession:aSession];
+	self.regionTopList = [SPToplist toplistForLocale:[SPSession sharedSession].locale
+										   inSession:[SPSession sharedSession]];
+	self.userTopList = [SPToplist toplistForCurrentUserInSession:[SPSession sharedSession]];
 	
 	//if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CreatePlaylist"])
 	//	self.playlist = [[[SPSession sharedSession] userPlaylists] createPlaylistWithName:self.playlistNameField.stringValue];
 	
 	[self waitAndFillTrackPool];
+}
+
+#pragma mark -
+#pragma mark SPSession Delegates
+
+-(void)sessionDidLoginSuccessfully:(SPSession *)aSession; {
+	// Invoked by SPSession after a successful login.
 }
 
 -(void)session:(SPSession *)aSession didFailToLoginWithError:(NSError *)error; {

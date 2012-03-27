@@ -49,6 +49,7 @@
 #import "SPPlaylistFolderInternal.h"
 #import "SPPlaylistItem.h"
 #import "SPUnknownPlaylist.h"
+#import "SPLoginViewControllerInternal.h"
 
 @interface NSObject (SPLoadedObject)
 -(BOOL)checkLoaded;
@@ -113,18 +114,28 @@ static void logged_in(sp_session *session, sp_error error) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	@autoreleasepool {
-	
+		
 		sess.connectionState = sp_session_connectionstate(session);
 		
-		if (error != SP_ERROR_OK && [sess.delegate respondsToSelector:@selector(session:didFailToLoginWithError:)]) {
-			[sess.delegate session:sess didFailToLoginWithError:[NSError spotifyErrorWithCode:error]];
+		if (error != SP_ERROR_OK) {
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionLoginDidFailNotification
+																object:sess
+															  userInfo:[NSDictionary dictionaryWithObject:[NSError spotifyErrorWithCode:error]
+																								   forKey:SPSessionLoginDidFailErrorKey]];
+			
+			if ([sess.delegate respondsToSelector:@selector(session:didFailToLoginWithError:)])
+				[sess.delegate session:sess didFailToLoginWithError:[NSError spotifyErrorWithCode:error]];
+			
 			return;
 		}
 		
+		[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionLoginDidSucceedNotification object:sess];
+		
 		if ([sess.delegate respondsToSelector:@selector(sessionDidLoginSuccessfully:)]) {
-            [sess.delegate sessionDidLoginSuccessfully:sess];
-        }
-    }
+			[sess.delegate sessionDidLoginSuccessfully:sess];
+		}
+	}
 }
 
 /**
@@ -138,6 +149,8 @@ static void logged_out(sp_session *session) {
 	@autoreleasepool {
 		
 		sess.connectionState = sp_session_connectionstate(session);
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionDidLogoutNotification object:sess];
 		
 		if ([sess.delegate respondsToSelector:@selector(sessionDidLogOut:)]) {
             [sess.delegate sessionDidLogOut:sess];
@@ -312,6 +325,8 @@ static void end_of_track(sp_session *session) {
 	
 	@autoreleasepool {
 		
+		sess.playing = NO;
+		
 		SEL selector = @selector(sessionDidEndPlayback:);
 		
 		if ([[sess playbackDelegate] respondsToSelector:selector]) { 
@@ -364,13 +379,14 @@ static void offline_status_updated(sp_session *session) {
 		
 		sess.offlineStatistics = [NSDictionary dictionaryWithDictionary:mutableStats];
 		
-		for (SPPlaylist *playlist in [sess.playlistCache allValues]) {
-			[playlist offlineSyncStatusMayHaveChanged];
+		for (id playlistOrFolder in [sess.playlistCache allValues]) {
+			if ([playlistOrFolder respondsToSelector:@selector(offlineSyncStatusMayHaveChanged)])
+				[playlistOrFolder offlineSyncStatusMayHaveChanged];
 		}
 	}
 }
-
-// Called when an error occurs during offline syncing.
+	
+	// Called when an error occurs during offline syncing.
 static void offline_error(sp_session *session, sp_error error) {
 	
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
@@ -393,6 +409,44 @@ static void credentials_blob_updated(sp_session *session, const char *blob) {
 	}
 }
 
+#if TARGET_OS_IPHONE
+
+#import "SPLoginViewController.h"
+
+static void show_signup_page(sp_session *session, sp_signup_page page, bool pageIsLoading, int featureMask, const char *recentUserName) {
+
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	@autoreleasepool {
+		[[SPLoginViewController loginControllerForSession:sess] handleShowSignupPage:page
+																			 loading:pageIsLoading
+																		 featureMask:featureMask
+																	  recentUserName:[NSString stringWithUTF8String:recentUserName]];
+	}
+}
+
+static void show_signup_error_page(sp_session *session, sp_signup_page page, sp_error error) {
+	
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	@autoreleasepool {
+		[[SPLoginViewController loginControllerForSession:sess] handleShowSignupErrorPage:page
+																					error:[NSError spotifyErrorWithCode:error]];
+	}
+}
+
+static void connect_to_facebook(sp_session *session, const char **permissions, int permission_count) {
+	
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	@autoreleasepool {
+		NSMutableArray *permissionStrs = [NSMutableArray arrayWithCapacity:permission_count];
+		for (int i = 0; i < permission_count; i++)
+			[permissionStrs addObject:[NSString stringWithUTF8String:permissions[i]]];
+		
+		[[SPLoginViewController loginControllerForSession:sess] handleConnectToFacebookWithPermissions:permissionStrs];
+	}
+}
+
+#endif
+
 static sp_session_callbacks _callbacks = {
 	&logged_in,
 	&logged_out,
@@ -411,7 +465,12 @@ static sp_session_callbacks _callbacks = {
 	NULL, //get_audio_buffer_stats
 	&offline_status_updated,
 	&offline_error,
-	&credentials_blob_updated
+	&credentials_blob_updated,
+#if TARGET_OS_IPHONE
+	&show_signup_page,
+	&show_signup_error_page,
+	&connect_to_facebook
+#endif
 };
 
 #pragma mark -
@@ -619,7 +678,7 @@ static SPSession *sharedSession;
         sp_session_forget_me(self.session);
 }
 
--(void)fushCaches {
+-(void)flushCaches {
 	if (session)
 		sp_session_flush_caches(session);
 }
