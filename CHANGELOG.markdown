@@ -1,4 +1,4 @@
-CocoaLibSpotify for libspotify 11, released March 21st 2012
+CocoaLibSpotify for libspotify 11, released March 27th 2012
 ===========================================================
 
 * SPSearch can now search for playlists.
