@@ -210,7 +210,7 @@
 		500D51EF1461569A0009B5FB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 500D51F21461569A0009B5FB /* Build configuration list for PBXProject "Offline Playlists" */;
 			compatibilityVersion = "Xcode 3.2";

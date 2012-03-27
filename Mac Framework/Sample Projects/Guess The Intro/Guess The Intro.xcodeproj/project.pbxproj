@@ -214,7 +214,7 @@
 		508464891372A93C00A9493B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = Spotify;
 			};
 			buildConfigurationList = 5084648C1372A93C00A9493B /* Build configuration list for PBXProject "Guess The Intro" */;
@@ -364,7 +364,6 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"../../libspotify-9.1.32-Darwin-universal",
 					"\"$(SRCROOT)\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -386,7 +385,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"../../libspotify-9.1.32-Darwin-universal",
 					"\"$(SRCROOT)\"",
 				);
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;

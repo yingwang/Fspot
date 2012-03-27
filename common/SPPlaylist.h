@@ -88,7 +88,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///----------------------------
 
 /** Returns the playlist's delegate object. */
-@property (nonatomic, readwrite) __weak id <SPPlaylistDelegate> delegate;
+@property (nonatomic, readwrite, weak) id <SPPlaylistDelegate> delegate;
 
 /** Returns `YES` if the playlist has changes not yet recognised by the Spotify servers, otherwise `NO`. */
 @property (nonatomic, readonly) BOOL hasPendingChanges;

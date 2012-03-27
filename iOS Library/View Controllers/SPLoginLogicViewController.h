@@ -31,19 +31,28 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "CocoaLibSpotify.h"
 
-@interface SPLoginViewController : UIViewController {
+@interface SPLoginLogicViewController : UIViewController <UITextFieldDelegate> {
 	UITextField *usernameField;
 	UITextField *passwordField;
-	UIButton *loginButton;
-	UIActivityIndicatorView *spinner;
+	SPSession *session;
+	UISwitch *rememberMeSwitch;
+	UIStatusBarStyle previousStyle;
+	UIViewController *myParentViewController;
+	UIBarButtonItem *cancelButton;
+	UIBarButtonItem *loginButton;
+	BOOL allowsAutomaticLoginToggle;
+	BOOL allowsCancel;
 }
 
-@property (nonatomic, strong) IBOutlet UITextField *usernameField;
-@property (nonatomic, strong) IBOutlet UITextField *passwordField;
-@property (nonatomic, strong) IBOutlet UIButton *loginButton;
-@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *spinner;
+@property (nonatomic) SPSession *session;
+@property (nonatomic) BOOL allowsCancel;
+@property (nonatomic) BOOL remembersCredentials;
 
-- (IBAction)performLogin:(id)sender;
+-(id)initWithSession:(SPSession *)sess;
+-(IBAction)performLogin:(id)sender;
+-(IBAction)cancel:(id)sender;
+-(void)resetState;
 
 @end

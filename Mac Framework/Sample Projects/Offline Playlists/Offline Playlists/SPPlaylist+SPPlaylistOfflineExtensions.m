@@ -55,3 +55,18 @@
 }
 
 @end
+
+@implementation SPPlaylistFolder (SPPlaylistFolderOfflineExtensions)
+
+-(NSString *)offlineStatusString {
+	return @"N/A";
+}
+
+-(id)items {
+	return nil;
+}
+
+-(BOOL)markedForOfflinePlayback { return NO; }
+-(void)setMarkedForOfflinePlayback:(BOOL)marked {}
+
+@end

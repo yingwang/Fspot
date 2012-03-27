@@ -44,7 +44,7 @@
 -(NSArray *)createPlaylistTree;
 
 @property (nonatomic, readwrite, strong) SPUser *owner;
-@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, weak) SPSession *session;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 @property (nonatomic, readwrite, strong) NSArray *playlists;
 @property (nonatomic, readwrite, strong) NSMutableDictionary *folderCache;
@@ -110,6 +110,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 @synthesize container = _container;
 @synthesize loaded;
 @synthesize folderCache;
+@synthesize playlists;
 
 -(sp_playlistcontainer *)container {
 #if DEBUG

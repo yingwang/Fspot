@@ -175,6 +175,17 @@ static NSMutableDictionary *albumCache;
 	});
 }
 
+-(void)albumBrowseDidLoad {
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		if (self.album) {
+			int aYear = sp_album_year(self.album);
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.year = aYear;
+			});
+		}
+	});
+}
+
 -(NSString *)description {
 	return [NSString stringWithFormat:@"%@: %@ by %@", [super description], self.name, self.artist.name];
 }

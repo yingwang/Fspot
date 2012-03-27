@@ -1,15 +1,21 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
 		<title>SPAlbum Class Reference</title>
-		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
 		<meta id="xcode-display" name="xcode-display" content="render"/>
 		<meta name="viewport" content="width=550" />
-		<link rel="stylesheet" type="text/css" href="../css/styles.css" />
-		<meta name="generator" content="appledoc 2.0.3 (build 684)" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
+		<link rel="stylesheet" type="text/css" media="print" href="../css/stylesPrint.css" />
+		<meta name="generator" content="appledoc 2.0.5 (build 789)" />
 	</head>
 	<body>
 		<header id="top_header">
+			<div id="library" class="hideInXcode">
+				<h1><a id="libraryTitle" href="../index.html">CocoaLibSpotify </a></h1>
+				<a id="developerHome" href="../index.html">Spotify AB</a>
+			</div>
+			
 			<div id="title" role="banner">
 				<h1 class="hideInXcode">SPAlbum Class Reference</h1>
 			</div>
@@ -180,7 +186,7 @@
 						<h2 class="subtitle subtitle-overview">Overview</h2>
 						<p>Represents an <a href="#//api/name/album">album</a> on Spotify.</p>
 
-<p><a href="SPAlbum.html">SPAlbum</a>  is roughly analogous to the sp_<a href="#//api/name/album">album</a> struct in the C LibSpotify API.</p>
+<p>SPAlbum  is roughly analogous to the sp_<a href="#//api/name/album">album</a> struct in the C LibSpotify API.</p>
 					</div>
 					
 					
@@ -199,21 +205,21 @@
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/albumWithAlbumStruct:inSession:">+&nbsp;albumWithAlbumStruct:inSession:</a></code>
-		<span class="tooltip"><p>Creates an <a href="SPAlbum.html">SPAlbum</a> from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p></span>
+		<span class="tooltip"><p>Creates an SPAlbum from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/albumWithAlbumURL:inSession:">+&nbsp;albumWithAlbumURL:inSession:</a></code>
-		<span class="tooltip"><p>Creates an <a href="SPAlbum.html">SPAlbum</a> from the given Spotify <a href="#//api/name/album">album</a> URL.</p></span>
+		<span class="tooltip"><p>Creates an SPAlbum from the given Spotify <a href="#//api/name/album">album</a> URL.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/initWithAlbumStruct:inSession:">&ndash;&nbsp;initWithAlbumStruct:inSession:</a></code>
-		<span class="tooltip"><p>Initializes a new <a href="SPAlbum.html">SPAlbum</a> from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p></span>
+		<span class="tooltip"><p>Initializes a new SPAlbum from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p></span>
 	</span>
 	
 	
@@ -242,7 +248,7 @@
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/session">&nbsp;&nbsp;session</a></code>
-		<span class="tooltip"><p>Returns the <a href="#//api/name/session">session</a> the album&rsquo;s metadata is <a href="#//api/name/loaded">loaded</a> in.</p></span>
+		<span class="tooltip"><p>Returns the session the album&rsquo;s metadata is <a href="#//api/name/loaded">loaded</a> in.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -257,28 +263,28 @@
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/artist">&nbsp;&nbsp;artist</a></code>
-		<span class="tooltip"><p>Returns the album&rsquo;s <a href="#//api/name/artist">artist</a>, or <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet.</p></span>
+		<span class="tooltip"><p>Returns the album&rsquo;s artist, or <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/cover">&nbsp;&nbsp;cover</a></code>
-		<span class="tooltip"><p>Returns the album&rsquo;s <a href="#//api/name/cover">cover</a> image. Returns <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet, or if the <a href="#//api/name/album">album</a> doesn&rsquo;t have a <a href="#//api/name/cover">cover</a> image.</p></span>
+		<span class="tooltip"><p>Returns the album&rsquo;s cover image. Returns <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet, or if the <a href="#//api/name/album">album</a> doesn&rsquo;t have a cover image.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/available">&nbsp;&nbsp;available</a></code>
-		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/album">album</a> is <a href="#//api/name/available">available</a> in the logged-in user&rsquo;s region.</p></span>
+		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/album">album</a> is available in the logged-in user&rsquo;s region.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/name">&nbsp;&nbsp;name</a></code>
-		<span class="tooltip"><p>Returns the <a href="#//api/name/name">name</a> of the <a href="#//api/name/album">album</a>.</p></span>
+		<span class="tooltip"><p>Returns the name of the <a href="#//api/name/album">album</a>.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -292,14 +298,14 @@
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/type">&nbsp;&nbsp;type</a></code>
-		<span class="tooltip"><p>Returns the <a href="#//api/name/album">album</a> <a href="#//api/name/type">type</a>.</p></span>
+		<span class="tooltip"><p>Returns the <a href="#//api/name/album">album</a> type.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/year">&nbsp;&nbsp;year</a></code>
-		<span class="tooltip"><p>Returns the release <a href="#//api/name/year">year</a> of the <a href="#//api/name/album">album</a>.</p></span>
+		<span class="tooltip"><p>Returns the release year of the <a href="#//api/name/album">album</a>.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -327,7 +333,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) sp_album *album</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) sp_album *album</code></div>
+	
+	
 	
 	
 	
@@ -336,7 +344,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> This should only be used if you plan to directly use the
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This should only be used if you plan to directly use the
 C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
 API directly on items that have CocoaLibSpotify objects associated with them.</p></div>
 	</div>
@@ -362,11 +370,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the album&rsquo;s <a href="#//api/name/artist">artist</a>, or <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet.</p>
+		<p>Returns the album&rsquo;s artist, or <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPArtist *artist</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPArtist *artist</code></div>
+	
+	
 	
 	
 	
@@ -394,11 +404,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns <code>YES</code> if the <a href="#//api/name/album">album</a> is <a href="#//api/name/available">available</a> in the logged-in user&rsquo;s region.</p>
+		<p>Returns <code>YES</code> if the <a href="#//api/name/album">album</a> is available in the logged-in user&rsquo;s region.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, getter=isAvailable) BOOL available</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, getter=isAvailable) BOOL available</code></div>
+	
+	
 	
 	
 	
@@ -426,11 +438,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the album&rsquo;s <a href="#//api/name/cover">cover</a> image. Returns <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet, or if the <a href="#//api/name/album">album</a> doesn&rsquo;t have a <a href="#//api/name/cover">cover</a> image.</p>
+		<p>Returns the album&rsquo;s cover image. Returns <code>nil</code> if the metadata isn&rsquo;t <a href="#//api/name/loaded">loaded</a> yet, or if the <a href="#//api/name/album">album</a> doesn&rsquo;t have a cover image.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPImage *cover</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPImage *cover</code></div>
+	
+	
 	
 	
 	
@@ -462,7 +476,9 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, getter=isLoaded) BOOL loaded</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, getter=isLoaded) BOOL loaded</code></div>
+	
+	
 	
 	
 	
@@ -490,11 +506,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the <a href="#//api/name/name">name</a> of the <a href="#//api/name/album">album</a>.</p>
+		<p>Returns the name of the <a href="#//api/name/album">album</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) NSString *name</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSString *name</code></div>
+	
+	
 	
 	
 	
@@ -522,11 +540,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the <a href="#//api/name/session">session</a> the album&rsquo;s metadata is <a href="#//api/name/loaded">loaded</a> in.</p>
+		<p>Returns the session the album&rsquo;s metadata is <a href="#//api/name/loaded">loaded</a> in.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, retain) SPSession *session</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, retain) SPSession *session</code></div>
+	
+	
 	
 	
 	
@@ -558,7 +578,9 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSURL *spotifyURL</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSURL *spotifyURL</code></div>
+	
+	
 	
 	
 	
@@ -586,11 +608,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the <a href="#//api/name/album">album</a> <a href="#//api/name/type">type</a>.</p>
+		<p>Returns the <a href="#//api/name/album">album</a> type.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) sp_albumtype type</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) sp_albumtype type</code></div>
+	
+	
 	
 	
 	
@@ -611,7 +635,7 @@ Single.</p>
 Compilation.</p>
 
 <p>SP_ALBUMTYPE_UNKNOWN  <br/>
-Unknown <a href="#//api/name/type">type</a>.</p>
+Unknown type.</p>
 	</div>
 	
 	
@@ -635,11 +659,13 @@ Unknown <a href="#//api/name/type">type</a>.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the release <a href="#//api/name/year">year</a> of the <a href="#//api/name/album">album</a>.</p>
+		<p>Returns the release year of the <a href="#//api/name/album">album</a>.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) NSUInteger year</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) NSUInteger year</code></div>
+	
+	
 	
 	
 	
@@ -675,7 +701,7 @@ Unknown <a href="#//api/name/type">type</a>.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Creates an <a href="SPAlbum.html">SPAlbum</a> from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p>
+		<p>Creates an SPAlbum from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p>
 	</div>		
 	
 	
@@ -687,7 +713,7 @@ Unknown <a href="#//api/name/type">type</a>.</p>
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>anAlbum</em></dt>
-			<dd><p>The sp_<a href="#//api/name/album">album</a> struct to create an <a href="SPAlbum.html">SPAlbum</a> for.</p></dd>
+			<dd><p>The sp_<a href="#//api/name/album">album</a> struct to create an SPAlbum for.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -701,15 +727,17 @@ Unknown <a href="#//api/name/type">type</a>.</p>
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPAlbum.html">SPAlbum</a> object.</p>
+		<p>Returns the created SPAlbum object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This convenience method creates an <a href="SPAlbum.html">SPAlbum</a> object if one doesn&rsquo;t exist, or
-returns a cached <a href="SPAlbum.html">SPAlbum</a> if one already exists for the given struct.</p>
+		<p>This convenience method creates an SPAlbum object if one doesn&rsquo;t exist, or
+returns a cached SPAlbum if one already exists for the given struct.</p>
 	</div>
 	
 	
@@ -733,7 +761,7 @@ returns a cached <a href="SPAlbum.html">SPAlbum</a> if one already exists for th
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Creates an <a href="SPAlbum.html">SPAlbum</a> from the given Spotify <a href="#//api/name/album">album</a> URL.</p>
+		<p>Creates an SPAlbum from the given Spotify <a href="#//api/name/album">album</a> URL.</p>
 	</div>		
 	
 	
@@ -745,7 +773,7 @@ returns a cached <a href="SPAlbum.html">SPAlbum</a> if one already exists for th
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>aURL</em></dt>
-			<dd><p>The <a href="#//api/name/album">album</a> URL to create an <a href="SPAlbum.html">SPAlbum</a> for.</p></dd>
+			<dd><p>The <a href="#//api/name/album">album</a> URL to create an SPAlbum for.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -759,15 +787,17 @@ returns a cached <a href="SPAlbum.html">SPAlbum</a> if one already exists for th
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPAlbum.html">SPAlbum</a> object, or <code>nil</code> if given an invalid <a href="#//api/name/album">album</a> URL.</p>
+		<p>Returns the created SPAlbum object, or <code>nil</code> if given an invalid <a href="#//api/name/album">album</a> URL.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This convenience method creates an <a href="SPAlbum.html">SPAlbum</a> object if one doesn&rsquo;t exist, or
-returns a cached <a href="SPAlbum.html">SPAlbum</a> if one already exists for the given URL.</p><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/album">album</a> URL (i.e., any URL not
+		<p>This convenience method creates an SPAlbum object if one doesn&rsquo;t exist, or
+returns a cached SPAlbum if one already exists for the given URL.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> If you pass in an invalid <a href="#//api/name/album">album</a> URL (i.e., any URL not
 starting <code>spotify:album:</code>, this method will return <code>nil</code>.</p></div>
 	</div>
 	
@@ -800,7 +830,7 @@ starting <code>spotify:album:</code>, this method will return <code>nil</code>.<
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Initializes a new <a href="SPAlbum.html">SPAlbum</a> from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p>
+		<p>Initializes a new SPAlbum from the given opaque sp_<a href="#//api/name/album">album</a> struct.</p>
 	</div>		
 	
 	
@@ -812,7 +842,7 @@ starting <code>spotify:album:</code>, this method will return <code>nil</code>.<
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>anAlbum</em></dt>
-			<dd><p>The sp_<a href="#//api/name/album">album</a> struct to create an <a href="SPAlbum.html">SPAlbum</a> for.</p></dd>
+			<dd><p>The sp_<a href="#//api/name/album">album</a> struct to create an SPAlbum for.</p></dd>
 		</dl>
 		
 		<dl class="argument-def parameter-def">
@@ -826,14 +856,16 @@ starting <code>spotify:album:</code>, this method will return <code>nil</code>.<
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPAlbum.html">SPAlbum</a> object.</p>
+		<p>Returns the created SPAlbum object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> For better performance and built-in caching, it is recommended
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> For better performance and built-in caching, it is recommended
 you create SPAlbum objects using <a href="#//api/name/albumWithAlbumStruct:inSession:">[SPAlbum albumWithAlbumStruct:inSession:]</a>,
 <a href="#//api/name/albumWithAlbumURL:inSession:">[SPAlbum albumWithAlbumURL:inSession:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
 	</div>
@@ -865,9 +897,9 @@ you create SPAlbum objects using <a href="#//api/name/albumWithAlbumStruct:inSes
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-22)</span><br />
 						
-						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
+						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						
 					</div>
 				</div>
@@ -955,6 +987,14 @@ you create SPAlbum objects using <a href="#//api/name/albumWithAlbumStruct:inSes
 			}
 			
 			window.onload = init;
+			
+			// If showing in Xcode, hide the TOC and Header
+			if (navigator.userAgent.match(/xcode/i)) {
+				document.getElementById("contents").className = "hideInXcode"
+				document.getElementById("tocContainer").className = "hideInXcode"
+				document.getElementById("top_header").className = "hideInXcode"
+			}
+			
 		</script>
 	</body>
 </html>

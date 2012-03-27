@@ -1,15 +1,21 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
 		<title>SPArtist Class Reference</title>
-		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
 		<meta id="xcode-display" name="xcode-display" content="render"/>
 		<meta name="viewport" content="width=550" />
-		<link rel="stylesheet" type="text/css" href="../css/styles.css" />
-		<meta name="generator" content="appledoc 2.0.3 (build 684)" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
+		<link rel="stylesheet" type="text/css" media="print" href="../css/stylesPrint.css" />
+		<meta name="generator" content="appledoc 2.0.5 (build 789)" />
 	</head>
 	<body>
 		<header id="top_header">
+			<div id="library" class="hideInXcode">
+				<h1><a id="libraryTitle" href="../index.html">CocoaLibSpotify </a></h1>
+				<a id="developerHome" href="../index.html">Spotify AB</a>
+			</div>
+			
 			<div id="title" role="banner">
 				<h1 class="hideInXcode">SPArtist Class Reference</h1>
 			</div>
@@ -45,16 +51,16 @@
 	
 	<option value="class_methods">Class Methods</option>
 	
-	<option value="//api/name/artistWithArtistStruct:">&nbsp;&nbsp;&nbsp;&nbsp;+ artistWithArtistStruct:</option>
+	<option value="//api/name/artistWithArtistStruct:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;+ artistWithArtistStruct:inSession:</option>
 	
-	<option value="//api/name/artistWithArtistURL:">&nbsp;&nbsp;&nbsp;&nbsp;+ artistWithArtistURL:</option>
+	<option value="//api/name/artistWithArtistURL:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;+ artistWithArtistURL:inSession:</option>
 	
 	
 	
 	
 	<option value="instance_methods">Instance Methods</option>
 	
-	<option value="//api/name/initWithArtistStruct:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithArtistStruct:</option>
+	<option value="//api/name/initWithArtistStruct:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithArtistStruct:inSession:</option>
 	
 	
 	
@@ -98,9 +104,9 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#class_methods">Class Methods</a></span><ul>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/artistWithArtistStruct:">artistWithArtistStruct:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/artistWithArtistStruct:inSession:">artistWithArtistStruct:inSession:</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/artistWithArtistURL:">artistWithArtistURL:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/artistWithArtistURL:inSession:">artistWithArtistURL:inSession:</a></span></li>
 	
 </ul></li>
 
@@ -108,7 +114,7 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithArtistStruct:">initWithArtistStruct:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithArtistStruct:inSession:">initWithArtistStruct:inSession:</a></span></li>
 	
 </ul></li>
 
@@ -152,7 +158,7 @@
 						<h2 class="subtitle subtitle-overview">Overview</h2>
 						<p>Represents an <a href="#//api/name/artist">artist</a> on Spotify.</p>
 
-<p><a href="SPArtist.html">SPArtist</a>  is roughly analogous to the sp_<a href="#//api/name/artist">artist</a> struct in the C LibSpotify API.</p>
+<p>SPArtist  is roughly analogous to the sp_<a href="#//api/name/artist">artist</a> struct in the C LibSpotify API.</p>
 					</div>
 					
 					
@@ -170,22 +176,22 @@
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
-		<code><a href="#//api/name/artistWithArtistStruct:">+&nbsp;artistWithArtistStruct:</a></code>
-		<span class="tooltip"><p>Creates an <a href="SPArtist.html">SPArtist</a> from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p></span>
+		<code><a href="#//api/name/artistWithArtistStruct:inSession:">+&nbsp;artistWithArtistStruct:inSession:</a></code>
+		<span class="tooltip"><p>Creates an SPArtist from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/artistWithArtistURL:">+&nbsp;artistWithArtistURL:</a></code>
-		<span class="tooltip"><p>Creates an <a href="SPArtist.html">SPArtist</a> from the given Spotify <a href="#//api/name/artist">artist</a> URL.</p></span>
+		<code><a href="#//api/name/artistWithArtistURL:inSession:">+&nbsp;artistWithArtistURL:inSession:</a></code>
+		<span class="tooltip"><p>Creates an SPArtist from the given Spotify <a href="#//api/name/artist">artist</a> URL.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/initWithArtistStruct:">&ndash;&nbsp;initWithArtistStruct:</a></code>
-		<span class="tooltip"><p>Initializes a new <a href="SPArtist.html">SPArtist</a> from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p></span>
+		<code><a href="#//api/name/initWithArtistStruct:inSession:">&ndash;&nbsp;initWithArtistStruct:inSession:</a></code>
+		<span class="tooltip"><p>Initializes a new SPArtist from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p></span>
 	</span>
 	
 	
@@ -215,7 +221,7 @@
 							<li>
 	<span class="tooltip">
 		<code><a href="#//api/name/name">&nbsp;&nbsp;name</a></code>
-		<span class="tooltip"><p>Returns the artist&rsquo;s <a href="#//api/name/name">name</a>.</p></span>
+		<span class="tooltip"><p>Returns the artist&rsquo;s name.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
 	
@@ -250,7 +256,9 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) sp_artist *artist</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) sp_artist *artist</code></div>
+	
+	
 	
 	
 	
@@ -259,7 +267,7 @@
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> This should only be used if you plan to directly use the
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This should only be used if you plan to directly use the
 C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
 API directly on items that have CocoaLibSpotify objects associated with them.</p></div>
 	</div>
@@ -285,11 +293,13 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Returns the artist&rsquo;s <a href="#//api/name/name">name</a>.</p>
+		<p>Returns the artist&rsquo;s name.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly) NSString *name</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSString *name</code></div>
+	
+	
 	
 	
 	
@@ -321,7 +331,9 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (readonly, copy) NSURL *spotifyURL</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSURL *spotifyURL</code></div>
+	
+	
 	
 	
 	
@@ -351,17 +363,17 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 						<h2 class="subtitle subtitle-methods">Class Methods</h2>
 						
 						<div class="section-method">
-	<a name="//api/name/artistWithArtistStruct:" title="artistWithArtistStruct:"></a>
-	<h3 class="subsubtitle method-title">artistWithArtistStruct:</h3>
+	<a name="//api/name/artistWithArtistStruct:inSession:" title="artistWithArtistStruct:inSession:"></a>
+	<h3 class="subsubtitle method-title">artistWithArtistStruct:inSession:</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Creates an <a href="SPArtist.html">SPArtist</a> from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p>
+		<p>Creates an SPArtist from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>+ (SPArtist *)artistWithArtistStruct:(sp_artist *)<em>anArtist</em></code></div>
+	<div class="method-subsection method-declaration"><code>+ (SPArtist *)artistWithArtistStruct:(sp_artist *)<em>anArtist</em> inSession:(SPSession *)<em>aSession</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -369,7 +381,12 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>anArtist</em></dt>
-			<dd><p>The sp_<a href="#//api/name/artist">artist</a> struct to create an <a href="SPArtist.html">SPArtist</a> for.</p></dd>
+			<dd><p>The sp_<a href="#//api/name/artist">artist</a> struct to create an SPArtist for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>aSession</em></dt>
+			<dd><p>The session to create the <a href="#//api/name/artist">artist</a> in.</p></dd>
 		</dl>
 		
 	</div>
@@ -378,15 +395,17 @@ API directly on items that have CocoaLibSpotify objects associated with them.</p
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPArtist.html">SPArtist</a> object.</p>
+		<p>Returns the created SPArtist object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This convenience method creates an <a href="SPArtist.html">SPArtist</a> object if one doesn&rsquo;t exist, or
-returns a cached <a href="SPArtist.html">SPArtist</a> if one already exists for the given struct.</p>
+		<p>This convenience method creates an SPArtist object if one doesn&rsquo;t exist, or
+returns a cached SPArtist if one already exists for the given struct.</p>
 	</div>
 	
 	
@@ -404,17 +423,17 @@ returns a cached <a href="SPArtist.html">SPArtist</a> if one already exists for 
 </div>
 						
 						<div class="section-method">
-	<a name="//api/name/artistWithArtistURL:" title="artistWithArtistURL:"></a>
-	<h3 class="subsubtitle method-title">artistWithArtistURL:</h3>
+	<a name="//api/name/artistWithArtistURL:inSession:" title="artistWithArtistURL:inSession:"></a>
+	<h3 class="subsubtitle method-title">artistWithArtistURL:inSession:</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Creates an <a href="SPArtist.html">SPArtist</a> from the given Spotify <a href="#//api/name/artist">artist</a> URL.</p>
+		<p>Creates an SPArtist from the given Spotify <a href="#//api/name/artist">artist</a> URL.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>+ (SPArtist *)artistWithArtistURL:(NSURL *)<em>aURL</em></code></div>
+	<div class="method-subsection method-declaration"><code>+ (SPArtist *)artistWithArtistURL:(NSURL *)<em>aURL</em> inSession:(SPSession *)<em>aSession</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -422,7 +441,12 @@ returns a cached <a href="SPArtist.html">SPArtist</a> if one already exists for 
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>aURL</em></dt>
-			<dd><p>The <a href="#//api/name/artist">artist</a> URL to create an <a href="SPArtist.html">SPArtist</a> for.</p></dd>
+			<dd><p>The <a href="#//api/name/artist">artist</a> URL to create an SPArtist for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>aSession</em></dt>
+			<dd><p>The session to create the <a href="#//api/name/artist">artist</a> in.</p></dd>
 		</dl>
 		
 	</div>
@@ -431,15 +455,17 @@ returns a cached <a href="SPArtist.html">SPArtist</a> if one already exists for 
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPArtist.html">SPArtist</a> object, or <code>nil</code> if given an invalid <a href="#//api/name/artist">artist</a> URL.</p>
+		<p>Returns the created SPArtist object, or <code>nil</code> if given an invalid <a href="#//api/name/artist">artist</a> URL.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This convenience method creates an <a href="SPArtist.html">SPArtist</a> object if one doesn&rsquo;t exist, or
-returns a cached <a href="SPArtist.html">SPArtist</a> if one already exists for the given URL.</p><div class="warning"><p><strong>Important:</strong> If you pass in an invalid <a href="#//api/name/artist">artist</a> URL (i.e., any URL not
+		<p>This convenience method creates an SPArtist object if one doesn&rsquo;t exist, or
+returns a cached SPArtist if one already exists for the given URL.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> If you pass in an invalid <a href="#//api/name/artist">artist</a> URL (i.e., any URL not
 starting <code>spotify:artist:</code>, this method will return <code>nil</code>.</p></div>
 	</div>
 	
@@ -466,17 +492,17 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
 						
 						<div class="section-method">
-	<a name="//api/name/initWithArtistStruct:" title="initWithArtistStruct:"></a>
-	<h3 class="subsubtitle method-title">initWithArtistStruct:</h3>
+	<a name="//api/name/initWithArtistStruct:inSession:" title="initWithArtistStruct:inSession:"></a>
+	<h3 class="subsubtitle method-title">initWithArtistStruct:inSession:</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Initializes a new <a href="SPArtist.html">SPArtist</a> from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p>
+		<p>Initializes a new SPArtist from the given opaque sp_<a href="#//api/name/artist">artist</a> struct.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>- (id)initWithArtistStruct:(sp_artist *)<em>anArtist</em></code></div>
+	<div class="method-subsection method-declaration"><code>- (id)initWithArtistStruct:(sp_artist *)<em>anArtist</em> inSession:(SPSession *)<em>aSession</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -484,7 +510,12 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 		
 		<dl class="argument-def parameter-def">
 			<dt><em>anArtist</em></dt>
-			<dd><p>The sp_<a href="#//api/name/artist">artist</a> struct to create an <a href="SPArtist.html">SPArtist</a> for.</p></dd>
+			<dd><p>The sp_<a href="#//api/name/artist">artist</a> struct to create an SPArtist for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>aSession</em></dt>
+			<dd><p>The session to create the <a href="#//api/name/artist">artist</a> in.</p></dd>
 		</dl>
 		
 	</div>
@@ -493,16 +524,18 @@ starting <code>spotify:artist:</code>, this method will return <code>nil</code>.
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created <a href="SPArtist.html">SPArtist</a> object.</p>
+		<p>Returns the created SPArtist object.</p>
 	</div>
+	
+	
 	
 	
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Important:</strong> For better performance and built-in caching, it is recommended
-you create SPArtist objects using <a href="#//api/name/artistWithArtistStruct:">[SPArtist artistWithArtistStruct:]</a>,
-<a href="#//api/name/artistWithArtistURL:">[SPArtist artistWithArtistURL:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> For better performance and built-in caching, it is recommended
+you create SPArtist objects using <a href="#//api/name/artistWithArtistStruct:inSession:">[SPArtist artistWithArtistStruct:inSession:]</a>,
+<a href="#//api/name/artistWithArtistURL:inSession:">[SPArtist artistWithArtistURL:inSession:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
 	</div>
 	
 	
@@ -532,9 +565,9 @@ you create SPArtist objects using <a href="#//api/name/artistWithArtistStruct:">
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2011 Spotify AB. All rights reserved. (Last updated: 2011-11-01)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-22)</span><br />
 						
-						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.3 (build 684)</a>.</span></p>
+						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						
 					</div>
 				</div>
@@ -622,6 +655,14 @@ you create SPArtist objects using <a href="#//api/name/artistWithArtistStruct:">
 			}
 			
 			window.onload = init;
+			
+			// If showing in Xcode, hide the TOC and Header
+			if (navigator.userAgent.match(/xcode/i)) {
+				document.getElementById("contents").className = "hideInXcode"
+				document.getElementById("tocContainer").className = "hideInXcode"
+				document.getElementById("top_header").className = "hideInXcode"
+			}
+			
 		</script>
 	</body>
 </html>

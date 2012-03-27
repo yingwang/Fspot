@@ -139,10 +139,26 @@ Playback
  
  @param userName The username of the user who wishes to log in.
  @param password The password for the user who wishes to log in.
- @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, otherwise `NO`.
+ @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
  */
 -(void)attemptLoginWithUserName:(NSString *)userName 
 					   password:(NSString *)password
+			rememberCredentials:(BOOL)rememberMe;
+
+/** Attempt to login to the Spotify service using an existing login credentials blob. 
+ 
+ Login success or fail methods will be called on the session's delegate.
+ 
+ @warning *Important:* You must have successfully logged in to the Spotify service before using 
+ most other API methods.
+ 
+ @param userName The username of the user who wishes to log in.
+ @param credential A login credential string previously provided by the `-session:didGenerateLoginCredentials:forUserName:` delegate method.
+ @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
+ 
+ */
+-(void)attemptLoginWithUserName:(NSString *)userName
+			 existingCredential:(NSString *)credential
 			rememberCredentials:(BOOL)rememberMe;
 
 /** Attempt to login to the Spotify service using previously stored credentials.
@@ -166,6 +182,13 @@ Playback
  Called automatically when the instance is deallocated. 
  */
 -(void)forgetStoredCredentials;
+
+/** Manually flush libSpotify's caches.
+ 
+ This method will force libSpotify to flush its caches. If you're writing an iOS application, call
+ this when your application is put into the background to ensure correct operation.
+ */
+-(void)flushCaches;
 
 /** Log out from the Spotify service.
  
@@ -216,7 +239,7 @@ Playback
 ///----------------------------
 
 /** Returns the current delegate object. */
-@property (nonatomic) __weak id <SPSessionDelegate> delegate;
+@property (nonatomic, weak) id <SPSessionDelegate> delegate;
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
@@ -489,6 +512,20 @@ Playback
  */
 -(void)sessionDidLoginSuccessfully:(SPSession *)aSession;
 
+/** Called when a set of login credentials has been generated for the user, typically just after login.
+ 
+ If you wish to store login credentials for multiple users, store the credentials given by this
+ delegate method rather than their passwords (it's against the libSpotify Terms and Conditions to store
+ Spotify passwords yourself). These credentials are safe to store without encryption, such as in `NSUserDefaults`.
+ 
+ To use these credentials to log in, use `-attemptLoginWithUserName:existingCredential:rememberCredentials:`.
+ 
+ @param aSession The session that logged in. 
+ @param credential The login credential.
+ @param userName The username for the given credential.
+ */
+-(void)session:(SPSession *)aSession didGenerateLoginCredentials:(NSString *)credential forUserName:(NSString *)userName;
+
 /** Called when the given session could not log in successfully.
  
  @param aSession The session that failed to log in. 
@@ -550,6 +587,21 @@ Playback
  */
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage;
 
+#if TARGET_OS_IPHONE
+
+/** Called when the session needs to present a view controller to allow the user to login, sign up
+ or confirm Facebook access permissions.
+ 
+ @warning *Important:* While this typically happens around login, it can happen at any point. When this method
+ is called, your application should make sure it's in a state appropriate for displaying a login view.
+ 
+ @param aSession The session needing to display UI.
+ @return A view controller appropriate for the given session to present a modal view controller over.
+ */
+-(UIViewController *)viewControllerToPresentLoginViewForSession:(SPSession *)aSession;
+
+#endif
+
 @end
 
 /** Delegate callbacks from SPSession specifically to do with audio playback. */
@@ -605,6 +657,11 @@ Playback
 -(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount format:(const sp_audioformat *)audioFormat;
 
 @end
+
+/**
+ Delegate callbacks from SPSession specifically to do with delivering audio to the audio device. 
+ This protocol replaces the audio delivery method in `SPSessionPlaybackDelegate`.
+ */
 
 @protocol SPSessionAudioDeliveryDelegate <NSObject>
 
@@ -665,3 +722,19 @@ static NSString * const SPOfflineStatisticsWillNotCopyTrackCountKey = @"SPOfflin
 
 /** Whether tracks are currently being synced as a boolean `NSNumber`. */
 static NSString * const SPOfflineStatisticsIsSyncingKey = @"SPOfflineStatisticsIsSyncing";
+
+///----------------------------
+/// @name NSNotification Keys
+///----------------------------
+
+/** @constant Sent when the user failed to log into the Spotify service. */
+static NSString * const SPSessionLoginDidFailNotification = @"SPSessionLoginDidFailNotification";
+
+/** @constant The userinfo key containing the error detailing the login failure reason in `SPSessionLoginDidFailNotification`. */
+static NSString * const SPSessionLoginDidFailErrorKey = @"error";
+
+/** @constant Sent when the user successfully logged in to the Spotify service. */
+static NSString * const SPSessionLoginDidSucceedNotification = @"SPSessionLoginDidSucceedNotification";
+
+/** @constant Sent when the user logged out from the Spotify service. */
+static NSString * const SPSessionDidLogoutNotification = @"SPSessionDidLogoutNotification";

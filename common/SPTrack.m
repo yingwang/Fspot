@@ -200,6 +200,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	});
 }
 
+-(void)albumBrowseDidLoad {
+	if (self.track) self.discNumber = sp_track_disc(self.track);
+}
+
+-(SPTrack *)playableTrack {
+	
+	if (!self.track) return nil;
+
+	sp_track *linked = sp_track_get_playable(self.session.session, self.track);
+	if (!linked) return nil;
+	
+	return [SPTrack trackForTrackStruct:linked inSession:self.session];
+	
+}
+
 #pragma mark -
 #pragma mark Properties 
 

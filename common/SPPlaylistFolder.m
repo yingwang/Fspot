@@ -76,6 +76,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @synthesize name;
 @synthesize session;
 @synthesize folderId;
+@synthesize parentFolder;
 
 -(void)addObject:(id)playlistOrFolder {
 	if (playlistOrFolder) self.playlists = [self.playlists arrayByAddingObject:playlistOrFolder];

@@ -51,6 +51,7 @@
 @property (nonatomic, readwrite, strong) NSArray *portraits;
 
 @property (nonatomic, readwrite, strong) NSArray *tracks;
+@property (nonatomic, readwrite, strong) NSArray *topTracks;
 @property (nonatomic, readwrite, strong) NSArray *albums;
 @property (nonatomic, readwrite, strong) NSArray *relatedArtists;
 
@@ -93,6 +94,17 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 			}
 			
 			newTracks = [NSArray arrayWithArray:tracks];
+			
+			int topTrackCount = sp_artistbrowse_num_tophit_tracks(result);
+			NSMutableArray *topTracks = [NSMutableArray arrayWithCapacity:topTrackCount];
+			for (int currentTopTrack =  0; currentTopTrack < trackCount; currentTopTrack++) {
+				sp_track *track = sp_artistbrowse_tophit_track(result, currentTopTrack);
+				if (track != NULL) {
+					[topTracks addObject:[SPTrack trackForTrackStruct:track inSession:artistBrowse.session]];
+				}
+			}
+			
+			artistBrowse.topTracks = [NSArray arrayWithArray:topTracks];
 			
 			int albumCount = sp_artistbrowse_num_albums(result);
 			NSMutableArray *albums = [NSMutableArray arrayWithCapacity:albumCount];
@@ -188,6 +200,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 @synthesize session;
 @synthesize portraits;
 @synthesize tracks;
+@synthesize topTracks;
 @synthesize albums;
 @synthesize relatedArtists;
 @synthesize biography;

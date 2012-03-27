@@ -79,6 +79,21 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  */
 +(SPSearch *)searchWithSearchQuery:(NSString *)searchQuery inSession:(SPSession *)aSession;
 
+/** Creates a new "live search" SPSearch with the default page size for the given query.
+ 
+ Live searches should be used when displaying "live search" UI — for example, a search suggestion
+ UI as the user is typing into a search field. This convenience method is simply returns a new, 
+ autoreleased SPSearch object. No caching is performed.
+ 
+ @warning *Important:* The search query will be sent to the Spotify search service
+ immediately. Be sure you want to perform the search before creating the object!
+ 
+ @param searchQuery The search query to create an SPSearch for.
+ @param aSession The SPSession the track should exist in.
+ @return Returns the created SPSearch object. 
+ */
++(SPSearch *)liveSearchWithSearchQuery:(NSString *)searchQuery inSession:(SPSession *)aSession;
+
 /** Initializes a new SPSearch with the default page size from the given Spotify search URL. 
 
  @warning *Important:* If you pass in an invalid search URL (i.e., any URL not
@@ -120,6 +135,24 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 -(id)initWithSearchQuery:(NSString *)searchString
 			   inSession:(SPSession *)aSession;
 
+/** Initializes a new SPSearch with the default page size for the given query and type.
+ 
+ If you are displaying "live search" UI — for example, a search suggestion
+ UI as the user is typing into a search field — pass `SP_SEARCH_SUGGEST` to `type` 
+ for more appropriate results.
+ 
+ @warning *Important:* The search query will be sent to the Spotify search service
+ immediately. Be sure you want to perform the search before creating the object!
+ 
+ @param searchString The search query to create an SPSearch for.
+ @param aSession The SPSession the track should exist in.
+ @param type The type of search to perform, either `SP_SEARCH_STANDARD` or `SP_SEARCH_SUGGEST`.
+ @return Returns the created SPSearch object. 
+ */
+-(id)initWithSearchQuery:(NSString *)searchString
+			   inSession:(SPSession *)aSession
+					type:(sp_search_type)type;
+
 /** Initializes a new SPSearch for the given query. 
  
  @warning *Important:* The search query will be sent to the Spotify search service
@@ -134,6 +167,26 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 				pageSize:(NSInteger)size
 			   inSession:(SPSession *)aSession;
 
+/** Initializes a new SPSearch for the given query. 
+ 
+ If you are displaying "live search" UI — for example, a search suggestion
+ UI as the user is typing into a search field — pass `SP_SEARCH_SUGGEST` to `type` 
+ for more appropriate results.
+
+ @warning *Important:* The search query will be sent to the Spotify search service
+ immediately. Be sure you want to perform the search before creating the object!
+ 
+ @param searchString The search query to create an SPSearch for.
+ @param size The number of results to request per page of results.
+ @param aSession The SPSession the track should exist in.
+ @param type The type of search to perform, either `SP_SEARCH_STANDARD` or `SP_SEARCH_SUGGEST`.
+ @return Returns the created SPSearch object. 
+ */
+-(id)initWithSearchQuery:(NSString *)searchString
+				pageSize:(NSInteger)size
+			   inSession:(SPSession *)aSession
+					type:(sp_search_type)type;
+
 ///----------------------------
 /// @name Requesting More Results
 ///----------------------------
@@ -143,7 +196,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  The albums property will be updated when new results are returned.
  
  @warning *Important:* If you want to request more than just albums, use 
- `-addPageForArtists:albums:tracks:` for better performance.
+ `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
  or if a search is already in progress.
@@ -155,7 +208,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
   The artists property will be updated when new results are returned.
  
  @warning *Important:* If you want to request more than just artists, use 
- `-addPageForArtists:albums:tracks:` for better performance.
+ `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
  or if a search is already in progress.
@@ -167,24 +220,37 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
   The tracks property will be updated when new results are returned.
  
  @warning *Important:* If you want to request more than just tracks, use 
- `-addPageForArtists:albums:tracks:` for better performance.
+ `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
  or if a search is already in progress.
  */
 -(BOOL)addTrackPage;
 
-/** Request an extra page of tracks, albums and tracks from the Spotify search service. 
+/** Request an extra page of playlists from the Spotify search service. 
  
-  The albums, artists and tracks properties will be updated as appropriate when new results are returned.
+ The playlists property will be updated when new results are returned.
+ 
+ @warning *Important:* If you want to request more than just playlists, use 
+ `-addPageForArtists:albums:tracks:playlists:` for better performance.
+ 
+ @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
+ or if a search is already in progress.
+ */
+-(BOOL)addPlaylistPage;
+
+/** Request an extra page of tracks, albums, tracks and playlists from the Spotify search service. 
+ 
+  The albums, artists, tracks and playlists properties will be updated as appropriate when new results are returned.
  
  @param searchArtist Set to `YES` to request more artist results.
  @param searchAlbum Set to `YES` to request more album results.
  @param searchTrack Set to `YES` to request more track results.
+ @param searchPlaylist Set to `YES` to request more playlist results. 
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch 
   or if a search is already in progress.
  */
--(BOOL)addPageForArtists:(BOOL)searchArtist albums:(BOOL)searchAlbum tracks:(BOOL)searchTrack;
+-(BOOL)addPageForArtists:(BOOL)searchArtist albums:(BOOL)searchAlbum tracks:(BOOL)searchTrack playlists:(BOOL)searchPlaylist;
 
 ///----------------------------
 /// @name Results
@@ -205,6 +271,9 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 /** Returns `YES` if the search service has indicated there are no more track results to find. */
 @property (nonatomic, readonly) BOOL hasExhaustedTrackResults;
 
+/** Returns `YES` if the search service has indicated there are no more playlist results to find. */
+@property (nonatomic, readonly) BOOL hasExhaustedPlaylistResults;
+
 /** Returns the album results of the search, or `nil` if the search has not loaded or there are no album results. */
 @property (nonatomic, readonly, strong) NSArray *albums;
 
@@ -213,6 +282,9 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
 /** Returns the track results of the search, or `nil` if the search has not loaded or there are no track results. */
 @property (nonatomic, readonly, strong) NSArray *tracks;
+
+/** Returns the playlist results of the search, or `nil` if the search has not loaded or there are no playlist results. */
+@property (nonatomic, readonly, strong) NSArray *playlists;
 
 ///----------------------------
 /// @name Properties
@@ -232,5 +304,10 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
 /** Returns the Spotify URI of the search, for example: `spotify:search:rick+astley` */
 @property (nonatomic, readonly, copy) NSURL *spotifyURL;
+
+/** Returns the type of search, either `SP_SEARCH_STANDARD` or `SP_SEARCH_SUGGEST`. */
+@property (nonatomic, readonly) sp_search_type searchType;
+
+
 
 @end
