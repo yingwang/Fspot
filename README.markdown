@@ -33,6 +33,9 @@ When including libCocoaLibSpotify in your application, you must also link to the
 - SystemConfiguration.framework
 - CFNetwork.framework
 - libstdc++
+- CoreAudio.framework
+- AudioToolbox.framework
+- AVFoundation.framework
 
 In addition, you must add the following two items to the "Other Linker Flags" build setting:
 
@@ -48,21 +51,6 @@ Otherwise, you can simply add all of the header files to your project manually.
 Once everything is set up, simply import the following header to get started with CocoaLibSpotify!
 
 `#import "CocoaLibSpotify.h"`
-
-## Playback Helper Classes ##
-
-If you want to use the provided playback helper classes, you also need to link to the following framworks in your project:
-
-Mac
-
-- CoreAudio.framework
-- AudioUnit.framework
-
-iOS
-
-- CoreAudio.framework
-- AudioToolbox.framework
-- AVFoundation.framework
 
 ## Documentation ##
 

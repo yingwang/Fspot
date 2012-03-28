@@ -8,6 +8,7 @@
 
 #import "Guess_The_IntroViewController.h"
 #import "SPArrayExtensions.h"
+#import <QuartzCore/QuartzCore.h>
 
 static NSUInteger const kLoadingTimeout = 10;
 static NSTimeInterval const kRoundDuration = 20.0;

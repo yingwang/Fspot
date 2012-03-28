@@ -191,6 +191,10 @@
 	[self.playbackManager seekToTrackPosition:self.positionSlider.value];
 }
 
+- (IBAction)setVolume:(id)sender {
+	self.playbackManager.volume = [(UISlider *)sender value];
+}
+
 #pragma mark -
 #pragma mark SPSessionDelegate Methods
 

@@ -31,19 +31,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "SPCircularBuffer.h"
-#import <AudioUnit/AudioUnit.h>
-
-#if TARGET_OS_IPHONE
-#import <AVFoundation/AVFoundation.h>
-#import <CoreAudio/CoreAudioTypes.h>
-#import "CocoaLibSpotify.h"
-#else
-#import <CoreAudio/CoreAudio.h>
-#import <CocoaLibSpotify/CocoaLibSpotify.h>
-#endif
+#import "CocoaLibSpotifyPlatformImports.h"
+#import "SPCoreAudioController.h"
 
 @class SPPlaybackManager;
+@class SPCoreAudioController;
+@class SPTrack;
+@class SPSession;
 
 @protocol SPPlaybackManagerDelegate <NSObject>
 
@@ -52,20 +46,13 @@
 
 @end
 
-@interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate> {
+@interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate, SPCoreAudioControllerDelegate> {
 @private
-	
-	SPCircularBuffer *audioBuffer;
-	AudioUnit outputAudioUnit;
-    NSTimeInterval currentTrackPosition;
+	NSTimeInterval currentTrackPosition;
 	SPSession *playbackSession;
-	double volume;
-	int currentCoreAudioSampleRate;
 	SPTrack *currentTrack;
 	NSTimeInterval trackPosition;
 	id <SPPlaybackManagerDelegate> delegate;
-    NSMethodSignature *incrementTrackPositionMethodSignature;
-	NSInvocation *incrementTrackPositionInvocation;
 }
 
 /** Initialize a new SPPlaybackManager object. 
