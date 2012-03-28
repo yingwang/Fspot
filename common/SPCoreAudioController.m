@@ -72,8 +72,8 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
 		self.audioOutputEnabled = NO; // Don't start audio playback until we're told.
 		
 		SEL incrementTrackPositionSelector = @selector(incrementTrackPositionWithFrameCount:);
-		incrementTrackPositionMethodSignature = [[SPCoreAudioController instanceMethodSignatureForSelector:incrementTrackPositionSelector] retain];
-		incrementTrackPositionInvocation = [[NSInvocation invocationWithMethodSignature:incrementTrackPositionMethodSignature] retain];
+		incrementTrackPositionMethodSignature = [SPCoreAudioController instanceMethodSignatureForSelector:incrementTrackPositionSelector];
+		incrementTrackPositionInvocation = [NSInvocation invocationWithMethodSignature:incrementTrackPositionMethodSignature];
 		[incrementTrackPositionInvocation setSelector:incrementTrackPositionSelector];
 		[incrementTrackPositionInvocation setTarget:self];
 		
@@ -89,16 +89,9 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
 	[self removeObserver:self forKeyPath:@"volume"];
 	[self removeObserver:self forKeyPath:@"audioOutputEnabled"];
 	
-	[incrementTrackPositionInvocation release];
-	incrementTrackPositionInvocation = nil;
-	[incrementTrackPositionMethodSignature release];
-	incrementTrackPositionMethodSignature = nil;
-	
 	[self clearAudioBuffers];
 	self.audioOutputEnabled = NO;
 	[self teardownCoreAudio];
-	
-	[super dealloc];
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -206,7 +199,7 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
     } else {
 		self.inputAudioDescription = newInputDescription;
 		[self clearAudioBuffers];
-		self.audioBuffer = [[[SPCircularBuffer alloc] initWithMaximumLength:(newInputDescription.mBytesPerFrame * newInputDescription.mSampleRate) * kTargetBufferLength] autorelease];
+		self.audioBuffer = [[SPCircularBuffer alloc] initWithMaximumLength:(newInputDescription.mBytesPerFrame * newInputDescription.mSampleRate) * kTargetBufferLength];
 	}
 }
 
@@ -467,15 +460,15 @@ static OSStatus AudioUnitRenderDelegateCallback(void *inRefCon,
 	if (self->framesSinceLastTimeUpdate >= 8820) {
         // Update 5 times per second
 		
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		
-		[self->incrementTrackPositionInvocation setArgument:&self->framesSinceLastTimeUpdate atIndex:2];
-		[self->incrementTrackPositionInvocation performSelectorOnMainThread:@selector(invoke)
-                                                                 withObject:nil
-                                                              waitUntilDone:NO];
-		self->framesSinceLastTimeUpdate = 0;
-		
-		[pool drain];
+		@autoreleasepool {
+			
+			[self->incrementTrackPositionInvocation setArgument:&self->framesSinceLastTimeUpdate atIndex:2];
+			[self->incrementTrackPositionInvocation performSelectorOnMainThread:@selector(invoke)
+																	 withObject:nil
+																  waitUntilDone:NO];
+			self->framesSinceLastTimeUpdate = 0;
+			
+		}
 	}
     
     return noErr;

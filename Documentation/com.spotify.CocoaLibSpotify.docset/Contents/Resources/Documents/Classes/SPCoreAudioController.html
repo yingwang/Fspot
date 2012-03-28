@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="html/html; charset=utf-8" />
-		<title>SPSessionAudioDeliveryDelegate Protocol Reference</title>
+		<title>SPCoreAudioController Class Reference</title>
 		<meta id="xcode-display" name="xcode-display" content="render"/>
 		<meta name="viewport" content="width=550" />
 		<link rel="stylesheet" type="text/css" href="../css/styles.css" media="all" />
@@ -17,7 +17,7 @@
 			</div>
 			
 			<div id="title" role="banner">
-				<h1 class="hideInXcode">SPSessionAudioDeliveryDelegate Protocol Reference</h1>
+				<h1 class="hideInXcode">SPCoreAudioController Class Reference</h1>
 			</div>
 			<ul id="headerButtons" role="toolbar">
 				<li id="toc_button">
@@ -38,11 +38,22 @@
 	
 	
 	
+	<option value="properties">Properties</option>
+	
+	<option value="//api/name/audioOutputEnabled">&nbsp;&nbsp;&nbsp;&nbsp;audioOutputEnabled</option>
+	
+	<option value="//api/name/delegate">&nbsp;&nbsp;&nbsp;&nbsp;delegate</option>
+	
+	<option value="//api/name/volume">&nbsp;&nbsp;&nbsp;&nbsp;volume</option>
+	
+	
 	
 	
 	
 	
 	<option value="instance_methods">Instance Methods</option>
+	
+	<option value="//api/name/clearAudioBuffers">&nbsp;&nbsp;&nbsp;&nbsp;- clearAudioBuffers</option>
 	
 	<option value="//api/name/session:shouldDeliverAudioFrames:ofCount:streamDescription:">&nbsp;&nbsp;&nbsp;&nbsp;- session:shouldDeliverAudioFrames:ofCount:streamDescription:</option>
 	
@@ -62,17 +73,33 @@
 
 <li role="treeitem" id="task_treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#tasks">Tasks</a></span><ul>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Control">Control</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Properties">Properties</a></span></li>
+	
 </ul></li>
 
 
 
 
 
+<li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#properties">Properties</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/audioOutputEnabled">audioOutputEnabled</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/delegate">delegate</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/volume">volume</a></span></li>
+	
+</ul></li>
+
 
 
 
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/clearAudioBuffers">clearAudioBuffers</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/session:shouldDeliverAudioFrames:ofCount:streamDescription:">session:shouldDeliverAudioFrames:ofCount:streamDescription:</a></span></li>
 	
@@ -83,7 +110,7 @@
 		</nav>
 		<article>
 			<div id="contents" class="isShowingTOC" role="main">
-				<a title="SPSessionAudioDeliveryDelegate Protocol Reference" name="top"></a>
+				<a title="SPCoreAudioController Class Reference" name="top"></a>
 				<div class="main-navigation navigation-top">
 					<ul>
 	<li><a href="../index.html">Index</a></li>
@@ -92,18 +119,21 @@
 				</div>
 				<div id="header">
 					<div class="section-header">
-						<h1 class="title title-header">SPSessionAudioDeliveryDelegate Protocol Reference</h1>
+						<h1 class="title title-header">SPCoreAudioController Class Reference</h1>
 					</div>		
 				</div>
 				<div id="container">	
 					
 					<div class="section section-specification"><table cellspacing="0"><tbody>
 						<tr>
-	<td class="specification-title">Conforms to</td>
+	<td class="specification-title">Inherits from</td>
 	<td class="specification-value">NSObject</td>
 </tr><tr>
+	<td class="specification-title">Conforms to</td>
+	<td class="specification-value"><a href="../Protocols/SPSessionAudioDeliveryDelegate.html">SPSessionAudioDeliveryDelegate</a></td>
+</tr><tr>
 	<td class="specification-title">Declared in</td>
-	<td class="specification-value">SPSession.h</td>
+	<td class="specification-value">SPCoreAudioController.h<br />SPCoreAudioController.m</td>
 </tr>
 						</tbody></table></div>
 					
@@ -113,8 +143,7 @@
 					<div class="section section-overview">
 						<a title="Overview" name="overview"></a>
 						<h2 class="subtitle subtitle-overview">Overview</h2>
-						<p>Delegate callbacks from <a href="../Classes/SPSession.html">SPSession</a> specifically to do with delivering audio to the audio device.
-This protocol replaces the audio delivery method in <a href="../Protocols/SPSessionPlaybackDelegate.html"><code>SPSessionPlaybackDelegate</code></a>.</p>
+						<p>Provides an audio pipeline from CocoaLibSpotify to the system&rsquo;s audio output.</p>
 					</div>
 					
 					
@@ -126,8 +155,52 @@ This protocol replaces the audio delivery method in <a href="../Protocols/SPSess
 						<h2 class="subtitle subtitle-tasks">Tasks</h2>
 						
 						
+						<a title="Control" name="task_Control"></a>
+						<h3 class="subsubtitle task-title">Control</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/clearAudioBuffers">&ndash;&nbsp;clearAudioBuffers</a></code>
+		<span class="tooltip"><p>Completely empties all audio that&rsquo;s buffered for playback.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
 						
 						
+						<a title="Properties" name="task_Properties"></a>
+						<h3 class="subsubtitle task-title">Properties</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/volume">&nbsp;&nbsp;volume</a></code>
+		<span class="tooltip"><p>Returns the volume of audio playback, between <code>0.0</code> and <code>1.0</code>.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/audioOutputEnabled">&nbsp;&nbsp;audioOutputEnabled</a></code>
+		<span class="tooltip"><p>Whether audio output is enabled.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/delegate">&nbsp;&nbsp;delegate</a></code>
+		<span class="tooltip"><p>Returns the receiver&rsquo;s delegate.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li>
+						</ul>
+						
+						
+						
+						<h3 class="subsubtitle task-title">Other Methods</h3>
 
 						<ul class="task-list">
 							<li>
@@ -136,7 +209,7 @@ This protocol replaces the audio delivery method in <a href="../Protocols/SPSess
 		<span class="tooltip"><p>Called when audio data has been decompressed and should be pushed to the audio buffers.</p></span>
 	</span>
 	
-	<span class="task-item-suffix">required method</span>
+	
 </li>
 						</ul>
 						
@@ -146,6 +219,119 @@ This protocol replaces the audio delivery method in <a href="../Protocols/SPSess
 					
 					
 					
+					<div class="section section-methods">
+						<a title="Properties" name="properties"></a>
+						<h2 class="subtitle subtitle-methods">Properties</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/audioOutputEnabled" title="audioOutputEnabled"></a>
+	<h3 class="subsubtitle method-title">audioOutputEnabled</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Whether audio output is enabled.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readwrite, nonatomic) BOOL audioOutputEnabled</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPCoreAudioController.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/delegate" title="delegate"></a>
+	<h3 class="subsubtitle method-title">delegate</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the receiver&rsquo;s delegate.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readwrite, nonatomic, assign) __unsafe_unretained id&lt;&gt; delegate</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPCoreAudioController.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/volume" title="volume"></a>
+	<h3 class="subsubtitle method-title">volume</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the volume of audio playback, between <code>0.0</code> and <code>1.0</code>.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readwrite, nonatomic) double volume</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This property only applies to audio played back through this class, not the system audio volume.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPCoreAudioController.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+					</div>
+					
 					
 					
 					
@@ -153,6 +339,46 @@ This protocol replaces the audio delivery method in <a href="../Protocols/SPSess
 					<div class="section section-methods">
 						<a title="Instance Methods" name="instance_methods"></a>
 						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/clearAudioBuffers" title="clearAudioBuffers"></a>
+	<h3 class="subsubtitle method-title">clearAudioBuffers</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Completely empties all audio that&rsquo;s buffered for playback.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)clearAudioBuffers</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This should be called when you need cancel all pending audio in order to,
+for example, play a new track.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPCoreAudioController.h</code><br />
+	</div>				
+	
+	
+</div>
 						
 						<div class="section-method">
 	<a name="//api/name/session:shouldDeliverAudioFrames:ofCount:streamDescription:" title="session:shouldDeliverAudioFrames:ofCount:streamDescription:"></a>

@@ -56,7 +56,7 @@
 											   userAgent:@"com.spotify.SimplePlayer-iOS"
 												   error:nil];
 
-	self.playbackManager = [[[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]] autorelease];
+	self.playbackManager = [[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]];
 
 	[self addObserver:self forKeyPath:@"currentTrack.name" options:0 context:nil];
 	[self addObserver:self forKeyPath:@"currentTrack.artists" options:0 context:nil];
@@ -72,7 +72,7 @@
 }
 
 -(void)showLogin {
-	
+
 	SPLoginViewController *controller = [SPLoginViewController loginControllerForSession:[SPSession sharedSession]];
 	controller.allowsCancel = NO;
 	
@@ -171,7 +171,7 @@
 															   delegate:nil
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
-				[[alert autorelease] show];
+				[alert show];
 			}
 			
 			self.currentTrack = track;
@@ -184,7 +184,7 @@
 												   delegate:nil
 										  cancelButtonTitle:@"OK"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 }
 
 - (IBAction)setTrackPosition:(id)sender {
@@ -233,7 +233,7 @@
 												   delegate:nil
 										  cancelButtonTitle:@"OK"
 										  otherButtonTitles:nil];
-	[[alert autorelease] show];
+	[alert show];
 }
 
 
@@ -244,16 +244,6 @@
 	[self removeObserver:self forKeyPath:@"currentTrack.album.cover.image"];
 	[self removeObserver:self forKeyPath:@"playbackManager.trackPosition"];
 	
-	[_currentTrack release];
-	[_playbackManager release];
-	[_window release];
-	[_mainViewController release];
-	[_trackURIField release];
-	[_trackTitle release];
-	[_trackArtist release];
-	[_coverView release];
-	[_positionSlider release];
-    [super dealloc];
 }
 
 @end

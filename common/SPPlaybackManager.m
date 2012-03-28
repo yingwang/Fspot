@@ -38,9 +38,9 @@
 
 @interface SPPlaybackManager ()
 
-@property (nonatomic, readwrite, retain) SPCoreAudioController *audioController;
-@property (nonatomic, readwrite, retain) SPTrack *currentTrack;
-@property (nonatomic, readwrite, retain) SPSession *playbackSession;
+@property (nonatomic, readwrite, strong) SPCoreAudioController *audioController;
+@property (nonatomic, readwrite, strong) SPTrack *currentTrack;
+@property (nonatomic, readwrite, strong) SPSession *playbackSession;
 
 @property (readwrite) NSTimeInterval trackPosition;
 
@@ -48,9 +48,12 @@
 
 @end
 
-static NSString * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOContext"; 
+static void * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOContext"; 
 
-@implementation SPPlaybackManager
+@implementation SPPlaybackManager {
+	NSMethodSignature *incrementTrackPositionMethodSignature;
+	NSInvocation *incrementTrackPositionInvocation;
+}
 
 -(id)initWithPlaybackSession:(SPSession *)aSession {
     
@@ -58,7 +61,7 @@ static NSString * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOCo
         
         self.playbackSession = aSession;
 		self.playbackSession.playbackDelegate = (id)self;
-		self.audioController = [[[SPCoreAudioController alloc] init] autorelease];
+		self.audioController = [[SPCoreAudioController alloc] init];
 		self.audioController.delegate = self;
 		self.playbackSession.audioDeliveryDelegate = self.audioController;
 		
@@ -79,8 +82,6 @@ static NSString * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOCo
 	self.currentTrack = nil;
 	
 	self.audioController = nil;
-	
-    [super dealloc];
 }
 
 @synthesize audioController;

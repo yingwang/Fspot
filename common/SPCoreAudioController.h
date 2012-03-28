@@ -40,21 +40,51 @@
 
 @class SPCoreAudioController;
 
+/** Provides delegate callbacks for SPCoreAudioController. */
+
 @protocol SPCoreAudioControllerDelegate <NSObject>
 
+/** Called repeatedly during audio playback when audio is pushed to the system's audio output.
+ 
+ This can be used to keep track of how much audio has been played back for progress indicators and so on.
+ 
+ @param controller The SPCoreAudioController that pushed audio.
+ */
 -(void)coreAudioController:(SPCoreAudioController *)controller didOutputAudioOfDuration:(NSTimeInterval)audioDuration;
 
 @end
 
+/** Provides an audio pipeline from CocoaLibSpotify to the system's audio output. */
+
 @interface SPCoreAudioController : NSObject <SPSessionAudioDeliveryDelegate>
 
+///----------------------------
+/// @name Control
+///----------------------------
+
+/**
+ Completely empties all audio that's buffered for playback. 
+ 
+ This should be called when you need cancel all pending audio in order to,
+ for example, play a new track.
+ */
+-(void)clearAudioBuffers;
+
+///----------------------------
+/// @name Properties
+///----------------------------
+
+/**
+ Returns the volume of audio playback, between `0.0` and `1.0`.
+ 
+ This property only applies to audio played back through this class, not the system audio volume.
+*/
 @property (readwrite, nonatomic) double volume;
+
+/** Whether audio output is enabled. */
 @property (readwrite, nonatomic) BOOL audioOutputEnabled;
 
+/** Returns the receiver's delegate. */
 @property (readwrite, nonatomic, assign) __unsafe_unretained id <SPCoreAudioControllerDelegate> delegate;
-
-// -- Control --
-
--(void)clearAudioBuffers;
 
 @end
