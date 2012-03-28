@@ -10,7 +10,7 @@ You can find the latest release notes in the [CHANGELOG.markdown](https://github
 
 ## Building -  Mac OS X ##
 
-The Xcode project was built in Xcode 4.2, and requires Mac OS X Lion.
+The Xcode project was built in Xcode 4.2, and requires Mac OS X 10.7 to build since it uses ARC. However, the built binary can be deployed on 64-bit systems running Mac OS X 10.6 or higher.
 
 The built CocoaLibSpotify.framework contains libspotify.framework as a child framework. Sometimes, Xcode gives build errors complaining it can't find <libspotify/api.h>. If you get this, manually add the directory libspotify.framework is in to your project's "Framework Search Paths" build setting. For example, if you're building the CocoaLibSpotify project alongside your application as an embedded Xcode project then copying it into your bundle, you'd have this:
 
@@ -22,7 +22,7 @@ Otherwise, you'd point to the downloaded libspotify.framework manually, somethin
 
 ## Building - iOS ##
 
-The Xcode project was built in Xcode 4.2, and requires iOS 5.0.
+The Xcode project was built in Xcode 4.2, and requires the iOS SDK version 5.0 to build since it uses ARC. However, the built binary can be deployed on any iOS version from version 4.0.
 
 The built libCocoaLibSpotify contains libspotify internally as a static library, as well as all of the required header files in a directory called "include".
 
