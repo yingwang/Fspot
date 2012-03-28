@@ -39,12 +39,22 @@
 @class SPTrack;
 @class SPSession;
 
+/** Provides delegate callbacks for SPPlaybackManager. */
+
 @protocol SPPlaybackManagerDelegate <NSObject>
 
-/** Called when audio starts playing. */
+/** Called when audio starts playing.
+ 
+ @param aPlaybackManager The playback manager that started playing.
+ */
 -(void)playbackManagerWillStartPlayingAudio:(SPPlaybackManager *)aPlaybackManager;
 
 @end
+
+/**
+ This class provides a very basic interface for playing a track. For advanced control of playback, 
+ either subclass this class or implement your own using SPCoreAudioController for the audio pipeline.
+ */
 
 @interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate, SPCoreAudioControllerDelegate>
 
@@ -84,7 +94,7 @@
 
 /** Seek the current playback position to the given time. 
  
- @param offset The time at which to seek to. Must be between 0.0 and the duration of the playing track.
+ @param newPosition The time at which to seek to. Must be between 0.0 and the duration of the playing track.
  */
 -(void)seekToTrackPosition:(NSTimeInterval)newPosition;
 

@@ -52,7 +52,7 @@
 
 @end
 
-/** This class provides a Spotify-designed login and signup flow for your application. 
+/** This class provides a Spotify-designed login and signup flow for your application. iOS only.
  
  @warning *Important:* You must also include the provided `SPLoginResources.bundle` bundle 
  as a resource in your application to use this class.

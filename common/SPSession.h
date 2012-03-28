@@ -95,8 +95,9 @@ Playback
  @param appKey Your application key as an NSData.
  @param userAgent Your application's user agent (for example, com.yourcompany.MyGreatApp).
  @param error An error pointer to be filled with an NSError should a login problem occur. 
+ @return `YES` the the shared session was initialized correctly, otherwise `NO`.
  */
-+(void)initializeSharedSessionWithApplicationKey:(NSData *)appKey
++(BOOL)initializeSharedSessionWithApplicationKey:(NSData *)appKey
 									   userAgent:(NSString *)userAgent
 										   error:(NSError **)error;
 

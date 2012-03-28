@@ -489,13 +489,17 @@ static SPSession *sharedSession;
 	return sharedSession;
 }
 
-+(void)initializeSharedSessionWithApplicationKey:(NSData *)appKey
++(BOOL)initializeSharedSessionWithApplicationKey:(NSData *)appKey
 									   userAgent:(NSString *)aUserAgent
 										   error:(NSError **)error {
 	
 	sharedSession = [[SPSession alloc] initWithApplicationKey:appKey
 													userAgent:aUserAgent
-														error:error];	
+														error:error];
+	if (sharedSession == nil)
+		return NO;
+	
+	return YES;
 }
 
 +(NSString *)libSpotifyBuildId {
