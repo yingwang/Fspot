@@ -1,8 +1,8 @@
 //
-//  Simple_PlayerAppDelegate.h
-//  Simple Player
+//  SPCoreAudioController.h
+//  Viva
 //
-//  Created by Daniel Kennett on 10/3/11.
+//  Created by Daniel Kennett on 04/02/2012.
 /*
  Copyright (c) 2011, Spotify AB
  All rights reserved.
@@ -30,35 +30,31 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIKit.h>
-#import "CocoaLibSpotify.h"
+// This class encapsulates a Core Audio graph that includes
+// an audio format converter, a mixer for iOS volume control and a standard output.
+// Clients just need to set the various properties and not worry about the details.
 
-@interface Simple_PlayerAppDelegate : NSObject <UIApplicationDelegate, SPSessionDelegate, SPSessionPlaybackDelegate> {
-	UIViewController *_mainViewController;
-	UITextField *_trackURIField;
-	UILabel *_trackTitle;
-	UILabel *_trackArtist;
-	UIImageView *_coverView;
-	UISlider *_positionSlider;
-	SPPlaybackManager *_playbackManager;
-	SPTrack *_currentTrack;
-}
+#import <Foundation/Foundation.h>
+#import "CocoaLibSpotifyPlatformImports.h"
+#import "SPSession.h"
 
+@class SPCoreAudioController;
 
-@property (nonatomic, strong) IBOutlet UIWindow *window;
-@property (nonatomic, strong) IBOutlet UIViewController *mainViewController;
+@protocol SPCoreAudioControllerDelegate <NSObject>
 
-@property (nonatomic, strong) IBOutlet UITextField *trackURIField;
-@property (nonatomic, strong) IBOutlet UILabel *trackTitle;
-@property (nonatomic, strong) IBOutlet UILabel *trackArtist;
-@property (nonatomic, strong) IBOutlet UIImageView *coverView;
-@property (nonatomic, strong) IBOutlet UISlider *positionSlider;
+-(void)coreAudioController:(SPCoreAudioController *)controller didOutputAudioOfDuration:(NSTimeInterval)audioDuration;
 
-@property (nonatomic, strong) SPTrack *currentTrack;
-@property (nonatomic, strong) SPPlaybackManager *playbackManager;
+@end
 
-- (IBAction)playTrack:(id)sender;
-- (IBAction)setTrackPosition:(id)sender;
-- (IBAction)setVolume:(id)sender;
+@interface SPCoreAudioController : NSObject <SPSessionAudioDeliveryDelegate>
+
+@property (readwrite, nonatomic) double volume;
+@property (readwrite, nonatomic) BOOL audioOutputEnabled;
+
+@property (readwrite, nonatomic, assign) __unsafe_unretained id <SPCoreAudioControllerDelegate> delegate;
+
+// -- Control --
+
+-(void)clearAudioBuffers;
 
 @end

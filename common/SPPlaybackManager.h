@@ -31,19 +31,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "SPCircularBuffer.h"
-#import <AudioUnit/AudioUnit.h>
-
-#if TARGET_OS_IPHONE
-#import <AVFoundation/AVFoundation.h>
-#import <CoreAudio/CoreAudioTypes.h>
-#import "CocoaLibSpotify.h"
-#else
-#import <CoreAudio/CoreAudio.h>
-#import <CocoaLibSpotify/CocoaLibSpotify.h>
-#endif
+#import "CocoaLibSpotifyPlatformImports.h"
+#import "SPCoreAudioController.h"
 
 @class SPPlaybackManager;
+@class SPCoreAudioController;
+@class SPTrack;
+@class SPSession;
 
 @protocol SPPlaybackManagerDelegate <NSObject>
 
@@ -52,21 +46,7 @@
 
 @end
 
-@interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate> {
-@private
-	
-	SPCircularBuffer *audioBuffer;
-	AudioUnit outputAudioUnit;
-    NSTimeInterval currentTrackPosition;
-	SPSession *playbackSession;
-	double volume;
-	int currentCoreAudioSampleRate;
-	SPTrack *currentTrack;
-	NSTimeInterval trackPosition;
-	id <SPPlaybackManagerDelegate> __weak delegate;
-    NSMethodSignature *incrementTrackPositionMethodSignature;
-	NSInvocation *incrementTrackPositionInvocation;
-}
+@interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate, SPCoreAudioControllerDelegate>
 
 /** Initialize a new SPPlaybackManager object. 
  
@@ -79,7 +59,7 @@
 @property (nonatomic, readonly, strong) SPTrack *currentTrack;
 
 /** Returns the manager's delegate. */
-@property (nonatomic, readwrite, weak) id <SPPlaybackManagerDelegate> delegate;
+@property (nonatomic, readwrite, assign) __unsafe_unretained id <SPPlaybackManagerDelegate> delegate;
 
 /** Returns the session that is performing decoding and playback. */
 @property (nonatomic, readonly, strong) SPSession *playbackSession;
