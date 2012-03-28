@@ -45,7 +45,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @property (nonatomic, readwrite, strong) SPUser *owner;
 @property (nonatomic, readwrite, strong) SPPlaylistFolder *rootFolder;
-@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPSession *session;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 
 @end

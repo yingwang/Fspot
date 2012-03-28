@@ -42,7 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, strong) SPPlatformNativeImage *image;
 @property (nonatomic, readwrite) sp_image *spImage;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
-@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite) __unsafe_unretained SPSession *session;
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
 
 @end

@@ -38,7 +38,7 @@
 @property (nonatomic, readwrite, copy) NSDate *dateAdded;
 @property (nonatomic, readwrite, strong) SPUser *creator;
 @property (nonatomic, readwrite, copy) NSString *message;
-@property (nonatomic, readwrite, weak) SPPlaylist *playlist;
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPPlaylist *playlist;
 @property (nonatomic, readwrite) int itemIndex;
 
 @end
