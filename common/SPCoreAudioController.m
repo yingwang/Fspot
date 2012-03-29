@@ -307,7 +307,7 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
 	converterDescription.componentSubType = kAudioUnitSubType_AUConverter;
 	converterDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
 	converterDescription.componentFlags = 0;
-	converterDescription.componentFlagsMask = 0;	
+	converterDescription.componentFlagsMask = 0;
     
 	// Create an AUGraph
 	OSErr status = NewAUGraph(&audioProcessingGraph);
@@ -404,6 +404,20 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
         fillWithError(err, @"Couldn't add render callback", status);
         return NO;
     }
+	
+	// Finally, set the kAudioUnitProperty_MaximumFramesPerSlice of each unit 
+	// to 4096, to allow playback on iOS when the screen is locked.
+	// Code based on http://developer.apple.com/library/ios/#qa/qa1606/_index.html
+	
+	UInt32 maxFramesPerSlice = 4096;
+	status = AudioUnitSetProperty(inputConverterUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maxFramesPerSlice, sizeof(maxFramesPerSlice));
+	status = AudioUnitSetProperty(mixerUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maxFramesPerSlice, sizeof(maxFramesPerSlice));
+	status = AudioUnitSetProperty(outputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maxFramesPerSlice, sizeof(maxFramesPerSlice));
+	
+	if (status != noErr) {
+		fillWithError(err, @"Couldn't set max frames per slice", status);
+        return NO;
+	}
 	
 	// Init Queue
 	status = AUGraphInitialize(audioProcessingGraph);
