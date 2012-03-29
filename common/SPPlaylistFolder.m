@@ -44,8 +44,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @interface SPPlaylistFolder ()
 
-@property (nonatomic, readwrite) __weak SPPlaylistContainer *parentContainer;
-@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPPlaylistContainer *parentContainer;
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPSession *session;
 @property (nonatomic, readwrite, strong) NSArray *playlists;
 
 @end

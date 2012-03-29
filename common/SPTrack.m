@@ -57,7 +57,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, getter = isLocal) BOOL local;
 @property (nonatomic, readwrite) sp_track *track;
 
-@property (nonatomic, assign, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPSession *session;
 	
 @end
 

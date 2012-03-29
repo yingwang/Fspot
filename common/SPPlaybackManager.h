@@ -31,42 +31,32 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "SPCircularBuffer.h"
-#import <AudioUnit/AudioUnit.h>
-
-#if TARGET_OS_IPHONE
-#import <AVFoundation/AVFoundation.h>
-#import <CoreAudio/CoreAudioTypes.h>
-#import "CocoaLibSpotify.h"
-#else
-#import <CoreAudio/CoreAudio.h>
-#import <CocoaLibSpotify/CocoaLibSpotify.h>
-#endif
+#import "CocoaLibSpotifyPlatformImports.h"
+#import "SPCoreAudioController.h"
 
 @class SPPlaybackManager;
+@class SPCoreAudioController;
+@class SPTrack;
+@class SPSession;
+
+/** Provides delegate callbacks for SPPlaybackManager. */
 
 @protocol SPPlaybackManagerDelegate <NSObject>
 
-/** Called when audio starts playing. */
+/** Called when audio starts playing.
+ 
+ @param aPlaybackManager The playback manager that started playing.
+ */
 -(void)playbackManagerWillStartPlayingAudio:(SPPlaybackManager *)aPlaybackManager;
 
 @end
 
-@interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate> {
-@private
-	
-	SPCircularBuffer *audioBuffer;
-	AudioUnit outputAudioUnit;
-    NSTimeInterval currentTrackPosition;
-	SPSession *playbackSession;
-	double volume;
-	int currentCoreAudioSampleRate;
-	SPTrack *currentTrack;
-	NSTimeInterval trackPosition;
-	id <SPPlaybackManagerDelegate> __weak delegate;
-    NSMethodSignature *incrementTrackPositionMethodSignature;
-	NSInvocation *incrementTrackPositionInvocation;
-}
+/**
+ This class provides a very basic interface for playing a track. For advanced control of playback, 
+ either subclass this class or implement your own using SPCoreAudioController for the audio pipeline.
+ */
+
+@interface SPPlaybackManager : NSObject <SPSessionPlaybackDelegate, SPCoreAudioControllerDelegate>
 
 /** Initialize a new SPPlaybackManager object. 
  
@@ -79,7 +69,7 @@
 @property (nonatomic, readonly, strong) SPTrack *currentTrack;
 
 /** Returns the manager's delegate. */
-@property (nonatomic, readwrite, weak) id <SPPlaybackManagerDelegate> delegate;
+@property (nonatomic, readwrite, assign) __unsafe_unretained id <SPPlaybackManagerDelegate> delegate;
 
 /** Returns the session that is performing decoding and playback. */
 @property (nonatomic, readonly, strong) SPSession *playbackSession;
@@ -104,7 +94,7 @@
 
 /** Seek the current playback position to the given time. 
  
- @param offset The time at which to seek to. Must be between 0.0 and the duration of the playing track.
+ @param newPosition The time at which to seek to. Must be between 0.0 and the duration of the playing track.
  */
 -(void)seekToTrackPosition:(NSTimeInterval)newPosition;
 

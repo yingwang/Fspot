@@ -43,8 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSString *message;
 
 @property (nonatomic, readwrite, assign) sp_inbox *inboxOperation;
-
-@property (nonatomic, readwrite) __weak id <SPPostTracksToInboxOperationDelegate> delegate;
+@property (nonatomic, readwrite, assign) __unsafe_unretained id <SPPostTracksToInboxOperationDelegate> delegate;
 
 @end
 

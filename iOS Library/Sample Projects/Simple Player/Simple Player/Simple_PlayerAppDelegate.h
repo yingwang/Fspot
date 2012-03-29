@@ -32,7 +32,6 @@
 
 #import <UIKit/UIKit.h>
 #import "CocoaLibSpotify.h"
-#import "SPPlaybackManager.h"
 
 @interface Simple_PlayerAppDelegate : NSObject <UIApplicationDelegate, SPSessionDelegate, SPSessionPlaybackDelegate> {
 	UIViewController *_mainViewController;
@@ -60,5 +59,6 @@
 
 - (IBAction)playTrack:(id)sender;
 - (IBAction)setTrackPosition:(id)sender;
+- (IBAction)setVolume:(id)sender;
 
 @end

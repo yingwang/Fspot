@@ -57,7 +57,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite) float offlineDownloadProgress;
 @property (nonatomic, readwrite) sp_playlist_offline_status offlineStatus;
 @property (nonatomic, readwrite) sp_playlist *playlist;
-@property (nonatomic, readwrite) __weak SPSession *session;
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPSession *session;
 
 -(void)rebuildItems;
 -(void)loadPlaylistData;

@@ -168,26 +168,25 @@
 	if ([[trackURLField stringValue] length] > 0) {
 		
 		NSURL *trackURL = [NSURL URLWithString:[trackURLField stringValue]];
-		SPTrack *track = [[SPSession sharedSession] trackForURL:trackURL];
-		
-		if (track != nil) {
-			
-			if (!track.isLoaded) {
-				// Since we're trying to play a brand new track that may not be loaded, 
-				// we may have to wait for a moment before playing. Tracks that are present 
-				// in the user's "library" (playlists, starred, inbox, etc) are automatically loaded
-				// on login. All this happens on an internal thread, so we'll just try again in a moment.
-				[self performSelector:@selector(playTrack:) withObject:sender afterDelay:0.1];
+		[[SPSession sharedSession] trackForURL:trackURL callback:^(SPTrack *track) {
+			if (track != nil) {
+				
+				if (!track.isLoaded) {
+					// Since we're trying to play a brand new track that may not be loaded, 
+					// we may have to wait for a moment before playing. Tracks that are present 
+					// in the user's "library" (playlists, starred, inbox, etc) are automatically loaded
+					// on login. All this happens on an internal thread, so we'll just try again in a moment.
+					[self performSelector:@selector(playTrack:) withObject:sender afterDelay:0.1];
+					return;
+				}
+				
+				[self.playbackManager playTrack:track callback:^(NSError *error) {
+					if (error) [self.window presentError:error];
+				}];
 				return;
 			}
-			
-			NSError *error = nil;
-			
-			if (![self.playbackManager playTrack:track error:&error]) {
-				[self.window presentError:error];
-			}
-			return;
-		}
+		}];
+		return;
 	}
 	NSBeep();
 }

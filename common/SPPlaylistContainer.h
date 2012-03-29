@@ -65,7 +65,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readonly, strong) NSArray *playlists;
 
 /** Returns the session the list is loaded in. */
-@property (nonatomic, readonly, weak) SPSession *session;
+@property (nonatomic, readonly, assign) __unsafe_unretained SPSession *session;
 
 ///----------------------------
 /// @name Working with Playlists and Folders
