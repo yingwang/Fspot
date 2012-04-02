@@ -80,6 +80,7 @@ static void * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOContex
 	if (self) {
 		self.audioController = aController;
 		self.audioController.delegate = self;
+		self.playbackSession.audioDeliveryDelegate = self.audioController;
 	}
 	
 	return self;
