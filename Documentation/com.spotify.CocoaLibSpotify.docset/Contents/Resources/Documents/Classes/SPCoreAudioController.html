@@ -55,6 +55,10 @@
 	
 	<option value="//api/name/clearAudioBuffers">&nbsp;&nbsp;&nbsp;&nbsp;- clearAudioBuffers</option>
 	
+	<option value="//api/name/connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:">&nbsp;&nbsp;&nbsp;&nbsp;- connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:</option>
+	
+	<option value="//api/name/disposeOfCustomNodesInGraph:">&nbsp;&nbsp;&nbsp;&nbsp;- disposeOfCustomNodesInGraph:</option>
+	
 	<option value="//api/name/session:shouldDeliverAudioFrames:ofCount:streamDescription:">&nbsp;&nbsp;&nbsp;&nbsp;- session:shouldDeliverAudioFrames:ofCount:streamDescription:</option>
 	
 	
@@ -74,6 +78,8 @@
 <li role="treeitem" id="task_treeitem"><span class="nodisclosure"></span><span class="sectionName"><a href="#tasks">Tasks</a></span><ul>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Control">Control</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Customizing the audio pipeline">Customizing the audio pipeline</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Properties">Properties</a></span></li>
 	
@@ -100,6 +106,10 @@
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/clearAudioBuffers">clearAudioBuffers</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:">connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/disposeOfCustomNodesInGraph:">disposeOfCustomNodesInGraph:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/session:shouldDeliverAudioFrames:ofCount:streamDescription:">session:shouldDeliverAudioFrames:ofCount:streamDescription:</a></span></li>
 	
@@ -163,6 +173,28 @@
 	<span class="tooltip">
 		<code><a href="#//api/name/clearAudioBuffers">&ndash;&nbsp;clearAudioBuffers</a></code>
 		<span class="tooltip"><p>Completely empties all audio that&rsquo;s buffered for playback.</p></span>
+	</span>
+	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Customizing the audio pipeline" name="task_Customizing the audio pipeline"></a>
+						<h3 class="subsubtitle task-title">Customizing the audio pipeline</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:">&ndash;&nbsp;connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:</a></code>
+		<span class="tooltip"><p>Connects the given <code>AUNode</code> instances together to complete the audio pipeline for playback.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/disposeOfCustomNodesInGraph:">&ndash;&nbsp;disposeOfCustomNodesInGraph:</a></code>
+		<span class="tooltip"><p>Called when custom nodes in the pipeline should be disposed.</p></span>
 	</span>
 	
 	
@@ -381,6 +413,142 @@ for example, play a new track.</p>
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:" title="connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:"></a>
+	<h3 class="subsubtitle method-title">connectOutputBus:ofNode:toInputBus:ofNode:inGraph:error:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Connects the given <code>AUNode</code> instances together to complete the audio pipeline for playback.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (BOOL)connectOutputBus:(UInt32)<em>sourceOutputBusNumber</em> ofNode:(AUNode)<em>sourceNode</em> toInputBus:(UInt32)<em>destinationInputBusNumber</em> ofNode:(AUNode)<em>destinationNode</em> inGraph:(AUGraph)<em>graph</em> error:(NSError **)<em>error</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>sourceOutputBusNumber</em></dt>
+			<dd><p>The bus on which the source node will be providing audio data.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>sourceNode</em></dt>
+			<dd><p>The <code>AUNode</code> which will provide audio data for the graph.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>destinationInputBusNumber</em></dt>
+			<dd><p>The bus on which the destination node expects to receive audio data.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>destinationNode</em></dt>
+			<dd><p>The <code>AUNode</code> which will carry the audio data to the system&rsquo;s audio output.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>graph</em></dt>
+			<dd><p>The <code>AUGraph</code> containing the given nodes.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>error</em></dt>
+			<dd><p>A pointer to an NSError instance to be filled with an <code>NSError</code> should a problem occur.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	<div class="method-subsection return">
+		<h4 class="method-subtitle parameter-title">Return Value</h4>
+		<p><code>YES</code> if the connection was made successfully, otherwise <code>NO</code>.</p>
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>If you wish to customise the audio pipeline, you can do so by overriding this method and inserting your
+own <code>AUNode</code> instances between <code>sourceNode</code> and <code>destinationNode</code>.</p>
+
+<p>This method will be called whenever the audio pipeline needs to be (re)built.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> If you override this method and connect the nodes yourself, do not call the <code>super</code>
+implementation. You can, however, conditionally decide whether to customise the queue and call <code>super</code>
+if you want the default behaviour.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPCoreAudioController.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/disposeOfCustomNodesInGraph:" title="disposeOfCustomNodesInGraph:"></a>
+	<h3 class="subsubtitle method-title">disposeOfCustomNodesInGraph:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Called when custom nodes in the pipeline should be disposed.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)disposeOfCustomNodesInGraph:(AUGraph)<em>graph</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>graph</em></dt>
+			<dd><p>The <code>AUGraph</code> that is being disposed.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>If you inserted your own <code>AUNode</code> instances into the audio pipeline, override this method to
+perform any cleanup needed.</p>
+
+<p>This method will be called whenever the audio pipeline is being torn down.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPCoreAudioController.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/session:shouldDeliverAudioFrames:ofCount:streamDescription:" title="session:shouldDeliverAudioFrames:ofCount:streamDescription:"></a>
 	<h3 class="subsubtitle method-title">session:shouldDeliverAudioFrames:ofCount:streamDescription:</h3>
 	
@@ -468,7 +636,7 @@ return 0 to signal that the library should retry delivery in a short while.</p><
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-03-28)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-04-02)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

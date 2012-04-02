@@ -14,11 +14,9 @@
 #if TARGET_OS_IPHONE
 #import <AVFoundation/AVFoundation.h>
 #import <CoreAudio/CoreAudioTypes.h>
-#import <AudioToolbox/AudioToolbox.h>
 #import "CocoaLibSpotify.h"
 #else
 #import <CoreAudio/CoreAudio.h>
-#import <AudioToolbox/AudioToolbox.h>
 #import <CocoaLibSpotify/CocoaLibSpotify.h>
 #endif
 
@@ -251,6 +249,9 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
     [self stopAudioQueue];
 	
     AUGraphStop(audioProcessingGraph);
+	
+	[self disposeOfCustomNodesInGraph:audioProcessingGraph];
+	
 	AUGraphUninitialize(audioProcessingGraph);
 	DisposeAUGraph(audioProcessingGraph);
 	
@@ -262,6 +263,10 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
 	outputUnit = NULL;
 	mixerUnit = NULL;
 	inputConverterUnit = NULL;
+}
+
+-(void)disposeOfCustomNodesInGraph:(AUGraph)graph {
+	// Empty implementation — for subclasses to override.
 }
 
 -(BOOL)setupCoreAudioWithInputFormat:(AudioStreamBasicDescription)inputFormat error:(NSError **)err {
@@ -379,20 +384,15 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
         return NO;
     }
 	
-	
-	// Connect converter to mixer
-	status = AUGraphConnectNodeInput(audioProcessingGraph, inputConverterNode, 0, mixerNode, 0);
-	if (status != noErr) {
-		fillWithError(err, @"Couldn't connect converter to mixer", status);
-		return NO;
-    }
-	
 	// Connect mixer to output
 	status = AUGraphConnectNodeInput(audioProcessingGraph, mixerNode, 0, outputNode, 0);
 	if (status != noErr) {
         fillWithError(err, @"Couldn't connect mixer to output", status);
         return NO;
     }
+	
+	if (![self connectOutputBus:0 ofNode:inputConverterNode toInputBus:0 ofNode:mixerNode inGraph:audioProcessingGraph error:err])
+		return NO;
 	
 	// Set render callback
 	AURenderCallbackStruct rcbs;
@@ -434,6 +434,18 @@ static NSTimeInterval const kTargetBufferLength = 0.5;
     [self applyVolumeToMixerAudioUnit:self.volume];
 	
     return YES;
+}
+
+-(BOOL)connectOutputBus:(UInt32)sourceOutputBusNumber ofNode:(AUNode)sourceNode toInputBus:(UInt32)destinationInputBusNumber ofNode:(AUNode)destinationNode inGraph:(AUGraph)graph error:(NSError **)error {
+	
+	// Connect converter to mixer
+	OSStatus status = AUGraphConnectNodeInput(graph, sourceNode, sourceOutputBusNumber, destinationNode, destinationInputBusNumber);
+	if (status != noErr) {
+		fillWithError(error, @"Couldn't connect converter to mixer", status);
+		return NO;
+    }
+	
+	return YES;
 }
 
 static void fillWithError(NSError **mayBeAnError, NSString *localizedDescription, int code) {

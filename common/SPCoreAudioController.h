@@ -37,6 +37,7 @@
 #import <Foundation/Foundation.h>
 #import "CocoaLibSpotifyPlatformImports.h"
 #import "SPSession.h"
+#import <AudioToolbox/AudioToolbox.h>
 
 @class SPCoreAudioController;
 
@@ -69,6 +70,44 @@
  for example, play a new track.
  */
 -(void)clearAudioBuffers;
+
+///----------------------------
+/// @name Customizing the audio pipeline
+///----------------------------
+
+/**
+ Connects the given `AUNode` instances together to complete the audio pipeline for playback.
+ 
+ If you wish to customise the audio pipeline, you can do so by overriding this method and inserting your 
+ own `AUNode` instances between `sourceNode` and `destinationNode`.
+ 
+ This method will be called whenever the audio pipeline needs to be (re)built.
+
+ @warning *Important:* If you override this method and connect the nodes yourself, do not call the `super`
+ implementation. You can, however, conditionally decide whether to customise the queue and call `super`
+ if you want the default behaviour.
+ 
+ @param sourceOutputBusNumber The bus on which the source node will be providing audio data.
+ @param sourceNode The `AUNode` which will provide audio data for the graph.
+ @param destinationInputBusNumber The bus on which the destination node expects to receive audio data.
+ @param destinationNode The `AUNode` which will carry the audio data to the system's audio output.
+ @param graph The `AUGraph` containing the given nodes.
+ @param error A pointer to an NSError instance to be filled with an `NSError` should a problem occur.
+ @return `YES` if the connection was made successfully, otherwise `NO`.
+ */
+-(BOOL)connectOutputBus:(UInt32)sourceOutputBusNumber ofNode:(AUNode)sourceNode toInputBus:(UInt32)destinationInputBusNumber ofNode:(AUNode)destinationNode inGraph:(AUGraph)graph error:(NSError **)error;
+
+/** 
+ Called when custom nodes in the pipeline should be disposed.
+ 
+ If you inserted your own `AUNode` instances into the audio pipeline, override this method to
+ perform any cleanup needed.
+ 
+ This method will be called whenever the audio pipeline is being torn down.
+ 
+ @param graph The `AUGraph` that is being disposed. 
+ */
+-(void)disposeOfCustomNodesInGraph:(AUGraph)graph;
 
 ///----------------------------
 /// @name Properties
