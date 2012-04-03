@@ -371,8 +371,6 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		
 		dispatch_async([SPSession libSpotifyQueue], ^{
 			
-			[self printRootList];
-			
 			NSInteger sourceIndex = NSNotFound;
 			SPPlaylist *sourcePlaylist = playlistOrFolder;
 			
