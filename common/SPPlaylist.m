@@ -425,7 +425,9 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 @synthesize trackChangesAreFromLibSpotifyCallback;
 
 -(void)setMarkedForOfflinePlayback:(BOOL)isMarkedForOfflinePlayback {
-	SPDispatchSyncIfNeeded(^() { sp_playlist_set_offline_mode(self.session.session, self.playlist, isMarkedForOfflinePlayback); });
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		sp_playlist_set_offline_mode(self.session.session, self.playlist, isMarkedForOfflinePlayback);
+	});
 }
 
 -(BOOL)isMarkedForOfflinePlayback {
@@ -622,28 +624,29 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		[(SPPlaylistItem *)[itemWrapper objectAtIndex:currentItemIndex] setItemIndexFromLibSpotify:(int)currentItemIndex];
 }
 
--(BOOL)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation error:(NSError **)error {
+-(void)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation callback:(SPErrorableOperationCallback)block {
 	
-	int count = (int)[indexes count];
-	int indexArray[count];
-	
-	NSUInteger index = [indexes firstIndex];
-	for (NSUInteger i = 0; i < [indexes count]; i++) {
-		indexArray[i] = (int)index;
-		index = [indexes indexGreaterThanIndex:index];
-	}
-	
-	__block sp_error errorCode = SP_ERROR_OK;
-	const int *indexArrayPtr = (const int *)&indexArray;
-	
-	SPDispatchSyncIfNeeded(^{
-		errorCode = sp_playlist_reorder_tracks(self.playlist, indexArrayPtr, count, (int)newLocation);
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		int count = (int)[indexes count];
+		int indexArray[count];
+		
+		NSUInteger index = [indexes firstIndex];
+		for (NSUInteger i = 0; i < [indexes count]; i++) {
+			indexArray[i] = (int)index;
+			index = [indexes indexGreaterThanIndex:index];
+		}
+		
+		const int *indexArrayPtr = (const int *)&indexArray;
+		sp_error errorCode = sp_playlist_reorder_tracks(self.playlist, indexArrayPtr, count, (int)newLocation);
+		
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		if (block) block(error);
+		
 	});
-	
-	if (errorCode != SP_ERROR_OK && error != nil)
-		*error = [NSError spotifyErrorWithCode:errorCode];
-	
-	return errorCode == SP_ERROR_OK;
 }
 
 #pragma mark -

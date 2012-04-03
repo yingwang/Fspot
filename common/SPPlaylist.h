@@ -191,7 +191,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param error An NSError pointer to be filled if the operation fails.
  @return Returns `YES` if the operation succeeded, otherwise `NO`. 
  */
--(BOOL)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation error:(NSError **)error;
+-(void)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation callback:(SPErrorableOperationCallback)block;
 
 @end
 
