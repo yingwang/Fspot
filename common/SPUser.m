@@ -153,7 +153,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^() { if (_user) sp_user_release(_user); });
+	sp_user *outgoing_user = _user;
+	_user = NULL;
+	dispatch_async([SPSession libSpotifyQueue], ^() {if (outgoing_user) sp_user_release(outgoing_user); });
 }
 
 @end

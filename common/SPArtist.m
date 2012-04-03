@@ -160,7 +160,9 @@ static NSMutableDictionary *artistCache;
 @synthesize name;
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^{ if (_artist) sp_artist_release(_artist); });
+	sp_artist *outgoing_artist = _artist;
+	_artist = NULL;
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (outgoing_artist) sp_artist_release(outgoing_artist); });
 }
 
 @end

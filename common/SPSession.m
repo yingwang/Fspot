@@ -683,7 +683,6 @@ static SPSession *sharedSession;
 			if (*error != NULL)
 				*error = creationError;
 			
-			SPDispatchSyncIfNeeded(^{ self.session = NULL; });
 			return nil;
 		}
 	}

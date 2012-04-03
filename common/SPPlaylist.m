@@ -745,11 +745,14 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     
     self.delegate = nil;
     self.session = nil;
+	
+	sp_playlist *outgoing_playlist = _playlist;
+	__unsafe_unretained void *outgoing_self = self;
     
-	SPDispatchSyncIfNeeded(^{
+	dispatch_async([SPSession libSpotifyQueue], ^() {
 		if (_playlist != NULL) {
-			sp_playlist_remove_callbacks(_playlist, &_playlistCallbacks, (__bridge void *)self);
-			sp_playlist_release(_playlist);
+			sp_playlist_remove_callbacks(outgoing_playlist, &_playlistCallbacks, outgoing_self);
+			sp_playlist_release(outgoing_playlist);
 		}
 	});
 }

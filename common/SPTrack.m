@@ -261,7 +261,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)dealloc {
-    SPDispatchSyncIfNeeded(^() { if (_track) sp_track_release(_track); });
+	sp_track *outgoing_track = _track;
+	_track = NULL;
+    dispatch_async([SPSession libSpotifyQueue], ^() { if (outgoing_track) sp_track_release(outgoing_track); });
     session = nil;
 }
 

@@ -181,7 +181,9 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 }
 
 - (void)dealloc {
-	SPDispatchSyncIfNeeded(^() { if (_albumBrowse) sp_albumbrowse_release(_albumBrowse); });
+	sp_albumbrowse *outgoing_browse = _albumBrowse;
+	_albumBrowse = NULL;
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (outgoing_browse) sp_albumbrowse_release(outgoing_browse); });
 }
 
 @end

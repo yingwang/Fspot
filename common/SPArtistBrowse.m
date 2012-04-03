@@ -225,7 +225,9 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 }
 
 - (void)dealloc {
-	SPDispatchSyncIfNeeded(^() { if (_artistBrowse) sp_artistbrowse_release(_artistBrowse); });
+	sp_artistbrowse *outgoing_browse = _artistBrowse;
+	_artistBrowse = NULL;
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (outgoing_browse) sp_artistbrowse_release(outgoing_browse); });
 }
 
 @end

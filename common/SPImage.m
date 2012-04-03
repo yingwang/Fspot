@@ -226,10 +226,13 @@ static NSMutableDictionary *imageCache;
 -(void)dealloc {
     
     [self removeObserver:self forKeyPath:@"loaded"];
+	
+	sp_image *outgoing_image = _spImage;
+	__unsafe_unretained void *outgoing_self = self;
     
-    SPDispatchSyncIfNeeded(^{
-		if (_spImage) sp_image_remove_load_callback(_spImage, &image_loaded, (__bridge void *)(self));
-		if (_spImage) sp_image_release(_spImage);
+    dispatch_async([SPSession libSpotifyQueue], ^() {
+		if (outgoing_image) sp_image_remove_load_callback(outgoing_image, &image_loaded, outgoing_self);
+		if (outgoing_image) sp_image_release(outgoing_image);
 	});
 }
 

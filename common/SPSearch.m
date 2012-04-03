@@ -494,7 +494,9 @@ void search_complete(sp_search *result, void *userdata) {
 #pragma mark -
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^() { if (_activeSearch) sp_search_release(_activeSearch); });
+	sp_search *outgoing_search = _activeSearch;
+	_activeSearch = NULL;
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (outgoing_search) sp_search_release(outgoing_search); });
 }
 
 @end

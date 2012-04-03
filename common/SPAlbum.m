@@ -209,7 +209,9 @@ static NSMutableDictionary *albumCache;
 @synthesize name;
 
 -(void)dealloc {
-	SPDispatchSyncIfNeeded(^() { if (_album) sp_album_release(_album); });
+	sp_album *outgoing_album = _album;
+	_album = NULL;
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (outgoing_album) sp_album_release(outgoing_album); });
 }
 
 @end
