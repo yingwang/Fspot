@@ -153,10 +153,11 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			
 		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
 			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
-			folderAtTopOfStack = folderAtTopOfStack.parentFolder;
 			
 			if (folderAtTopOfStack.folderId != folderId)
 				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"WARNING: Root list is insane!");
+			
+			folderAtTopOfStack = folderAtTopOfStack.parentFolder;
 			
 		} else if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
 			
@@ -242,11 +243,11 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			
 		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
 			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
-			if (folderId == folder.folderId)
+			if (folderId == folder.folderId) {
 				folderRange.length = (currentItem - folderRange.location) + 1;
-			
-			if (folderRange.location == NSNotFound)
-				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"WARNING: Root list is insane!");
+				if (folderRange.location == NSNotFound)
+					NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"WARNING: Root list is insane!");
+			}
 		}
 	}
 	
