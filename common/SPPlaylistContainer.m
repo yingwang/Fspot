@@ -194,12 +194,14 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	NSRange rangeOfPlaylists = parentFolder == nil ? folderRangeInRootList : NSMakeRange(folderRangeInRootList.location + 1, folderRangeInRootList.length - 2);
 	NSUInteger currentRootlistIndex = rangeOfPlaylists.location;
 	
-	for (NSUInteger currentIndex = 0; currentIndex < self.playlists.count; currentIndex++) {
+	NSArray *playlistsOfParent = parentFolder == nil ? self.playlists : parentFolder.playlists;
+	
+	for (NSUInteger currentIndex = 0; currentIndex < playlistsOfParent.count; currentIndex++) {
 		// For each index in our items, we want the rootlist index that'd replace it.
 		
 		[indexes addObject:[NSNumber numberWithInteger:currentRootlistIndex]];
 		
-		id item = [self.playlists objectAtIndex:currentIndex];
+		id item = [playlistsOfParent objectAtIndex:currentIndex];
 		
 		if ([item isKindOfClass:[SPPlaylist class]])
 			currentRootlistIndex++;
@@ -208,9 +210,9 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	}
 	
 	// The indexes array now contains the root list index for the item at the virtual index
-	if (virtualIndex == self.playlists.count)
-		return folderRangeInRootList.location + folderRangeInRootList.length; // Why did we just do that loop?
-	else if (virtualIndex > self.playlists.count)
+	if (virtualIndex == playlistsOfParent.count)
+		return rangeOfPlaylists.location + rangeOfPlaylists.length; // Why did we just do that loop?
+	else if (virtualIndex > playlistsOfParent.count)
 		return NSNotFound;
 	else
 		return [[indexes objectAtIndex:virtualIndex] integerValue];
@@ -241,7 +243,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
 			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
 			if (folderId == folder.folderId)
-				folderRange.length = currentItem - folderRange.location;
+				folderRange.length = (currentItem - folderRange.location) + 1;
 			
 			if (folderRange.location == NSNotFound)
 				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"WARNING: Root list is insane!");
@@ -368,6 +370,8 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		
 		dispatch_async([SPSession libSpotifyQueue], ^{
 			
+			[self printRootList];
+			
 			NSInteger sourceIndex = NSNotFound;
 			SPPlaylist *sourcePlaylist = playlistOrFolder;
 			
@@ -485,6 +489,55 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         
     }
     return self;
+}
+
+-(void)printRootList {
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	
+	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+		
+		sp_playlist_type type = sp_playlistcontainer_playlist_type(self.container, currentItem);
+		
+		if (type == SP_PLAYLIST_TYPE_START_FOLDER) {
+			
+			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
+			
+			char nameChars[256];
+			NSString *folderName = nil;
+			sp_error nameError = sp_playlistcontainer_playlist_folder_name(self.container, currentItem, nameChars, sizeof(nameChars));
+			if (nameError == SP_ERROR_OK)
+				folderName = [NSString stringWithUTF8String:nameChars];
+			
+			NSLog(@"%lu: ---- Folder Start Marker: %llu ---- (%@)", currentItem, folderId, folderName);
+			
+		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
+			
+			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
+			NSLog(@"%lu: ---- Folder End Marker: %llu ----", currentItem, folderId);
+			
+		} else if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
+			
+			sp_playlist *pl = sp_playlistcontainer_playlist(self.container, currentItem);
+			NSString *playlistName = [NSString stringWithUTF8String:sp_playlist_name(pl)];
+			
+			sp_link *link = sp_link_create_from_playlist(pl);
+			char uriChars[256];
+			sp_link_as_string(link, (char *)&uriChars, sizeof(uriChars));
+			
+			NSString *playlistUrl = [NSString stringWithUTF8String:uriChars];
+			free(link);
+			link = NULL;
+			
+			NSLog(@"%lu: Playlist: %@ (%@)", currentItem, playlistUrl, playlistName);
+			
+		} else if (type == SP_PLAYLIST_TYPE_PLACEHOLDER) {
+			NSLog(@"%lu: Placeholder Playlist", currentItem);
+		}
+	}
+	
 }
 
 @end

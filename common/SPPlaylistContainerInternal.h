@@ -35,5 +35,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @interface SPPlaylistContainer (SPPlaylistContainerInternal)
 
 -(id)initWithContainerStruct:(sp_playlistcontainer *)aContainer inSession:(SPSession *)aSession;
+-(void)printRootList;
 
 @end
