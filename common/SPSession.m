@@ -76,7 +76,7 @@
 @property (nonatomic, readwrite) NSUInteger offlinePlaylistsRemaining;
 @property (nonatomic, readwrite, copy) NSDictionary *offlineStatistics;
 
-@property (nonatomic, readwrite, copy) NSSet *loadingObjects;
+@property (nonatomic, readwrite, strong) NSMutableSet *loadingObjects;
 
 @property (nonatomic, copy, readwrite) NSString *userAgent;
 
@@ -584,7 +584,7 @@ static SPSession *sharedSession;
         self.trackCache = [[NSMutableDictionary alloc] init];
         self.userCache = [[NSMutableDictionary alloc] init];
 		self.playlistCache = [[NSMutableDictionary alloc] init];
-		self.loadingObjects = [[NSSet alloc] init];
+		self.loadingObjects = [[NSMutableSet alloc] init];
 		
 		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
 		
@@ -1114,10 +1114,7 @@ static SPSession *sharedSession;
 -(void)addLoadingObject:(id)object;
 {
 	dispatch_async([SPSession libSpotifyQueue], ^{
-		@synchronized(loadingObjects){
-			NSSet *newSet = [self.loadingObjects setByAddingObject:object];
-			self.loadingObjects = newSet;
-		}
+		[self.loadingObjects addObject:object];
 	});
 }
 
@@ -1126,14 +1123,15 @@ static SPSession *sharedSession;
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
 	//Let objects that got new metadata fire their KVO's
-	@synchronized(loadingObjects){
-		NSMutableSet *objects = [loadingObjects mutableCopy];
-		for(id object in loadingObjects){
-			if([object checkLoaded])
-				[objects removeObject:object];
-		}
-		
-		self.loadingObjects = objects;
+	NSMutableSet *objectsToRemove = [NSMutableSet set];
+	
+	for (id object in self.loadingObjects) {
+		if ([object checkLoaded])
+			[objectsToRemove addObject:object];
+	}
+
+	for (id object in objectsToRemove) {
+		[self.loadingObjects removeObject:object];
 	}
 }
 
