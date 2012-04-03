@@ -463,10 +463,10 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
     self.session = nil;
     
 	sp_playlistcontainer *outgoing_container = _container;
-	__unsafe_unretained void *outgoing_self = self;
+	__unsafe_unretained SPPlaylistContainer *outgoing_self = self;
 	
     dispatch_async([SPSession libSpotifyQueue], ^() {
-		if (outgoing_container) sp_playlistcontainer_remove_callbacks(outgoing_container, &playlistcontainer_callbacks, outgoing_self);
+		if (outgoing_container) sp_playlistcontainer_remove_callbacks(outgoing_container, &playlistcontainer_callbacks, (__bridge void *)outgoing_self);
 		if (outgoing_container) sp_playlistcontainer_release(outgoing_container);
     });
 }

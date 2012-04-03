@@ -747,11 +747,11 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     self.session = nil;
 	
 	sp_playlist *outgoing_playlist = _playlist;
-	__unsafe_unretained void *outgoing_self = self;
+	__unsafe_unretained SPPlaylist *outgoing_self = self;
     
 	dispatch_async([SPSession libSpotifyQueue], ^() {
 		if (_playlist != NULL) {
-			sp_playlist_remove_callbacks(outgoing_playlist, &_playlistCallbacks, outgoing_self);
+			sp_playlist_remove_callbacks(outgoing_playlist, &_playlistCallbacks, (__bridge void *)outgoing_self);
 			sp_playlist_release(outgoing_playlist);
 		}
 	});
