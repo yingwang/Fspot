@@ -39,6 +39,17 @@
 #import "SPPlaylistContainerInternal.h"
 #import "SPPlaylistFolderInternal.h"
 
+@interface SPPlaylistContainerCallbackProxy : NSObject
+// SPPlaylistContainerCallbackProxy is here to bridge the gap between -dealloc and the 
+// playlist callbacks being unregistered, since that's done async.
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPPlaylistContainer *container;
+@end
+
+@implementation SPPlaylistContainerCallbackProxy
+@synthesize container;
+@end
+
+
 @interface SPPlaylistContainer ()
 
 -(NSArray *)createPlaylistTree;
@@ -48,6 +59,7 @@
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 @property (nonatomic, readwrite, strong) NSArray *playlists;
 @property (nonatomic, readwrite, strong) NSMutableDictionary *folderCache;
+@property (nonatomic, readwrite, strong) SPPlaylistContainerCallbackProxy *callbackProxy;
 
 @property (nonatomic, readwrite) sp_playlistcontainer *container;
 
@@ -79,14 +91,18 @@ static void playlist_moved(sp_playlistcontainer *pc, sp_playlist *playlist, int 
 
 
 static void container_loaded(sp_playlistcontainer *pc, void *userdata) {
-	SPPlaylistContainer *container = (__bridge SPPlaylistContainer *)userdata;
+	
+	SPPlaylistContainerCallbackProxy *proxy = (__bridge SPPlaylistContainerCallbackProxy *)userdata;
+	SPPlaylistContainer *container = proxy.container;
+	if (!container) return;
+	
 	SPUser *user = [SPUser userWithUserStruct:sp_playlistcontainer_owner(container.container) inSession:container.session];
 	NSArray *newTree = [container createPlaylistTree];
 	
 	dispatch_async(dispatch_get_main_queue(), ^() {
-		container.loaded = YES;
 		container.owner = user;
-		dispatch_async(dispatch_get_main_queue(), ^{ container.playlists = newTree; });
+		container.playlists = newTree;
+		container.loaded = YES;
 	});
 }
 
@@ -111,6 +127,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 @synthesize loaded;
 @synthesize folderCache;
 @synthesize playlists;
+@synthesize callbackProxy;
 
 -(sp_playlistcontainer *)container {
 #if DEBUG
@@ -341,7 +358,9 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		
 		// Remove callbacks, since we have to remove two playlists and reacting to list change notifications halfway through would be bad.
-		sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		self.callbackProxy.container = nil;
+		sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
+		self.callbackProxy = nil;
 		
 		
 		NSRange folderRange = [self rangeOfFolderInRootList:aFolder];
@@ -352,7 +371,9 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			entriesToRemove--;
 		}
 		
-		sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		self.callbackProxy = [[SPPlaylistContainerCallbackProxy alloc] init];
+		self.callbackProxy.container = self;
+		sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
 		
 		NSArray *newTree = [self createPlaylistTree];
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -410,7 +431,9 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		
 		dispatch_async([SPSession libSpotifyQueue], ^{
 			
-			sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+			self.callbackProxy.container = nil;
+			sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
+			self.callbackProxy = nil;
 			
 			NSInteger sourceIndex = NSNotFound;
 			SPPlaylistFolder *folder = playlistOrFolder;
@@ -445,9 +468,11 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 				}
 			}
 			
-			sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+			self.callbackProxy = [[SPPlaylistContainerCallbackProxy alloc] init];
+			self.callbackProxy.container = self;
+			sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
 			if (sp_playlistcontainer_is_loaded(self.container))
-				container_loaded(self.container, (__bridge void *)(self));
+				container_loaded(self.container, (__bridge void *)(self.callbackProxy));
 			
 			dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(nil); });
 			
@@ -463,10 +488,12 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
     self.session = nil;
     
 	sp_playlistcontainer *outgoing_container = _container;
-	__unsafe_unretained SPPlaylistContainer *outgoing_self = self;
+	SPPlaylistContainerCallbackProxy *outgoingProxy = self.callbackProxy;
+	self.callbackProxy.container = nil;
+	self.callbackProxy = nil;
 	
     dispatch_async([SPSession libSpotifyQueue], ^() {
-		if (outgoing_container) sp_playlistcontainer_remove_callbacks(outgoing_container, &playlistcontainer_callbacks, (__bridge void *)outgoing_self);
+		if (outgoing_container) sp_playlistcontainer_remove_callbacks(outgoing_container, &playlistcontainer_callbacks, (__bridge void *)outgoingProxy);
 		if (outgoing_container) sp_playlistcontainer_release(outgoing_container);
     });
 }
@@ -484,7 +511,10 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         sp_playlistcontainer_add_ref(self.container);
         self.session = aSession;
 		
-        sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self));
+		self.callbackProxy = [[SPPlaylistContainerCallbackProxy alloc] init];
+		self.callbackProxy.container = self;
+		
+        sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
 		
 		NSArray *newTree = [self createPlaylistTree];
 		dispatch_async(dispatch_get_main_queue(), ^{ self.playlists = newTree; });

@@ -34,6 +34,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPSession.h"
 #import "SPURLExtensions.h"
 
+@interface SPImageCallbackProxy : NSObject
+// SPImageCallbackProxy is here to bridge the gap between -dealloc and the 
+// playlist callbacks being unregistered, since that's done async.
+@property (nonatomic, readwrite, assign) __unsafe_unretained SPImage *image;
+@end
+
+@implementation SPImageCallbackProxy
+@synthesize image;
+@end
+
 @interface SPImage ()
 
 -(void) cacheSpotifyURL;
@@ -44,12 +54,17 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 @property (nonatomic, readwrite) __unsafe_unretained SPSession *session;
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
+@property (nonatomic, readwrite, strong) SPImageCallbackProxy *callbackProxy;
 
 @end
 
 static void image_loaded(sp_image *image, void *userdata) {
+	
+	SPImageCallbackProxy *proxy = (__bridge SPImageCallbackProxy *)userdata;
+	if (!proxy.image) return;
+	
 	BOOL isLoaded = sp_image_is_loaded(image);
-	dispatch_async(dispatch_get_main_queue(), ^{ [(__bridge SPImage *)userdata setLoaded:isLoaded]; });
+	dispatch_async(dispatch_get_main_queue(), ^{ [proxy.image setLoaded:isLoaded]; });
 }
 
 static NSString * const kSPImageKVOContext = @"kSPImageKVOContext";
@@ -130,9 +145,13 @@ static NSMutableDictionary *imageCache;
 		if (anImage != NULL) {
 			self.spImage = anImage;
 			sp_image_add_ref(self.spImage);
+			
+			self.callbackProxy = [[SPImageCallbackProxy alloc] init];
+			self.callbackProxy.image = self;
+			
 			sp_image_add_load_callback(self.spImage,
 									   &image_loaded,
-									   (__bridge void *)(self));
+									   (__bridge void *)(self.callbackProxy));
 			
 			BOOL isLoaded = sp_image_is_loaded(self.spImage);
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -183,6 +202,7 @@ static NSMutableDictionary *imageCache;
 @synthesize session;
 @synthesize spotifyURL;
 @synthesize imageId;
+@synthesize callbackProxy;
 
 -(SPPlatformNativeImage *)image {
 	if (_image == nil && !hasRequestedImage)
@@ -211,7 +231,14 @@ static NSMutableDictionary *imageCache;
 		if (self.spImage != NULL) {
 			[self cacheSpotifyURL];
 			
-			sp_image_add_load_callback(self.spImage, &image_loaded, (__bridge void *)(self));
+			// Clear out previous proxy.
+			self.callbackProxy.image = nil;
+			self.callbackProxy = nil;
+			
+			self.callbackProxy = [[SPImageCallbackProxy alloc] init];
+			self.callbackProxy.image = self;
+			
+			sp_image_add_load_callback(self.spImage, &image_loaded, (__bridge void *)(self.callbackProxy));
 			BOOL isLoaded = sp_image_is_loaded(self.spImage);
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -228,10 +255,12 @@ static NSMutableDictionary *imageCache;
     [self removeObserver:self forKeyPath:@"loaded"];
 	
 	sp_image *outgoing_image = _spImage;
-	__unsafe_unretained SPImage *outgoing_self = self;
+	SPImageCallbackProxy *outgoingProxy = self.callbackProxy;
+	self.callbackProxy.image = nil;
+	self.callbackProxy = nil;
     
     dispatch_async([SPSession libSpotifyQueue], ^() {
-		if (outgoing_image) sp_image_remove_load_callback(outgoing_image, &image_loaded, (__bridge void *)outgoing_self);
+		if (outgoing_image) sp_image_remove_load_callback(outgoing_image, &image_loaded, (__bridge void *)outgoingProxy);
 		if (outgoing_image) sp_image_release(outgoing_image);
 	});
 }
