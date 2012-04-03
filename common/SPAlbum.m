@@ -125,53 +125,53 @@ static NSMutableDictionary *albumCache;
 
 -(BOOL)checkLoaded {
 	
-	__block BOOL isLoaded = NO;
-	SPDispatchSyncIfNeeded(^() { isLoaded = sp_album_is_loaded(self.album); });
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
-    if (isLoaded) {
+	BOOL isLoaded = sp_album_is_loaded(self.album);
+	
+    if (isLoaded)
         [self loadAlbumData];
-    }
+		
 	return isLoaded;
 }
 
 -(void)loadAlbumData {
 	
-	dispatch_async([SPSession libSpotifyQueue], ^{
-		
-		SPImage *newCover = nil;
-		SPArtist *newArtist = nil;
-		NSString *newName = nil;
-		NSUInteger newYear = sp_album_year(self.album);
-		sp_albumtype newAlbumType = sp_album_type(self.album);
-		BOOL newAvailable = sp_album_is_available(self.album);
-		BOOL newLoaded = sp_album_is_loaded(self.album);
-		
-		const byte *imageId = sp_album_cover(self.album);
-		
-		if (imageId != NULL)
-			newCover = [SPImage imageWithImageId:imageId inSession:self.session];
-		
-		sp_artist *spArtist = sp_album_artist(self.album);
-		if (spArtist != NULL)
-			newArtist = [SPArtist artistWithArtistStruct:spArtist inSession:self.session];
-				
-		const char *nameCharArray = sp_album_name(self.album);
-		if (nameCharArray != NULL) {
-			NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
-			newName = [nameString length] > 0 ? nameString : nil;
-		} else {
-			newName = nil;
-		}
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			self.cover = newCover;
-			self.artist = newArtist;
-			self.name = newName;
-			self.year = newYear;
-			self.type = newAlbumType;
-			self.available = newAvailable;
-			self.loaded = newLoaded;
-		});
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	SPImage *newCover = nil;
+	SPArtist *newArtist = nil;
+	NSString *newName = nil;
+	NSUInteger newYear = sp_album_year(self.album);
+	sp_albumtype newAlbumType = sp_album_type(self.album);
+	BOOL newAvailable = sp_album_is_available(self.album);
+	BOOL newLoaded = sp_album_is_loaded(self.album);
+	
+	const byte *imageId = sp_album_cover(self.album);
+	
+	if (imageId != NULL)
+		newCover = [SPImage imageWithImageId:imageId inSession:self.session];
+	
+	sp_artist *spArtist = sp_album_artist(self.album);
+	if (spArtist != NULL)
+		newArtist = [SPArtist artistWithArtistStruct:spArtist inSession:self.session];
+	
+	const char *nameCharArray = sp_album_name(self.album);
+	if (nameCharArray != NULL) {
+		NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
+		newName = [nameString length] > 0 ? nameString : nil;
+	} else {
+		newName = nil;
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		self.cover = newCover;
+		self.artist = newArtist;
+		self.name = newName;
+		self.year = newYear;
+		self.type = newAlbumType;
+		self.available = newAvailable;
+		self.loaded = newLoaded;
 	});
 }
 

@@ -228,8 +228,10 @@ static void metadata_updated(sp_session *session) {
 	
 	@autoreleasepool {
 		
+		// Call this on the libSpotify queue
+		[sess checkLoadingObjects];
+		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[sess checkLoadingObjects];
 			
 			if ([sess.delegate respondsToSelector:@selector(sessionDidChangeMetadata:)]) {
 				[sess.delegate sessionDidChangeMetadata:sess];
@@ -1112,23 +1114,27 @@ static SPSession *sharedSession;
 
 -(void)addLoadingObject:(id)object;
 {
-	@synchronized(loadingObjects){
-		NSSet *newSet = [self.loadingObjects setByAddingObject:object];
-		self.loadingObjects = newSet;
-	}
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		@synchronized(loadingObjects){
+			NSSet *newSet = [self.loadingObjects setByAddingObject:object];
+			self.loadingObjects = newSet;
+		}
+	});
 }
 
 -(void)checkLoadingObjects{
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
 	//Let objects that got new metadata fire their KVO's
-	@synchronized(self.loadingObjects){
+	@synchronized(loadingObjects){
 		NSMutableSet *objects = [loadingObjects mutableCopy];
 		for(id object in loadingObjects){
-			if([object checkLoaded]){
+			if([object checkLoaded])
 				[objects removeObject:object];
-			}
 		}
 		
-		loadingObjects = objects;
+		self.loadingObjects = objects;
 	}
 }
 

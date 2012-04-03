@@ -120,8 +120,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          
 -(BOOL)checkLoaded {
 	
-    __block BOOL isLoaded = NO;
-	SPDispatchSyncIfNeeded(^() { isLoaded = sp_track_is_loaded(self.track); });
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	BOOL isLoaded = sp_track_is_loaded(self.track);
 	
     if (isLoaded)
         [self loadTrackData];
@@ -131,72 +132,71 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)loadTrackData {
 	
-	dispatch_async([SPSession libSpotifyQueue], ^{
-		
-		NSURL *trackURL = nil;
-		SPAlbum *newAlbum = nil;
-		NSString *newName = nil;
-		BOOL newLocal = sp_track_is_local(self.session.session, self.track);
-		NSUInteger newTrackNumber = sp_track_index(self.track);
-		NSUInteger newDiscNumber = sp_track_disc(self.track);
-		NSUInteger newPopularity = sp_track_popularity(self.track);
-		NSTimeInterval newDuration = (NSTimeInterval)sp_track_duration(self.track) / 1000.0;
-		sp_track_availability newAvailability = sp_track_get_availability(self.session.session, self.track);
-		sp_track_offline_status newOfflineStatus = sp_track_offline_get_status(self.track);
-		BOOL newLoaded = sp_track_is_loaded(self.track);
-		BOOL newStarred = sp_track_is_starred(self.session.session, self.track);
-		
-		sp_link *link = sp_link_create_from_track(self.track, 0);
-		if (link != NULL) {
-			trackURL = [NSURL urlWithSpotifyLink:link];
-			sp_link_release(link);
-		}
-		
-		sp_album *spAlbum = sp_track_album(self.track);
-		if (spAlbum != NULL)
-			newAlbum = [SPAlbum albumWithAlbumStruct:spAlbum inSession:self.session];
-		
-		const char *nameCharArray = sp_track_name(self.track);
-		if (nameCharArray != NULL) {
-			NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
-			newName = [nameString length] > 0 ? nameString : nil;
-		} else {
-			newName = nil;
-		}
-		
-		NSUInteger artistCount = sp_track_num_artists(self.track);
-		NSArray *newArtists = nil;
-		
-		if (artistCount > 0) {
-			NSMutableArray *array = [NSMutableArray arrayWithCapacity:artistCount];
-			NSUInteger currentArtist = 0;
-			for (currentArtist = 0; currentArtist < artistCount; currentArtist++) {
-				sp_artist *artist = sp_track_artist(self.track, (int)currentArtist);
-				if (artist != NULL) {
-					[array addObject:[SPArtist artistWithArtistStruct:artist inSession:session]];
-				}
-			}
-			
-			if ([array count] > 0) {
-				newArtists = [NSArray arrayWithArray:array];
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	NSURL *trackURL = nil;
+	SPAlbum *newAlbum = nil;
+	NSString *newName = nil;
+	BOOL newLocal = sp_track_is_local(self.session.session, self.track);
+	NSUInteger newTrackNumber = sp_track_index(self.track);
+	NSUInteger newDiscNumber = sp_track_disc(self.track);
+	NSUInteger newPopularity = sp_track_popularity(self.track);
+	NSTimeInterval newDuration = (NSTimeInterval)sp_track_duration(self.track) / 1000.0;
+	sp_track_availability newAvailability = sp_track_get_availability(self.session.session, self.track);
+	sp_track_offline_status newOfflineStatus = sp_track_offline_get_status(self.track);
+	BOOL newLoaded = sp_track_is_loaded(self.track);
+	BOOL newStarred = sp_track_is_starred(self.session.session, self.track);
+	
+	sp_link *link = sp_link_create_from_track(self.track, 0);
+	if (link != NULL) {
+		trackURL = [NSURL urlWithSpotifyLink:link];
+		sp_link_release(link);
+	}
+	
+	sp_album *spAlbum = sp_track_album(self.track);
+	if (spAlbum != NULL)
+		newAlbum = [SPAlbum albumWithAlbumStruct:spAlbum inSession:self.session];
+	
+	const char *nameCharArray = sp_track_name(self.track);
+	if (nameCharArray != NULL) {
+		NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
+		newName = [nameString length] > 0 ? nameString : nil;
+	} else {
+		newName = nil;
+	}
+	
+	NSUInteger artistCount = sp_track_num_artists(self.track);
+	NSArray *newArtists = nil;
+	
+	if (artistCount > 0) {
+		NSMutableArray *array = [NSMutableArray arrayWithCapacity:artistCount];
+		NSUInteger currentArtist = 0;
+		for (currentArtist = 0; currentArtist < artistCount; currentArtist++) {
+			sp_artist *artist = sp_track_artist(self.track, (int)currentArtist);
+			if (artist != NULL) {
+				[array addObject:[SPArtist artistWithArtistStruct:artist inSession:session]];
 			}
 		}
 		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			self.spotifyURL = trackURL;
-			self.album = newAlbum;
-			self.name = newName;
-			self.local = newLocal;
-			self.trackNumber = newTrackNumber;
-			self.discNumber = newDiscNumber;
-			self.popularity = newPopularity;
-			self.duration = newDuration;
-			self.availability = newAvailability;
-			self.offlineStatus = newOfflineStatus;
-			self.loaded = newLoaded;
-			[self setStarredFromLibSpotifyUpdate:newStarred];
-			self.artists = newArtists;
-		});
+		if ([array count] > 0) {
+			newArtists = [NSArray arrayWithArray:array];
+		}
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		self.spotifyURL = trackURL;
+		self.album = newAlbum;
+		self.name = newName;
+		self.local = newLocal;
+		self.trackNumber = newTrackNumber;
+		self.discNumber = newDiscNumber;
+		self.popularity = newPopularity;
+		self.duration = newDuration;
+		self.availability = newAvailability;
+		self.offlineStatus = newOfflineStatus;
+		self.loaded = newLoaded;
+		[self setStarredFromLibSpotifyUpdate:newStarred];
+		self.artists = newArtists;
 	});
 }
 

@@ -118,29 +118,30 @@ static NSMutableDictionary *artistCache;
 
 
 -(BOOL)checkLoaded {
-	__block BOOL isLoaded = NO;
-	SPDispatchSyncIfNeeded(^{ isLoaded = sp_artist_is_loaded(self.artist); });
+	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	BOOL isLoaded = sp_artist_is_loaded(self.artist);
 	if (isLoaded) [self loadArtistData];
+	
 	return isLoaded;
 }
 
 -(void)loadArtistData {
 	
-	dispatch_async([SPSession libSpotifyQueue], ^{
-		
-		NSString *newName = nil;
-		
-		const char *nameCharArray = sp_artist_name(self.artist);
-		if (nameCharArray != NULL) {
-			NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
-			newName = [nameString length] > 0 ? nameString : nil;
-		} else {
-			newName = nil;
-		}
-		
-		dispatch_async(dispatch_get_main_queue(), ^() { self.name = newName; });
-		
-	});
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	NSString *newName = nil;
+	
+	const char *nameCharArray = sp_artist_name(self.artist);
+	if (nameCharArray != NULL) {
+		NSString *nameString = [NSString stringWithUTF8String:nameCharArray];
+		newName = [nameString length] > 0 ? nameString : nil;
+	} else {
+		newName = nil;
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^() { self.name = newName; });
 }
 
 -(NSString *)description {

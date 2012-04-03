@@ -92,8 +92,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(BOOL)checkLoaded {
 	
-	__block BOOL userLoaded = NO;
-	SPDispatchSyncIfNeeded(^{ userLoaded = sp_user_is_loaded(self.user); });
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	BOOL userLoaded = sp_user_is_loaded(self.user);
 
     if (userLoaded)
         [self loadUserData];
@@ -102,40 +103,39 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)loadUserData {
-    
-	dispatch_async([SPSession libSpotifyQueue], ^{
+
+    NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
+	BOOL userLoaded = sp_user_is_loaded(self.user);
+	NSURL *url = nil;
+	NSString *canonicalString = nil;
+	NSString *displayString = nil;
+	
+	if (userLoaded) {
 		
-		BOOL userLoaded = sp_user_is_loaded(self.user);
-		NSURL *url = nil;
-		NSString *canonicalString = nil;
-		NSString *displayString = nil;
-		
-		if (userLoaded) {
-			
-			sp_link *link = sp_link_create_from_user(self.user);
-			if (link != NULL) {
-				url = [NSURL urlWithSpotifyLink:link];
-				sp_link_release(link);
-			}
-			
-			const char *canonical = sp_user_canonical_name(self.user);
-			if (canonical != NULL) {
-				canonicalString = [NSString stringWithUTF8String:canonical];
-			}
-			
-			const char *display = sp_user_display_name(self.user);
-			if (display != NULL) {
-				displayString = [NSString stringWithUTF8String:display];
-			}
-			
-			dispatch_async(dispatch_get_main_queue(), ^{
-				self.loaded = userLoaded;
-				self.canonicalName = [canonicalString length] > 0 ? canonicalString : nil;
-				self.displayName = [displayString length] > 0 ? displayString : nil;
-				self.spotifyURL = url;
-			});
+		sp_link *link = sp_link_create_from_user(self.user);
+		if (link != NULL) {
+			url = [NSURL urlWithSpotifyLink:link];
+			sp_link_release(link);
 		}
-	});
+		
+		const char *canonical = sp_user_canonical_name(self.user);
+		if (canonical != NULL) {
+			canonicalString = [NSString stringWithUTF8String:canonical];
+		}
+		
+		const char *display = sp_user_display_name(self.user);
+		if (display != NULL) {
+			displayString = [NSString stringWithUTF8String:display];
+		}
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.loaded = userLoaded;
+			self.canonicalName = [canonicalString length] > 0 ? canonicalString : nil;
+			self.displayName = [displayString length] > 0 ? displayString : nil;
+			self.spotifyURL = url;
+		});
+	}
 }
 
 @synthesize spotifyURL;
