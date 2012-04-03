@@ -68,8 +68,6 @@ Playback
 @interface SPSession : NSObject <SPSessionPlaybackProvider>
 
 +(dispatch_queue_t)libSpotifyQueue;
--(BOOL)libSpotifySessionIsNULL;
-
 
 /** Returns a shared SPSession object. 
  
@@ -175,7 +173,7 @@ Playback
  @return Returns the username that will be logged in with -[SPSession attemptLoginWithStoredCredentials:], or 
  `nil` if there are no stored credentials.
  */
--(NSString *)storedCredentialsUserName;
+-(void)fetchStoredCredentialsUserName:(void (^)(NSString *storedUserName))block;
 
 /** Remove stored credentials from the encrypted store.
  
@@ -189,7 +187,7 @@ Playback
  This method will force libSpotify to flush its caches. If you're writing an iOS application, call
  this when your application is put into the background to ensure correct operation.
  */
--(void)flushCaches;
+-(void)beginFlushingCaches:(void (^)())completionBlock;
 
 /** Log out from the Spotify service.
  
@@ -270,7 +268,7 @@ Playback
 @property (nonatomic, readonly, copy) NSDictionary *offlineStatistics;
 
 /** Returns the time until the user needs to reconnect to Spotify to renew offline syncing keys. */
-@property (nonatomic, readonly) NSTimeInterval offlineKeyTimeRemaining;
+-(void)fetchOfflineKeyTimeRemaining:(void (^)(NSTimeInterval remainingTime))block;
 
 /** Returns the last error encountered during offline syncing, or `nil` if there is no problem. */
 @property (nonatomic, readonly, strong) NSError *offlineSyncError;

@@ -522,6 +522,7 @@ static NSString * const kSPSessionKVOContext = @"kSPSessionKVOContext";
 @implementation SPSession {
 	BOOL _playing;
 	sp_connectionstate _connectionState;
+	BOOL _cachedIsUsingNormalization;
 }
 
 static dispatch_queue_t libspotify_global_queue;
@@ -535,12 +536,6 @@ static dispatch_queue_t libspotify_global_queue;
 
 +(dispatch_queue_t)libSpotifyQueue {
 	return libspotify_global_queue;
-}
-
--(BOOL)libSpotifySessionIsNULL {
-	__block BOOL sessionIsNull = YES;
-	SPDispatchSyncIfNeeded(^{ sessionIsNull = (self.session == NULL); });
-	return sessionIsNull;
 }
 
 static SPSession *sharedSession;
@@ -675,6 +670,8 @@ static SPSession *sharedSession;
 			if (createErrorCode != SP_ERROR_OK) {
 				self.session = NULL;
 				creationError = [NSError spotifyErrorWithCode:createErrorCode];
+			} else {
+				_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
 			}
 
 		});
@@ -730,11 +727,12 @@ static SPSession *sharedSession;
 	});
 }
 
--(NSString *)storedCredentialsUserName {
+-(void)fetchStoredCredentialsUserName:(void (^)(NSString *storedUserName))block {
 	
-	__block NSString *name = nil;
-	
-	SPDispatchSyncIfNeeded(^() {
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		NSString *name = nil;
+		
 		if (self.session != NULL) {
 			char userNameBuffer[300];
 			int userNameLength = sp_session_remembered_user(self.session, (char *)&userNameBuffer, sizeof(userNameBuffer));
@@ -745,17 +743,22 @@ static SPSession *sharedSession;
 					name = userName;
 			}
 		}
+		
+		if (block) block(name);
 	});
-	
-	return name;
 }
 
 -(void)forgetStoredCredentials {
 	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_forget_me(self.session); });
 }
 
--(void)flushCaches {
-	SPDispatchSyncIfNeeded(^() { if (self.session) sp_session_flush_caches(self.session); });
+-(void)beginFlushingCaches:(void (^)())completionBlock {
+	dispatch_async([SPSession libSpotifyQueue], ^() {
+		if (self.session) sp_session_flush_caches(self.session); 
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (completionBlock) completionBlock();
+		});
+	});
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -1145,10 +1148,15 @@ static SPSession *sharedSession;
     dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_set_cache_size(self.session, maximumCacheSizeMB); });
 }
 
--(NSTimeInterval)offlineKeyTimeRemaining {
-	__block NSTimeInterval interval = 0.0;
-	SPDispatchSyncIfNeeded(^() { if (self.session) interval = sp_offline_time_left(self.session); });
-	return interval;
+-(void)fetchOfflineKeyTimeRemaining:(void (^)(NSTimeInterval remainingTime))block {
+	dispatch_async([SPSession libSpotifyQueue], ^() {
+		NSTimeInterval interval = 0.0;
+		if (self.session) interval = sp_offline_time_left(self.session);
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (block) block(interval);
+		});
+	});
 }
 
 @synthesize offlineStatistics;
@@ -1213,22 +1221,25 @@ static SPSession *sharedSession;
 }
 
 -(void)setPlaying:(BOOL)nowPlaying {
-	SPDispatchSyncIfNeeded(^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
-	if (![self libSpotifySessionIsNULL]) _playing = nowPlaying;
+	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
+	_playing = nowPlaying;
 }
 
 -(BOOL)isPlaying {
-	return _playing && ![self libSpotifySessionIsNULL];
+	return _playing;
 }
 
 -(void)setUsingVolumeNormalization:(BOOL)usingVolumeNormalization {
-	SPDispatchSyncIfNeeded(^() { sp_session_set_volume_normalization(self.session, usingVolumeNormalization); });
+#if TARGET_OS_IPHONE
+	// No normalization on iOS yet :-(
+	usingVolumeNormalization = NO;
+#endif
+	_cachedIsUsingNormalization = usingVolumeNormalization;
+	dispatch_async([SPSession libSpotifyQueue], ^() { sp_session_set_volume_normalization(self.session, usingVolumeNormalization); });
 }
 
 -(BOOL)isUsingVolumeNormalization {
-	__block BOOL normed = NO;
-	SPDispatchSyncIfNeeded(^() { normed = sp_session_get_volume_normalization(self.session); });
-	return normed;
+	return _cachedIsUsingNormalization;
 }
 
 -(void)unloadPlayback {
