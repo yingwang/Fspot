@@ -73,6 +73,19 @@ static void * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOContex
     return self;
 }
 
+-(id)initWithAudioController:(SPCoreAudioController *)aController playbackSession:(SPSession *)aSession {
+	
+	self = [self initWithPlaybackSession:aSession];
+	
+	if (self) {
+		self.audioController = aController;
+		self.audioController.delegate = self;
+		self.playbackSession.audioDeliveryDelegate = self.audioController;
+	}
+	
+	return self;
+}
+
 -(void)dealloc {
 	
 	[self removeObserver:self forKeyPath:@"playbackSession.playing"];
@@ -81,6 +94,7 @@ static void * const kSPPlaybackManagerKVOContext = @"kSPPlaybackManagerKVOContex
 	self.playbackSession = nil;
 	self.currentTrack = nil;
 	
+	self.audioController.delegate = nil;
 	self.audioController = nil;
 }
 

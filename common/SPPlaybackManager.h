@@ -65,6 +65,14 @@
 */ 
 -(id)initWithPlaybackSession:(SPSession *)aSession;
 
+/** Initialize a new SPPlaybackManager object with a custom audio controller. 
+ 
+ @param aController The `SPCoreAudioController` this instance should use.
+ @param aSession The session that should stream and decode audio data.
+ @return Returns the created playback manager.
+ */
+-(id)initWithAudioController:(SPCoreAudioController *)aController playbackSession:(SPSession *)aSession;
+
 /** Returns the currently playing track, or `nil` if nothing is playing. */
 @property (nonatomic, readonly, strong) SPTrack *currentTrack;
 
