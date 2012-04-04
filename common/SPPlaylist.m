@@ -435,9 +435,12 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		if (self.playlist != NULL) {
 			sp_playlist_add_ref(pl);
 			
+			// We should build a (probably incomplete right now) list of 
+			// tracks to the delta callbacks can safely be applied.
+			[self rebuildItems];
+			
 			self.callbackProxy = [[SPPlaylistCallbackProxy alloc] init];
 			self.callbackProxy.playlist = self;
-			
 			sp_playlist_add_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self.callbackProxy);
 			sp_playlist_set_in_ram(aSession.session, self.playlist, true);
 			
