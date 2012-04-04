@@ -694,9 +694,9 @@ static SPSession *sharedSession;
 	if (userName.length == 0 || password.length == 0)
 		return;
 	
-	[self logout];
-    
-    dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], rememberMe, NULL); });
+	[self beginLogout:^{
+		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], rememberMe, NULL); });
+	}];
 }
 
 -(void)attemptLoginWithUserName:(NSString *)userName
@@ -706,9 +706,9 @@ static SPSession *sharedSession;
 	if ([userName length] == 0 || [credential length] == 0)
 		return;
 	
-	[self logout];
-	
-	dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], NULL, rememberMe, [credential UTF8String]); });
+	[self beginLogout:^{
+		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], NULL, rememberMe, [credential UTF8String]); });
+	}];
 }
 
 -(void)attemptLoginWithStoredCredentials:(SPErrorableOperationCallback)block {
@@ -859,7 +859,7 @@ static SPSession *sharedSession;
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
--(void)logout {
+-(void)beginLogout:(void (^)())completionBlock {
 	[self.trackCache removeAllObjects];
 	[self.userCache removeAllObjects];
 	[self.playlistCache removeAllObjects];
@@ -870,7 +870,12 @@ static SPSession *sharedSession;
 	self.locale = nil;
 	self.connectionState = SP_CONNECTION_STATE_LOGGED_OUT;
 	
-	SPDispatchSyncIfNeeded(^() { if (self.session) sp_session_logout(self.session); });
+	dispatch_async([SPSession libSpotifyQueue], ^() { 
+		if (self.session) sp_session_logout(self.session);
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (completionBlock) completionBlock();
+		});
+	});
 }
 
 -(sp_connectionstate)connectionState {
@@ -1274,7 +1279,7 @@ static SPSession *sharedSession;
 	[self removeObserver:self forKeyPath:@"starredPlaylist.items"];
 	if (self.session != NULL) {
 		[self unloadPlayback];
-        [self logout];
+        [self beginLogout:nil];
     }
 }
 

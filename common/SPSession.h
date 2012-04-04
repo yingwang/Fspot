@@ -194,7 +194,7 @@ Playback
  This method will cleanly log out from the Spotify service and clear any in-memory caches. 
  Called automatically when the instance is deallocated.
  */
--(void)logout;
+-(void)beginLogout:(void (^)())completionBlock;
 
 /** Returns the current connection state.
  
