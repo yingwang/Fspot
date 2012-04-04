@@ -870,8 +870,10 @@ static SPSession *sharedSession;
 	self.locale = nil;
 	self.connectionState = SP_CONNECTION_STATE_LOGGED_OUT;
 	
+	sp_session *outgoing_session = _session;
+	
 	dispatch_async([SPSession libSpotifyQueue], ^() { 
-		if (self.session) sp_session_logout(self.session);
+		if (outgoing_session) sp_session_logout(outgoing_session);
 		dispatch_async(dispatch_get_main_queue(), ^{
 			if (completionBlock) completionBlock();
 		});
