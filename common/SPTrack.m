@@ -77,10 +77,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
-    if (self.discNumber == 0) {
-        self.discNumber = sp_track_disc(self.track);
-        self.trackNumber = sp_track_index(self.track);
-    }
+	self.discNumber = sp_track_disc(self.track);
+	self.trackNumber = sp_track_index(self.track);
 }
 
 @end
