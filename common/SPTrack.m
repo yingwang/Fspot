@@ -192,9 +192,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		self.duration = newDuration;
 		self.availability = newAvailability;
 		self.offlineStatus = newOfflineStatus;
-		self.loaded = newLoaded;
 		[self setStarredFromLibSpotifyUpdate:newStarred];
 		self.artists = newArtists;
+		self.loaded = newLoaded;
 	});
 }
 
