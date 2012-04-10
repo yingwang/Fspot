@@ -8,6 +8,32 @@ CocoaLibSpotify requires libspotify.framework, which isn't included in the repos
 
 You can find the latest release notes in the [CHANGELOG.markdown](https://github.com/spotify/cocoalibspotify/blob/master/CHANGELOG.markdown) file.
 
+## A Note On "Loading" ##
+
+CocoaLibSpotify does a lot of asynchronous loading — tracks, playlists, artists, albums, etc can all finish loading their metadata after you get an object. In the case of user playlists and searching, this can be a number of seconds.
+
+Do *not* poll these properties. CocoaLibSpotify does a lot of work in the main runloop, and when you do a polling loop you can, in many cases, stop CocoaLibSpotify's ability to do any work, causing the metadata to never load.
+
+Instead, CocoaLibSpotify's properties are Key-Value Observing compliant, and the best practice is to add an observer to the properties you're interested in to receive a notification callback when the metadata is loaded.
+
+For example, if you want to know when search results come back, add an observer like this:
+
+    [self addObserver:self forKeyPath:@"search.tracks" options:0 context:nil];
+    self.search = [SPSearch searchWithSearchQuery:@"Hello" inSession:[SPSession sharedSession]];
+
+When the tracks in the search are updated, you'll get a callback:
+
+
+    - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    
+    	if ([keyPath isEqualToString:@"search.tracks"])
+    		NSLog(@"Search found tracks: %@", self.search.tracks);
+    }
+
+Most objects also have a generic `loaded` or similar property that you can observe for general callbacks about when objects are loaded.
+
+Key-Value Observing is a core technology in the Mac and iOS SDKs, and extensive documentation and examples can be found in Apple's [developer documentation](http://developer.apple.com/library/ios/#documentation/General/Conceptual/DevPedia-CocoaCore/KVO.html).
+
 ## Building -  Mac OS X ##
 
 The Xcode project requires Xcode 4.3 and Mac OS X 10.7 to build since it uses ARC. However, the built binary can be deployed on 64-bit systems running Mac OS X 10.6 or higher.
