@@ -61,6 +61,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPCoreAudioController.h"
 #import "SPPlaybackManager.h"
 
+#import "SPAsyncLoadingObserver.h"
+
 #else
 
 #import <CocoaLibSpotify/SPErrorExtensions.h>
@@ -84,5 +86,5 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import <CocoaLibSpotify/SPCircularBuffer.h>
 #import <CocoaLibSpotify/SPCoreAudioController.h>
 #import <CocoaLibSpotify/SPPlaybackManager.h>
-
+#import <CocoaLibSpotify/SPAsyncLoadingObserver.h>
 #endif

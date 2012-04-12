@@ -61,6 +61,8 @@
 		50B1F2071518B1DA00CB7186 /* SPSignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B1F2051518B1DA00CB7186 /* SPSignupViewController.m */; };
 		50B1F28B1518E69A00CB7186 /* SPLoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B1F2891518E69A00CB7186 /* SPLoginViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50B1F28C1518E69A00CB7186 /* SPLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B1F28A1518E69A00CB7186 /* SPLoginViewController.m */; };
+		50C3CE0115370C4F00B1F2C3 /* SPAsyncLoadingObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3CDFF15370C4F00B1F2C3 /* SPAsyncLoadingObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		50C3CE0215370C4F00B1F2C3 /* SPAsyncLoadingObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3CE0015370C4F00B1F2C3 /* SPAsyncLoadingObserver.m */; };
 		50DB47FA1523166A0037A206 /* SPCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DB47F41523166A0037A206 /* SPCircularBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50DB47FB1523166A0037A206 /* SPCircularBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 50DB47F51523166A0037A206 /* SPCircularBuffer.m */; };
 		50DB47FC1523166A0037A206 /* SPCoreAudioController.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DB47F61523166A0037A206 /* SPCoreAudioController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -129,6 +131,8 @@
 		50B1F2051518B1DA00CB7186 /* SPSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSignupViewController.m; path = "View Controllers/SPSignupViewController.m"; sourceTree = "<group>"; };
 		50B1F2891518E69A00CB7186 /* SPLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPLoginViewController.h; path = "View Controllers/SPLoginViewController.h"; sourceTree = "<group>"; };
 		50B1F28A1518E69A00CB7186 /* SPLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPLoginViewController.m; path = "View Controllers/SPLoginViewController.m"; sourceTree = "<group>"; };
+		50C3CDFF15370C4F00B1F2C3 /* SPAsyncLoadingObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPAsyncLoadingObserver.h; path = ../common/SPAsyncLoadingObserver.h; sourceTree = "<group>"; };
+		50C3CE0015370C4F00B1F2C3 /* SPAsyncLoadingObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPAsyncLoadingObserver.m; path = ../common/SPAsyncLoadingObserver.m; sourceTree = "<group>"; };
 		50DB47F41523166A0037A206 /* SPCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPCircularBuffer.h; path = ../common/SPCircularBuffer.h; sourceTree = "<group>"; };
 		50DB47F51523166A0037A206 /* SPCircularBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPCircularBuffer.m; path = ../common/SPCircularBuffer.m; sourceTree = "<group>"; };
 		50DB47F61523166A0037A206 /* SPCoreAudioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPCoreAudioController.h; path = ../common/SPCoreAudioController.h; sourceTree = "<group>"; };
@@ -205,6 +209,7 @@
 				50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */,
 				50AF4A4F1439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h */,
 				509840241460442600C0FC18 /* SPCommon.h */,
+				50C3CDFD15370C3A00B1F2C3 /* Helpers */,
 				50AF4A381439CC7100E4A5EF /* Extensions */,
 				50AF4A391439CC8B00E4A5EF /* Model */,
 				5046739A15135F6000F59AC4 /* Views */,
@@ -284,6 +289,15 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		50C3CDFD15370C3A00B1F2C3 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				50C3CDFF15370C4F00B1F2C3 /* SPAsyncLoadingObserver.h */,
+				50C3CE0015370C4F00B1F2C3 /* SPAsyncLoadingObserver.m */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
 		50DB47F2152316580037A206 /* Playback */ = {
 			isa = PBXGroup;
 			children = (
@@ -341,6 +355,7 @@
 				50DB47FA1523166A0037A206 /* SPCircularBuffer.h in Headers */,
 				50DB47FC1523166A0037A206 /* SPCoreAudioController.h in Headers */,
 				50DB47FE1523166A0037A206 /* SPPlaybackManager.h in Headers */,
+				50C3CE0115370C4F00B1F2C3 /* SPAsyncLoadingObserver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +452,7 @@
 				50DB47FB1523166A0037A206 /* SPCircularBuffer.m in Sources */,
 				50DB47FD1523166A0037A206 /* SPCoreAudioController.m in Sources */,
 				50DB47FF1523166A0037A206 /* SPPlaybackManager.m in Sources */,
+				50C3CE0215370C4F00B1F2C3 /* SPAsyncLoadingObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
