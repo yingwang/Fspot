@@ -41,7 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPAlbum;
 @class SPSession;
 
-@interface SPTrack : NSObject <SPPlaylistableItem> {
+@interface SPTrack : NSObject <SPPlaylistableItem, SPAsyncLoading> {
 	BOOL _starred;
 }
 

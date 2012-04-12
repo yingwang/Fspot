@@ -34,7 +34,7 @@
 
 @interface SPPlaylistItem ()
 
-@property (nonatomic, readwrite, strong) id <SPPlaylistableItem> item;
+@property (nonatomic, readwrite, strong) id <SPPlaylistableItem, SPAsyncLoading> item;
 @property (nonatomic, readwrite, copy) NSDate *dateAdded;
 @property (nonatomic, readwrite, strong) SPUser *creator;
 @property (nonatomic, readwrite, copy) NSString *message;

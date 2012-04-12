@@ -42,7 +42,7 @@ static SInt32 const kSPSearchDefaultSearchPageSize = 75;
 /** The "do not search" page size. Used if you don't want to search for a particular kind of result. */
 static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
-@interface SPSearch : NSObject
+@interface SPSearch : NSObject <SPAsyncLoading>
 
 ///----------------------------
 /// @name Creating and Initializing Searches
@@ -293,8 +293,8 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 /** Returns an NSError indicating the search failure reason, or `nil` if there was no error. */
 @property (nonatomic, readonly, copy) NSError *searchError;
 
-/** Returns `YES` if a search is currently in progress, or `NO` if the search is complete (or has failed). */
-@property (nonatomic, readonly) BOOL searchInProgress;
+/** Returns `NO` if a search is currently in progress, or `YES` if the search is complete (or has failed). */
+@property (nonatomic, readonly, getter = isLoaded) BOOL loaded;
 
 /** Returns the search query for this search. */
 @property (nonatomic, readonly, copy) NSString *searchQuery;

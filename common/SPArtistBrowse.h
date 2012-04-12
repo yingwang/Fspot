@@ -47,7 +47,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPSession;
 @class SPImage;
 
-@interface SPArtistBrowse : NSObject
+@interface SPArtistBrowse : NSObject <SPAsyncLoading>
 
 ///----------------------------
 /// @name Creating and Initializing Artist Browses

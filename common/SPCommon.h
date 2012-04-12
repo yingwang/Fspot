@@ -45,11 +45,13 @@ typedef void (^SPErrorableOperationCallback)(NSError *error);
 @protocol SPSessionPlaybackDelegate;
 @protocol SPSessionAudioDeliveryDelegate;
 
-@protocol SPPlaylistableItem <NSObject>
+@protocol SPAsyncLoading <NSObject>
+@property (readonly, nonatomic, getter = isLoaded) BOOL loaded;
+@end
 
+@protocol SPPlaylistableItem <NSObject>
 -(NSString *)name;
 -(NSURL *)spotifyURL;
-
 @end
 
 @protocol SPSessionPlaybackProvider <NSObject>

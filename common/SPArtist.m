@@ -41,6 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, copy, readwrite) NSString *name;
 @property (nonatomic, copy, readwrite) NSURL *spotifyURL;
 @property (nonatomic, readwrite) sp_artist *artist;
+@property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
 
 @end
 
@@ -141,7 +142,12 @@ static NSMutableDictionary *artistCache;
 		newName = nil;
 	}
 	
-	dispatch_async(dispatch_get_main_queue(), ^() { self.name = newName; });
+	BOOL isLoaded = sp_artist_is_loaded(self.artist);
+	
+	dispatch_async(dispatch_get_main_queue(), ^() {
+		self.name = newName;
+		self.loaded = isLoaded;
+	});
 }
 
 -(NSString *)description {
@@ -158,6 +164,7 @@ static NSMutableDictionary *artistCache;
 @synthesize artist = _artist;
 @synthesize spotifyURL;
 @synthesize name;
+@synthesize loaded;
 
 -(void)dealloc {
 	sp_artist *outgoing_artist = _artist;

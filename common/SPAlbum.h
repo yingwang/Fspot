@@ -42,7 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPImage;
 @class SPArtist;
 
-@interface SPAlbum : NSObject <SPPlaylistableItem>
+@interface SPAlbum : NSObject <SPPlaylistableItem, SPAsyncLoading>
 
 ///----------------------------
 /// @name Creating and Initializing Albums

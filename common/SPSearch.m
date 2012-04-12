@@ -61,7 +61,7 @@
 @property (nonatomic, readwrite, strong) SPSession *session;
 @property (nonatomic, readwrite) sp_search *activeSearch;
 
-@property (nonatomic, readwrite) BOOL searchInProgress;
+@property (nonatomic, readwrite, getter = isLoaded) BOOL loaded;
 
 -(id)initWithSession:(SPSession *)aSession; // Designated initialiser.
 -(void)searchDidComplete:(sp_search *)search wasSearchingForTracks:(BOOL)searchTracks artists:(BOOL)searchArtists albums:(BOOL)searchAlbums playlists:(BOOL)searchPlaylists;
@@ -222,7 +222,7 @@ void search_complete(sp_search *result, void *userdata) {
 
 @synthesize searchType;
 @synthesize searchError;
-@synthesize searchInProgress;
+@synthesize loaded;
 
 @synthesize searchQuery;
 @synthesize suggestedSearchQuery;
@@ -395,7 +395,7 @@ void search_complete(sp_search *result, void *userdata) {
 		self.hasExhaustedPlaylistResults = newHasExhaustedPlaylists;
 		requestedPlaylistResults += additionalPlaylists.count;
 		
-		self.searchInProgress = NO;
+		self.loaded = YES;
 		
 	});
 }
@@ -486,7 +486,7 @@ void search_complete(sp_search *result, void *userdata) {
 		}
 	});
 	
-	self.searchInProgress = YES;
+	self.loaded = NO;
 	return YES;
 	
 }

@@ -40,7 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @class SPSession;
 
-@interface SPArtist : NSObject <SPPlaylistableItem>
+@interface SPArtist : NSObject <SPPlaylistableItem, SPAsyncLoading>
 
 ///----------------------------
 /// @name Creating and Initializing Artists
@@ -104,5 +104,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Returns the Spotify URI of the track, for example: `spotify:artist:12EtLdLfJ41vUOoVzPZIUy` */
 @property (nonatomic, readonly, copy) NSURL *spotifyURL;
+
+/** Returns `YES` if the artist metadata has finished loading. */ 
+@property (nonatomic, readonly, getter=isLoaded) BOOL loaded;
 
 @end

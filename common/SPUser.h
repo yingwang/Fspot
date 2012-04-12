@@ -40,7 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @class SPSession;
 
-@interface SPUser : NSObject
+@interface SPUser : NSObject <SPAsyncLoading>
 
 ///----------------------------
 /// @name Creating and Initializing Users

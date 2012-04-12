@@ -41,7 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @class SPPlaylist;
 @class SPPlaylistFolder;
 
-@interface SPPlaylistContainer : NSObject
+@interface SPPlaylistContainer : NSObject <SPAsyncLoading>
 
 ///----------------------------
 /// @name Properties
