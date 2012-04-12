@@ -273,7 +273,7 @@ static NSMutableDictionary *loginControllerCache;
 	}
 	
 	if (page == SP_SIGNUP_PAGE_NONE) {
-		[self.session logout];
+		[self.session beginLogout:nil];
 		SPLoginLogicViewController *root = [[self viewControllers] objectAtIndex:0];
 		[root resetState];
 		[self popToViewController:root animated:YES];
