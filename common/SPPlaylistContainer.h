@@ -64,6 +64,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Returns an array of SPPlaylist and/or SPPlaylistFolders representing the owner's playlist list. */
 @property (nonatomic, readonly, strong) NSArray *playlists;
 
+/** Returns a flattened array of the `SPPlaylist` objects in the playlists tree, without folders. 
+ 
+ This array is computed each time this method is called, so be careful if you're in a performance-critical section.
+*/
+-(NSArray *)flattenedPlaylists;
+
 /** Returns the session the list is loaded in. */
 @property (nonatomic, readonly, assign) __unsafe_unretained SPSession *session;
 

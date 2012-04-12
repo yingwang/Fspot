@@ -67,6 +67,7 @@
 -(NSInteger)indexInFlattenedListForIndex:(NSUInteger)virtualIndex inFolder:(SPPlaylistFolder *)parentFolder;
 -(void)removeFolderFromTree:(SPPlaylistFolder *)aPlaylistOrFolderIndex callback:(void (^)())block;
 -(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(void (^)())block;
+-(NSArray *)playlistsInFolder:(SPPlaylistFolder *)folder;
 
 @end
 
@@ -272,6 +273,36 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 }
 
 #pragma mark -
+
+-(NSArray *)flattenedPlaylists {
+	
+	NSArray *tree = [self.playlists copy];
+	NSMutableArray *flatList = [NSMutableArray array];
+	
+	for (id item in tree) {
+		if ([item isKindOfClass:[SPPlaylist class]])
+			[flatList addObject:item];
+		else if ([item isKindOfClass:[SPPlaylistFolder class]])
+			[flatList addObjectsFromArray:[self playlistsInFolder:item]];
+	}
+	
+	return [NSArray arrayWithArray:flatList];
+}
+
+-(NSArray *)playlistsInFolder:(SPPlaylistFolder *)folder {
+	
+	NSMutableArray *playlistsInFolder = [NSMutableArray array];
+	
+	for (id item in folder.playlists) {
+		
+		if ([item isKindOfClass:[SPPlaylist class]])
+			[playlistsInFolder addObject:item];
+		else if ([item isKindOfClass:[SPPlaylistFolder class]])
+			[playlistsInFolder addObjectsFromArray:[self playlistsInFolder:item]];
+	}
+	
+	return [NSArray arrayWithArray:playlistsInFolder];
+}
 
 -(void)createPlaylistWithName:(NSString *)name callback:(void (^)(SPPlaylist *))block {
 	
