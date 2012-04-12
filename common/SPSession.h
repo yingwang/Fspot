@@ -65,7 +65,7 @@ Playback
 @protocol SPPostTracksToInboxOperationDelegate;
 @protocol SPSessionPlaybackProvider;
 
-@interface SPSession : NSObject <SPSessionPlaybackProvider>
+@interface SPSession : NSObject <SPSessionPlaybackProvider, SPAsyncLoading>
 
 +(dispatch_queue_t)libSpotifyQueue;
 
@@ -272,6 +272,13 @@ Playback
 
 /** Returns the last error encountered during offline syncing, or `nil` if there is no problem. */
 @property (nonatomic, readonly, strong) NSError *offlineSyncError;
+
+/** Returns `YES` if the session has finished loading.
+ 
+ The session is considered loaded when the `inboxPlaylist`, `starredPlaylist`, 
+ `user`, `locale` and `userPlaylists` properties are set.
+ */ 
+@property (nonatomic, readonly, getter=isLoaded) BOOL loaded;
 
 ///----------------------------
 /// @name User Content

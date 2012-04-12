@@ -908,6 +908,18 @@ static SPSession *sharedSession;
 @synthesize userAgent;
 @synthesize loadingObjects;
 
++(NSSet *)keyPathsForValuesAffectingLoaded {
+	return [NSSet setWithObjects:@"inboxPlaylist", @"starredPlaylist", @"user", @"locale", @"userPlaylists", nil];
+}
+
+-(BOOL)isLoaded {
+	return self.inboxPlaylist != nil &&
+	self.starredPlaylist != nil &&
+	self.user != nil &&
+	self.locale != nil &&
+	self.userPlaylists != nil;
+}
+
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     // WARNING: This MUST be called on the LibSpotify worker queue.
 	
