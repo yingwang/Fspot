@@ -125,7 +125,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 		[SPSession sharedSession].connectionState == SP_CONNECTION_STATE_UNDEFINED) 
 		return NSTerminateNow;
 	
-	[[SPSession sharedSession] logout];
+	[[SPSession sharedSession] beginLogout:nil];
 	return NSTerminateLater;
 }
 
@@ -172,7 +172,10 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 	self.userTopList = [SPToplist toplistForCurrentUserInSession:aSession];
 	
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CreatePlaylist"])
-		self.playlist = [[[SPSession sharedSession] userPlaylists] createPlaylistWithName:self.playlistNameField.stringValue];
+		[[[SPSession sharedSession] userPlaylists] createPlaylistWithName:self.playlistNameField.stringValue
+																 callback:^(SPPlaylist *createdPlaylist) {
+																	 self.playlist = createdPlaylist;
+																 }];
 	
 	[self waitAndFillTrackPool];
 }
@@ -238,75 +241,50 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 
 -(void)waitAndFillTrackPool {
 	
-	// It can take a while for playlists to load, especially on a large account.
-	// Here, we go through things we're interested in to see if they're loaded.
-	// If they're not loaded after five attempts, we assume enough will be loaded
-	// to provide a reasonable pool of tracks and move on.
-	
-	if (![[[SPSession sharedSession] userPlaylists] isLoaded]) {
-		loginAttempts++;
+	[SPAsyncLoadingObserver waitUntilLoaded:[NSArray arrayWithObject:[SPSession sharedSession]] then:^(NSArray *loadedession) {
 		
-		if (loginAttempts < kLoadingTimeout) {
-			[self performSelector:_cmd withObject:nil afterDelay:1.0];
-			return;
-		}
-	}
-	
-	SPPlaylist *starred = [[SPSession sharedSession] starredPlaylist];
-	SPPlaylist *inbox = [[SPSession sharedSession] inboxPlaylist];
-	
-	if (starred.isLoaded == NO || inbox.isLoaded == NO || self.regionTopList.isLoaded == NO || self.userTopList.isLoaded == NO) {
-		loginAttempts++;
+		// The session is logged in and loaded — now wait for the userPlaylists to load.
+		NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"Session loaded.");
 		
-		if (loginAttempts < kLoadingTimeout) {
-			[self performSelector:_cmd withObject:nil afterDelay:1.0];
-			return;
-		}
-	}
-	
-	NSMutableArray *playlistPool = [NSMutableArray arrayWithObjects:starred, inbox, nil];
-	
-	for (id playlistOrFolder in [[SPSession sharedSession] userPlaylists].playlists) {
-		if ([playlistOrFolder isKindOfClass:[SPPlaylist class]]) {
-			[playlistPool addObject:(SPPlaylist *)playlistOrFolder];
-		} else {
-			[playlistPool addObjectsFromArray:[self playlistsInFolder:(SPPlaylistFolder *)playlistOrFolder]];
-		}
-	}
-	
-	for (SPPlaylist *aPlaylist in playlistPool) {
-		if (aPlaylist.isLoaded == NO && aPlaylist.isUpdating == NO) {
-			loginAttempts++;
+		[SPAsyncLoadingObserver waitUntilLoaded:[NSArray arrayWithObject:[SPSession sharedSession].userPlaylists] then:^(NSArray *loadedContainers) {
 			
-			if (loginAttempts < kLoadingTimeout) {
-				[self performSelector:_cmd withObject:nil afterDelay:1.0];
-				return;
-			}
-		}
-	}
-	
-	NSMutableArray *potentialTrackPool = [NSMutableArray arrayWithArray:[self tracksFromPlaylistItems:[playlistPool valueForKeyPath:@"@unionOfArrays.items"]]];
-	[potentialTrackPool addObjectsFromArray:[self tracksFromPlaylistItems:starred.items]];
-	[potentialTrackPool addObjectsFromArray:[self tracksFromPlaylistItems:inbox.items]];
-	[potentialTrackPool addObjectsFromArray:self.regionTopList.tracks];
-	[potentialTrackPool addObjectsFromArray:self.userTopList.tracks];
-	
-	NSMutableArray *theTrackPool = [NSMutableArray arrayWithCapacity:[potentialTrackPool count]];
-	
-	for (SPTrack *aTrack in potentialTrackPool) {
-		if (aTrack.availability == SP_TRACK_AVAILABILITY_AVAILABLE && [aTrack.name length] > 0)
-			[theTrackPool addObject:aTrack];
-	}
-	
-	SPTrack *rickRollingNeverGetsOld = [[SPSession sharedSession] 
-										trackForURL:[NSURL URLWithString:@"spotify:track:6JEK0CvvjDjjMUBFoXShNZ"]];
-	if (rickRollingNeverGetsOld != nil)
-		[theTrackPool addObject:rickRollingNeverGetsOld];
-	
-	self.trackPool = [NSMutableArray arrayWithArray:[[NSSet setWithArray:theTrackPool] allObjects]];
-	// ^ Thin out duplicates.
-	
-	[self startNewRound];
+			// User playlists are loaded — wait for playlists to load their metadata.
+			NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"Container loaded.");
+			
+			NSMutableArray *playlists = [NSMutableArray array];
+			[playlists addObject:[SPSession sharedSession].starredPlaylist];
+			[playlists addObject:[SPSession sharedSession].inboxPlaylist];
+			[playlists addObjectsFromArray:[SPSession sharedSession].userPlaylists.flattenedPlaylists];
+			
+			[SPAsyncLoadingObserver waitUntilLoaded:playlists then:^(NSArray *loadedPlaylists) {
+				
+				// All of our playlists have loaded their metadata — wait for all tracks to load their metadata.
+				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"All playlists loaded.");
+				
+				NSArray *playlistItems = [loadedPlaylists valueForKeyPath:@"@unionOfArrays.items"];
+				NSArray *tracks = [self tracksFromPlaylistItems:playlistItems];
+				
+				[SPAsyncLoadingObserver waitUntilLoaded:tracks then:^(NSArray *loadedTracks) {
+					
+					// All of our tracks have loaded their metadata. Hooray!
+					NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"All tracks loaded.");
+					
+					NSMutableArray *theTrackPool = [NSMutableArray arrayWithCapacity:loadedTracks.count];
+					
+					for (SPTrack *aTrack in loadedTracks) {
+						if (aTrack.availability == SP_TRACK_AVAILABILITY_AVAILABLE && [aTrack.name length] > 0)
+							[theTrackPool addObject:aTrack];
+					}
+					
+					self.trackPool = [NSMutableArray arrayWithArray:[[NSSet setWithArray:theTrackPool] allObjects]];
+					// ^ Thin out duplicates.
+					
+					[self startNewRound];
+					
+				}];
+			}];
+		}];
+	}];
 }
 
 -(NSArray *)playlistsInFolder:(SPPlaylistFolder *)aFolder {
@@ -564,14 +542,10 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 			return;
 		}
 	
-		NSError *error = nil;
-		
-		if (![self.playbackManager playTrack:aTrack error:&error]) {
-			[self.window presentError:error];
-		}
-		return;
+		[self.playbackManager playTrack:aTrack callback:^(NSError *error) {
+			if (error) [self.window presentError:error];
+		}];
 	}
-	NSBeep();
 }
 
 -(void)playbackManagerWillStartPlayingAudio:(SPPlaybackManager *)aPlaybackManager {
