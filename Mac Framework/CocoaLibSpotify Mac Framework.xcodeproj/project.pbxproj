@@ -58,8 +58,8 @@
 		50BED5A815220712000D0919 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50BED5A715220712000D0919 /* AudioUnit.framework */; };
 		50BED5B5152208E5000D0919 /* SPPlaybackManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 50BED5B3152208E5000D0919 /* SPPlaybackManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BED5B6152208E5000D0919 /* SPPlaybackManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 50BED5B4152208E5000D0919 /* SPPlaybackManager.m */; };
-		50C3CDF81536FFA800B1F2C3 /* SPAsyncLoadingObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3CDF61536FFA800B1F2C3 /* SPAsyncLoadingObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		50C3CDF91536FFA800B1F2C3 /* SPAsyncLoadingObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3CDF71536FFA800B1F2C3 /* SPAsyncLoadingObserver.m */; };
+		50C3CDF81536FFA800B1F2C3 /* SPAsyncLoading.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3CDF61536FFA800B1F2C3 /* SPAsyncLoading.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		50C3CDF91536FFA800B1F2C3 /* SPAsyncLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C3CDF71536FFA800B1F2C3 /* SPAsyncLoading.m */; };
 		50D9864713605B8000DA5542 /* SPSearch.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D9864513605B8000DA5542 /* SPSearch.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50D9864813605B8000DA5542 /* SPSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 50D9864613605B8000DA5542 /* SPSearch.m */; };
 		50DE7F42147E757E005403A9 /* SPPlaylistInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DE7F40147E757D005403A9 /* SPPlaylistInternal.h */; };
@@ -129,8 +129,8 @@
 		50BED5A715220712000D0919 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		50BED5B3152208E5000D0919 /* SPPlaybackManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaybackManager.h; path = ../common/SPPlaybackManager.h; sourceTree = "<group>"; };
 		50BED5B4152208E5000D0919 /* SPPlaybackManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPPlaybackManager.m; path = ../common/SPPlaybackManager.m; sourceTree = "<group>"; };
-		50C3CDF61536FFA800B1F2C3 /* SPAsyncLoadingObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPAsyncLoadingObserver.h; path = ../common/SPAsyncLoadingObserver.h; sourceTree = "<group>"; };
-		50C3CDF71536FFA800B1F2C3 /* SPAsyncLoadingObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPAsyncLoadingObserver.m; path = ../common/SPAsyncLoadingObserver.m; sourceTree = "<group>"; };
+		50C3CDF61536FFA800B1F2C3 /* SPAsyncLoading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPAsyncLoading.h; path = ../common/SPAsyncLoading.h; sourceTree = "<group>"; };
+		50C3CDF71536FFA800B1F2C3 /* SPAsyncLoading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPAsyncLoading.m; path = ../common/SPAsyncLoading.m; sourceTree = "<group>"; };
 		50CE7623131149AD0047543F /* SPImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SPImage.h; path = ../common/SPImage.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		50CE7624131149AD0047543F /* SPImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPImage.m; path = ../common/SPImage.m; sourceTree = "<group>"; };
 		50CE7626131161BD0047543F /* SPAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SPAlbum.h; path = ../common/SPAlbum.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -280,8 +280,8 @@
 		50C3CDF41536FF8B00B1F2C3 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				50C3CDF61536FFA800B1F2C3 /* SPAsyncLoadingObserver.h */,
-				50C3CDF71536FFA800B1F2C3 /* SPAsyncLoadingObserver.m */,
+				50C3CDF61536FFA800B1F2C3 /* SPAsyncLoading.h */,
+				50C3CDF71536FFA800B1F2C3 /* SPAsyncLoading.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -342,7 +342,7 @@
 				50BED59F152202E1000D0919 /* SPCircularBuffer.h in Headers */,
 				50BED5A1152202E1000D0919 /* SPCoreAudioController.h in Headers */,
 				50BED5B5152208E5000D0919 /* SPPlaybackManager.h in Headers */,
-				50C3CDF81536FFA800B1F2C3 /* SPAsyncLoadingObserver.h in Headers */,
+				50C3CDF81536FFA800B1F2C3 /* SPAsyncLoading.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,7 +463,7 @@
 				50BED5A0152202E1000D0919 /* SPCircularBuffer.m in Sources */,
 				50BED5A2152202E1000D0919 /* SPCoreAudioController.m in Sources */,
 				50BED5B6152208E5000D0919 /* SPPlaybackManager.m in Sources */,
-				50C3CDF91536FFA800B1F2C3 /* SPAsyncLoadingObserver.m in Sources */,
+				50C3CDF91536FFA800B1F2C3 /* SPAsyncLoading.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,13 +30,12 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "SPAsyncLoadingObserver.h"
-#import "CocoaLibSpotifyPlatformImports.h"
+#import "SPAsyncLoading.h"
 
 static void * const kSPAsyncLoadingObserverKVOContext = @"SPAsyncLoadingObserverKVO";
 static NSMutableArray *observerCache;
 
-@interface SPAsyncLoadingObserver ()
+@interface SPAsyncLoading ()
 
 -(id)initWithItems:(NSArray *)items loadedBlock:(void (^)(NSArray *))block;
 -(id)initWithItems:(NSArray *)items timeout:(NSTimeInterval)timeout loadedBlock:(void (^)(NSArray *loadedItems, NSArray *notLoadedItems))block;
@@ -46,11 +45,13 @@ static NSMutableArray *observerCache;
 @property (nonatomic, readwrite, copy) void (^loadedWithTimeoutHandler) (NSArray *, NSArray *);
 @end
 
-@implementation SPAsyncLoadingObserver
+@implementation SPAsyncLoading
 
-+(void)waitUntilLoaded:(NSArray *)items then:(void (^)(NSArray *))block {
++(void)waitUntilLoaded:(id)itemOrItems then:(void (^)(NSArray *))block {
 	
-	SPAsyncLoadingObserver *observer = [[SPAsyncLoadingObserver alloc] initWithItems:items
+	NSArray *itemArray = [itemOrItems isKindOfClass:[NSArray class]] ? itemOrItems : [NSArray arrayWithObject:itemOrItems];
+	
+	SPAsyncLoading *observer = [[SPAsyncLoading alloc] initWithItems:itemArray
 																		 loadedBlock:block];
 	
 	if (observer) {
@@ -62,9 +63,11 @@ static NSMutableArray *observerCache;
 	}
 }
 
-+(void)waitUntilLoaded:(NSArray *)items timeout:(NSTimeInterval)timeout then:(void (^)(NSArray *, NSArray *))block {
++(void)waitUntilLoaded:(id)itemOrItems timeout:(NSTimeInterval)timeout then:(void (^)(NSArray *, NSArray *))block {
 	
-	SPAsyncLoadingObserver *observer = [[SPAsyncLoadingObserver alloc] initWithItems:items
+	NSArray *itemArray = [itemOrItems isKindOfClass:[NSArray class]] ? itemOrItems : [NSArray arrayWithObject:itemOrItems];
+	
+	SPAsyncLoading *observer = [[SPAsyncLoading alloc] initWithItems:itemArray
 																			 timeout:timeout
 																		 loadedBlock:block];
 	

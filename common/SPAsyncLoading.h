@@ -32,19 +32,23 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol SPAsyncLoading <NSObject>
+@property (readonly, nonatomic, getter = isLoaded) BOOL loaded;
+@end
+
 /** Helper class providing a simple callback mechanism for when objects are loaded. */ 
 
-@interface SPAsyncLoadingObserver : NSObject
+@interface SPAsyncLoading : NSObject
 
 /** Call the provided callback block when all passed items are loaded.
  
  The callback block will be triggered immediately if no items are provided 
  or all provided items are already loaded.
  
- @param items An array of items conforming to the `SPAsyncLoading` protocol.
+ @param itemOrItems A single item of an array of items conforming to the `SPAsyncLoading` protocol.
  @param block The block to call when all given items are loaded.
  */
-+(void)waitUntilLoaded:(NSArray *)items then:(void (^)(NSArray *))block;
++(void)waitUntilLoaded:(id)itemOrItems then:(void (^)(NSArray *))block;
 
 /** Call the provided callback block when all passed items are loaded or the
  given timeout is reached.
@@ -52,10 +56,10 @@
  The callback block will be triggered immediately if no items are provided 
  or all provided items are already loaded.
  
- @param items An array of items conforming to the `SPAsyncLoading` protocol.
+ @param itemOrItems A single item of an array of items conforming to the `SPAsyncLoading` protocol.
  @param timeout Time to allow before timing out.
  @param block The block to call when all given items are loaded or the timeout is reached.
  */
-+(void)waitUntilLoaded:(NSArray *)items timeout:(NSTimeInterval)timeout then:(void (^)(NSArray *loadedItems, NSArray *notLoadedItems))block;
++(void)waitUntilLoaded:(id)itemOrItems timeout:(NSTimeInterval)timeout then:(void (^)(NSArray *loadedItems, NSArray *notLoadedItems))block;
 
 @end

@@ -241,12 +241,12 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 
 -(void)waitAndFillTrackPool {
 	
-	[SPAsyncLoadingObserver waitUntilLoaded:[NSArray arrayWithObject:[SPSession sharedSession]] then:^(NSArray *loadedession) {
+	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] then:^(NSArray *loadedession) {
 		
 		// The session is logged in and loaded — now wait for the userPlaylists to load.
 		NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"Session loaded.");
 		
-		[SPAsyncLoadingObserver waitUntilLoaded:[NSArray arrayWithObject:[SPSession sharedSession].userPlaylists] then:^(NSArray *loadedContainers) {
+		[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession].userPlaylists then:^(NSArray *loadedContainers) {
 			
 			// User playlists are loaded — wait for playlists to load their metadata.
 			NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"Container loaded.");
@@ -256,18 +256,20 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 			[playlists addObject:[SPSession sharedSession].inboxPlaylist];
 			[playlists addObjectsFromArray:[SPSession sharedSession].userPlaylists.flattenedPlaylists];
 			
-			[SPAsyncLoadingObserver waitUntilLoaded:playlists then:^(NSArray *loadedPlaylists) {
+			[SPAsyncLoading waitUntilLoaded:playlists timeout:3.0 then:^(NSArray *loadedPlaylists, NSArray *notLoadedPlaylists) {
 				
 				// All of our playlists have loaded their metadata — wait for all tracks to load their metadata.
-				NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"All playlists loaded.");
+				NSLog(@"[%@ %@]: %@ of %@ playlists loaded.", NSStringFromClass([self class]), NSStringFromSelector(_cmd), 
+					  [NSNumber numberWithInteger:loadedPlaylists.count], [NSNumber numberWithInteger:loadedPlaylists.count + notLoadedPlaylists.count]);
 				
 				NSArray *playlistItems = [loadedPlaylists valueForKeyPath:@"@unionOfArrays.items"];
 				NSArray *tracks = [self tracksFromPlaylistItems:playlistItems];
 				
-				[SPAsyncLoadingObserver waitUntilLoaded:tracks then:^(NSArray *loadedTracks) {
+				[SPAsyncLoading waitUntilLoaded:tracks timeout:3.0 then:^(NSArray *loadedTracks, NSArray *notLoadedTracks) {
 					
 					// All of our tracks have loaded their metadata. Hooray!
-					NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"All tracks loaded.");
+					NSLog(@"[%@ %@]: %@ of %@ tracks loaded.", NSStringFromClass([self class]), NSStringFromSelector(_cmd), 
+						  [NSNumber numberWithInteger:loadedTracks.count], [NSNumber numberWithInteger:loadedTracks.count + notLoadedTracks.count]);
 					
 					NSMutableArray *theTrackPool = [NSMutableArray arrayWithCapacity:loadedTracks.count];
 					
