@@ -52,7 +52,7 @@ static NSMutableArray *observerCache;
 	NSArray *itemArray = [itemOrItems isKindOfClass:[NSArray class]] ? itemOrItems : [NSArray arrayWithObject:itemOrItems];
 	
 	SPAsyncLoading *observer = [[SPAsyncLoading alloc] initWithItems:itemArray
-																		 loadedBlock:block];
+														 loadedBlock:block];
 	
 	if (observer) {
 		if (observerCache == nil) observerCache = [[NSMutableArray alloc] init];
@@ -68,8 +68,8 @@ static NSMutableArray *observerCache;
 	NSArray *itemArray = [itemOrItems isKindOfClass:[NSArray class]] ? itemOrItems : [NSArray arrayWithObject:itemOrItems];
 	
 	SPAsyncLoading *observer = [[SPAsyncLoading alloc] initWithItems:itemArray
-																			 timeout:timeout
-																		 loadedBlock:block];
+															 timeout:timeout
+														 loadedBlock:block];
 	
 	if (observer) {
 		if (observerCache == nil) observerCache = [[NSMutableArray alloc] init];
