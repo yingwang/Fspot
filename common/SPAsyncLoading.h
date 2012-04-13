@@ -32,8 +32,13 @@
 
 #import <Foundation/Foundation.h>
 
+/** Provides standard protocol for CocoaLibSpotify metadata objects to load. */
+
 @protocol SPAsyncLoading <NSObject>
+
+/** Returns `YES` if the reciever has loaded its metadata, otherwise `NO`. Must be KVO-compliant. */
 @property (readonly, nonatomic, getter = isLoaded) BOOL loaded;
+
 @end
 
 /** Helper class providing a simple callback mechanism for when objects are loaded. */ 
