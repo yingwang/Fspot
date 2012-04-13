@@ -39,9 +39,11 @@ static NSMutableArray *observerCache;
 @interface SPAsyncLoadingObserver ()
 
 -(id)initWithItems:(NSArray *)items loadedBlock:(void (^)(NSArray *))block;
+-(id)initWithItems:(NSArray *)items timeout:(NSTimeInterval)timeout loadedBlock:(void (^)(NSArray *loadedItems, NSArray *notLoadedItems))block;
 
 @property (nonatomic, readwrite, copy) NSArray *observedItems;
 @property (nonatomic, readwrite, copy) void (^loadedHandler) (NSArray *);
+@property (nonatomic, readwrite, copy) void (^loadedWithTimeoutHandler) (NSArray *, NSArray *);
 @end
 
 @implementation SPAsyncLoadingObserver
@@ -58,6 +60,22 @@ static NSMutableArray *observerCache;
 			[observerCache addObject:observer];
 		}
 	}
+}
+
++(void)waitUntilLoaded:(NSArray *)items timeout:(NSTimeInterval)timeout then:(void (^)(NSArray *, NSArray *))block {
+	
+	SPAsyncLoadingObserver *observer = [[SPAsyncLoadingObserver alloc] initWithItems:items
+																			 timeout:timeout
+																		 loadedBlock:block];
+	
+	if (observer) {
+		if (observerCache == nil) observerCache = [[NSMutableArray alloc] init];
+		
+		@synchronized(observerCache) {
+			[observerCache addObject:observer];
+		}
+	}
+	
 }
 
 -(id)initWithItems:(NSArray *)items loadedBlock:(void (^)(NSArray *))block {
@@ -93,13 +111,63 @@ static NSMutableArray *observerCache;
 	return self;
 }
 
+-(id)initWithItems:(NSArray *)items timeout:(NSTimeInterval)timeout loadedBlock:(void (^)(NSArray *, NSArray *))block {
+	
+	self = [self initWithItems:items loadedBlock:nil];
+	
+	if (self == nil) {
+		// All were loaded already.
+		if (block) block(items, nil);
+		return nil;
+	}
+	
+	if (self) {
+		self.loadedWithTimeoutHandler = block;
+		[self performSelector:@selector(triggerTimeout)
+				   withObject:nil
+				   afterDelay:timeout];
+	}
+	
+	return self;
+}
+
 -(void)dealloc {
+	
+	// Cancel previous delayed calls to this 
+    [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                             selector:@selector(triggerTimeout)
+                                               object:nil];
+	
 	for (id <SPAsyncLoading> item in self.observedItems)
 		[(id)item removeObserver:self forKeyPath:@"loaded"];
 }
 
 @synthesize observedItems;
 @synthesize loadedHandler;
+@synthesize loadedWithTimeoutHandler;
+
+-(void)triggerTimeout {
+	
+	NSMutableArray *loadedItems = [NSMutableArray arrayWithCapacity:self.observedItems.count];
+	NSMutableArray *notLoadedItems = [NSMutableArray arrayWithCapacity:self.observedItems.count];
+	
+	for (id <SPAsyncLoading> item in self.observedItems) {
+		if (item.isLoaded)
+			[loadedItems addObject:item];
+		else {
+			[notLoadedItems addObject:item];
+		}
+	}
+	
+	if (self.loadedWithTimeoutHandler) dispatch_async(dispatch_get_main_queue(), ^() {
+		self.loadedWithTimeoutHandler([NSArray arrayWithArray:loadedItems], [NSArray arrayWithArray:notLoadedItems]);
+		self.loadedHandler = nil;
+		self.loadedWithTimeoutHandler = nil;
+		@synchronized(observerCache) {
+			[observerCache removeObject:self];
+		}
+	});
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -110,9 +178,19 @@ static NSMutableArray *observerCache;
 			allLoaded &= item.isLoaded;
 		
 		if (allLoaded) {
-			if (self.loadedHandler) dispatch_async(dispatch_get_main_queue(), ^() {
-				self.loadedHandler(self.observedItems);
+			
+			[NSObject cancelPreviousPerformRequestsWithTarget:self
+													 selector:@selector(triggerTimeout)
+													   object:nil];
+			
+			if (self.loadedHandler || self.loadedWithTimeoutHandler) dispatch_async(dispatch_get_main_queue(), ^() {
+				if (self.loadedHandler)
+					self.loadedHandler(self.observedItems);
+				else if (self.loadedWithTimeoutHandler)
+					self.loadedWithTimeoutHandler(self.observedItems, nil);
+				
 				self.loadedHandler = nil;
+				self.loadedWithTimeoutHandler = nil;
 				@synchronized(observerCache) {
 					[observerCache removeObject:self];
 				}

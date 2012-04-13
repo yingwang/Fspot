@@ -46,4 +46,16 @@
  */
 +(void)waitUntilLoaded:(NSArray *)items then:(void (^)(NSArray *))block;
 
+/** Call the provided callback block when all passed items are loaded or the
+ given timeout is reached.
+ 
+ The callback block will be triggered immediately if no items are provided 
+ or all provided items are already loaded.
+ 
+ @param items An array of items conforming to the `SPAsyncLoading` protocol.
+ @param timeout Time to allow before timing out.
+ @param block The block to call when all given items are loaded or the timeout is reached.
+ */
++(void)waitUntilLoaded:(NSArray *)items timeout:(NSTimeInterval)timeout then:(void (^)(NSArray *loadedItems, NSArray *notLoadedItems))block;
+
 @end
