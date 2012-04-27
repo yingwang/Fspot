@@ -137,6 +137,32 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	return _container;
 }
 
+-(void)startLoading {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		if (self.callbackProxy != nil) return;
+		
+		self.callbackProxy = [[SPPlaylistContainerCallbackProxy alloc] init];
+		self.callbackProxy.container = self;
+		
+        sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
+		
+		NSArray *newTree = [self createPlaylistTree];
+		SPUser *user = nil;
+		BOOL isLoaded = sp_playlistcontainer_is_loaded(self.container);
+		
+		if (isLoaded)
+			user = [SPUser userWithUserStruct:sp_playlistcontainer_owner(self.container) inSession:self.session];
+		
+		dispatch_async(dispatch_get_main_queue(), ^() {
+			self.owner = user;
+			self.playlists = newTree;
+			self.loaded = YES;
+		});
+	});
+}
+
 -(NSArray *)createPlaylistTree {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
@@ -542,14 +568,8 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         sp_playlistcontainer_add_ref(self.container);
         self.session = aSession;
 		
-		self.callbackProxy = [[SPPlaylistContainerCallbackProxy alloc] init];
-		self.callbackProxy.container = self;
-		
-        sp_playlistcontainer_add_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
-		
-		NSArray *newTree = [self createPlaylistTree];
-		dispatch_async(dispatch_get_main_queue(), ^{ self.playlists = newTree; });
-        
+		if (self.session.loadingPolicy == SPAsyncLoadingImmediate)
+			[self startLoading];
     }
     return self;
 }
