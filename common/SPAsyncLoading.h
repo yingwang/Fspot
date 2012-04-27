@@ -41,11 +41,27 @@
 
 @end
 
+typedef enum SPAsyncLoadingPolicy {
+	SPAsyncLoadingImmediate = 0,
+	SPAsyncLoadingManual
+} SPAsyncLoadingPolicy;
+
+/** Provides a standard protocol for CocoaLibSpotify metadata objects to load later. */
+
+@protocol SPDelayableAsyncLoading <SPAsyncLoading, NSObject>
+
+/** Starts the loading process. Has no effect if the loading process has already been started. */
+-(void)startLoading;
+
+@end
+
 /** Helper class providing a simple callback mechanism for when objects are loaded. */ 
 
 @interface SPAsyncLoading : NSObject
 
 /** Call the provided callback block when all passed items are loaded.
+ 
+ This will trigger a load if the item's session's loading policy is `SPAsyncLoadingManual`.
  
  The callback block will be triggered immediately if no items are provided 
  or all provided items are already loaded.
@@ -57,6 +73,8 @@
 
 /** Call the provided callback block when all passed items are loaded or the
  given timeout is reached.
+ 
+  This will trigger a load if the item's session's loading policy is `SPAsyncLoadingManual`.
  
  The callback block will be triggered immediately if no items are provided 
  or all provided items are already loaded.

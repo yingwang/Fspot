@@ -102,6 +102,9 @@ static NSMutableArray *observerCache;
 					   forKeyPath:@"loaded"
 						  options:0
 						  context:kSPAsyncLoadingObserverKVOContext];
+			
+			if ([item conformsToProtocol:@protocol(SPDelayableAsyncLoading)])
+				[(id <SPDelayableAsyncLoading>)item startLoading];
 		}
 		
 		// Since the items async load, an item may have loaded in the meantime.

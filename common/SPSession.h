@@ -96,11 +96,13 @@ Playback
  
  @param appKey Your application key as an NSData.
  @param userAgent Your application's user agent (for example, com.yourcompany.MyGreatApp).
+ @param policy The loading policy to use.
  @param error An error pointer to be filled with an NSError should a login problem occur. 
  @return `YES` the the shared session was initialized correctly, otherwise `NO`.
  */
 +(BOOL)initializeSharedSessionWithApplicationKey:(NSData *)appKey
 									   userAgent:(NSString *)userAgent
+								   loadingPolicy:(SPAsyncLoadingPolicy)policy
 										   error:(NSError **)error;
 
 /** The "debug" build ID of libspotify.
@@ -122,11 +124,13 @@ Playback
  
 @param appKey Your application key as an NSData.
 @param userAgent Your application's user agent (for example, com.yourcompany.MyGreatApp).
+@param policy The loading policy to use.
 @param error An error pointer to be filled with an NSError should a login problem occur.
 @return Returns a newly initialised SPSession object.
  */
 -(id)initWithApplicationKey:(NSData *)appKey
 				  userAgent:(NSString *)userAgent
+			  loadingPolicy:(SPAsyncLoadingPolicy)policy
 					  error:(NSError **)error;
 
 /** Attempt to login to the Spotify service.
@@ -250,6 +254,9 @@ Playback
 
 /** Returns the user agent value the session was initialized with. */
 @property (nonatomic, copy, readonly) NSString *userAgent;
+
+/** Returns the loading policy of the session. */
+@property (nonatomic, readonly) SPAsyncLoadingPolicy loadingPolicy;
 
 ///----------------------------
 /// @name Offline Syncing
