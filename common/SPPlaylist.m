@@ -433,19 +433,10 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
                   context:(__bridge void *)kSPPlaylistKVOContext];
 		
 		if (self.playlist != NULL) {
-			sp_playlist_add_ref(pl);
-			
-			// We should build a (probably incomplete right now) list of 
-			// tracks to the delta callbacks can safely be applied.
-			[self rebuildItems];
-			
-			self.callbackProxy = [[SPPlaylistCallbackProxy alloc] init];
-			self.callbackProxy.playlist = self;
-			sp_playlist_add_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self.callbackProxy);
-			sp_playlist_set_in_ram(aSession.session, self.playlist, true);
-			
-			BOOL isLoaded = sp_playlist_is_loaded(pl);
-			dispatch_async(dispatch_get_main_queue(), ^() { self.loaded = isLoaded; });
+			sp_playlist_add_ref(self.playlist);
+		
+			if (aSession.loadingPolicy == SPAsyncLoadingImmediate)
+				dispatch_async(dispatch_get_main_queue(), ^() { [self startLoading]; });
 		}
         
     }
@@ -551,9 +542,29 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		sp_playlist_update_subscribers(self.session.session, self.playlist);
 		
 	});
-	
 }
 
+-(void)startLoading {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^() {
+		
+		if (self.callbackProxy != nil) return;
+		
+		// We should build a (probably incomplete right now) list of 
+		// tracks to the delta callbacks can safely be applied.
+		[self rebuildItems];
+		
+		self.callbackProxy = [[SPPlaylistCallbackProxy alloc] init];
+		self.callbackProxy.playlist = self;
+		sp_playlist_add_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self.callbackProxy);
+		sp_playlist_set_in_ram(self.session.session, self.playlist, true);
+		
+		BOOL isLoaded = sp_playlist_is_loaded(self.playlist);
+		dispatch_async(dispatch_get_main_queue(), ^() { self.loaded = isLoaded; });
+		
+	});
+}
+				   
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
     if (context == (__bridge void *)kSPPlaylistKVOContext) {
