@@ -457,13 +457,15 @@ static void credentials_blob_updated(sp_session *session, const char *blob) {
 #import "SPLoginViewControllerInternal.h"
 
 static void show_signup_page(sp_session *session, sp_signup_page page, bool pageIsLoading, int featureMask, const char *recentUserName) {
-
+	
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	@autoreleasepool {
-		[[SPLoginViewController loginControllerForSession:sess] handleShowSignupPage:page
-																			 loading:pageIsLoading
-																		 featureMask:featureMask
-																	  recentUserName:[NSString stringWithUTF8String:recentUserName]];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[SPLoginViewController loginControllerForSession:sess] handleShowSignupPage:page
+																				 loading:pageIsLoading
+																			 featureMask:featureMask
+																		  recentUserName:[NSString stringWithUTF8String:recentUserName]];
+		});
 	}
 }
 
@@ -471,8 +473,10 @@ static void show_signup_error_page(sp_session *session, sp_signup_page page, sp_
 	
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	@autoreleasepool {
-		[[SPLoginViewController loginControllerForSession:sess] handleShowSignupErrorPage:page
-																					error:[NSError spotifyErrorWithCode:error]];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[SPLoginViewController loginControllerForSession:sess] handleShowSignupErrorPage:page
+																						error:[NSError spotifyErrorWithCode:error]];
+		});
 	}
 }
 
@@ -484,7 +488,9 @@ static void connect_to_facebook(sp_session *session, const char **permissions, i
 		for (int i = 0; i < permission_count; i++)
 			[permissionStrs addObject:[NSString stringWithUTF8String:permissions[i]]];
 		
-		[[SPLoginViewController loginControllerForSession:sess] handleConnectToFacebookWithPermissions:permissionStrs];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[SPLoginViewController loginControllerForSession:sess] handleConnectToFacebookWithPermissions:permissionStrs];
+		});
 	}
 }
 
