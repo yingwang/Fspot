@@ -569,7 +569,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         self.session = aSession;
 		
 		if (self.session.loadingPolicy == SPAsyncLoadingImmediate)
-			[self startLoading];
+			dispatch_async(dispatch_get_main_queue(), ^() { [self startLoading]; });
     }
     return self;
 }

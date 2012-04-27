@@ -42,8 +42,8 @@
 @end
 
 typedef enum SPAsyncLoadingPolicy {
-	SPAsyncLoadingImmediate = 0,
-	SPAsyncLoadingManual
+	SPAsyncLoadingImmediate = 0, /* Immediately load items on login. */
+	SPAsyncLoadingManual /* Only load items when -startLoading is called. */
 } SPAsyncLoadingPolicy;
 
 /** Provides a standard protocol for CocoaLibSpotify metadata objects to load later. */
