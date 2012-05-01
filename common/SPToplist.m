@@ -64,7 +64,7 @@ void toplistbrowse_tracks_complete(sp_toplistbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
 	
-		SPToplist *toplist = (__bridge SPToplist *)userdata;
+		SPToplist *toplist = (__bridge_transfer SPToplist *)userdata;
 		
 		BOOL tracksAreLoaded = sp_toplistbrowse_is_loaded(result);
 		sp_error errorCode = sp_toplistbrowse_error(result);
@@ -98,7 +98,7 @@ void toplistbrowse_artists_complete(sp_toplistbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
 	
-		SPToplist *toplist = (__bridge SPToplist *)userdata;
+		SPToplist *toplist = (__bridge_transfer SPToplist *)userdata;
 		
 		BOOL artistsAreLoaded = sp_toplistbrowse_is_loaded(result);
 		sp_error errorCode = sp_toplistbrowse_error(result);
@@ -132,7 +132,7 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
 	
-		SPToplist *toplist = (__bridge SPToplist *)userdata;
+		SPToplist *toplist = (__bridge_transfer SPToplist *)userdata;
 		
 		BOOL albumsAreLoaded = sp_toplistbrowse_is_loaded(result);
 		sp_error errorCode = sp_toplistbrowse_error(result);
@@ -208,21 +208,21 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 																region, 
 																NULL,
 																&toplistbrowse_tracks_complete, 
-																(__bridge void *)(self));
+																(__bridge_retained void *)(self));
 			
 			self.artistBrowseOperation = sp_toplistbrowse_create(aSession.session,
 																 SP_TOPLIST_TYPE_ARTISTS,
 																 region, 
 																 NULL,
 																 &toplistbrowse_artists_complete, 
-																 (__bridge void *)(self));
+																 (__bridge_retained void *)(self));
 			
 			self.albumBrowseOperation = sp_toplistbrowse_create(aSession.session,
 																SP_TOPLIST_TYPE_ALBUMS,
 																region, 
 																NULL,
 																&toplistbrowse_albums_complete, 
-																(__bridge void *)(self));
+																(__bridge_retained void *)(self));
 		});
 		
 		return self;
@@ -249,21 +249,21 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 																region, 
 																[user UTF8String],
 																&toplistbrowse_tracks_complete, 
-																(__bridge void *)(self));
+																(__bridge_retained void *)(self));
 			
 			self.artistBrowseOperation = sp_toplistbrowse_create(aSession.session,
 																 SP_TOPLIST_TYPE_ARTISTS,
 																 region, 
 																 [user UTF8String],
 																 &toplistbrowse_artists_complete, 
-																 (__bridge void *)(self));
+																 (__bridge_retained void *)(self));
 			
 			self.albumBrowseOperation = sp_toplistbrowse_create(aSession.session,
 																SP_TOPLIST_TYPE_ALBUMS,
 																region, 
 																[user UTF8String],
 																&toplistbrowse_albums_complete, 
-																(__bridge void *)(self));
+																(__bridge_retained void *)(self));
 		});
 		
 		return self;

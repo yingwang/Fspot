@@ -72,7 +72,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		
 		// This called on the libSpotify queue
 		
-		SPAlbumBrowse *albumBrowse = (__bridge SPAlbumBrowse *)userdata;
+		SPAlbumBrowse *albumBrowse = (__bridge_transfer SPAlbumBrowse *)userdata;
 		
 		BOOL isLoaded = sp_albumbrowse_is_loaded(result);
 		
@@ -152,7 +152,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 			self.albumBrowse = sp_albumbrowse_create(aSession.session,
 													 anAlbum.album,
 													 &albumbrowse_complete,
-													 (__bridge void *)(self));
+													 (__bridge_retained void *)(self));
 		});
 	}
 	

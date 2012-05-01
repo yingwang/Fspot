@@ -247,7 +247,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	if (self.artists.count == 0)
 		return nil;
 	
-	return [[[self.artists valueForKey:@"name"] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] componentsJoinedByString:@", "];
+	NSMutableArray *artistNames = [[self.artists valueForKey:@"name"] mutableCopy];
+	[artistNames removeObjectIdenticalTo:[NSNull null]];
+	
+	return [[artistNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] componentsJoinedByString:@", "];
 }
 
 -(void)setStarred:(BOOL)starred {

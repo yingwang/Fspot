@@ -68,7 +68,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 		
 		// This is on the libSpotify thread
 		
-		SPArtistBrowse *artistBrowse = (__bridge SPArtistBrowse *)userdata;
+		SPArtistBrowse *artistBrowse = (__bridge_transfer SPArtistBrowse *)userdata;
 		
 		BOOL isLoaded = sp_artistbrowse_is_loaded(result);
 		sp_error errorCode = sp_artistbrowse_error(result);
@@ -183,7 +183,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 													   anArtist.artist,
 													   browseMode,
 													   &artistbrowse_complete,
-													   (__bridge void *)(self));
+													   (__bridge_retained void *)(self));
 		});
 	}
 	
