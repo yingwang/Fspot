@@ -50,7 +50,7 @@ void inboxpost_complete(sp_inbox *result, void *userdata);
 void inboxpost_complete(sp_inbox *result, void *userdata) {
 	
 	@autoreleasepool {
-		SPPostTracksToInboxOperation *operation = (__bridge SPPostTracksToInboxOperation *)userdata;
+		SPPostTracksToInboxOperation *operation = (__bridge_transfer SPPostTracksToInboxOperation *)userdata;
 		sp_error errorCode = sp_inbox_error(result);
 		
 		if (errorCode != SP_ERROR_OK) {
@@ -114,7 +114,7 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 												  trackCount, 
 												  [self.message UTF8String], 
 												  &inboxpost_complete, 
-												  (__bridge void *)(self));
+												  (__bridge_retained void *)(self));
 		} else {
 			return nil;
 		}

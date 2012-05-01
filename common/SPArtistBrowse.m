@@ -64,7 +64,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
 		
-		SPArtistBrowse *artistBrowse = (__bridge SPArtistBrowse *)userdata;
+		SPArtistBrowse *artistBrowse = (__bridge_transfer SPArtistBrowse *)userdata;
 		
 		artistBrowse.loaded = sp_artistbrowse_is_loaded(result);
 		sp_error errorCode = sp_artistbrowse_error(result);
@@ -169,7 +169,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 															   self.artist.artist,
 															   browseMode,
 															   &artistbrowse_complete,
-															   (__bridge void *)(self));
+															   (__bridge_retained void *)(self));
 		if (artistBrowse != NULL) {
 			browseOperation = artistBrowse;
 		}

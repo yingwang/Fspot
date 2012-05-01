@@ -68,7 +68,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
 		
-		SPAlbumBrowse *albumBrowse = (__bridge SPAlbumBrowse *)userdata;
+		SPAlbumBrowse *albumBrowse = (__bridge_transfer SPAlbumBrowse *)userdata;
 		sp_error errorCode = sp_albumbrowse_error(result);
 		
 		if (errorCode != SP_ERROR_OK) {
@@ -147,7 +147,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		sp_albumbrowse *albumBrowse = sp_albumbrowse_create(self.session.session,
 															self.album.album,
 															&albumbrowse_complete,
-															(__bridge void *)(self));
+															(__bridge_retained void *)(self));
 		if (albumBrowse != NULL) {
 			browseOperation = albumBrowse;
 		}
