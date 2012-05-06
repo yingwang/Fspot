@@ -69,14 +69,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     if ((self = [super init])) {
         self.user = aUser;
         self.session = aSession;
-		
-		__block BOOL isLoaded = NO;
-		
+
 		sp_user_add_ref(self.user);
-		isLoaded = sp_user_is_loaded(self.user);
-		
-		self.loaded = isLoaded;
-		
+		self.loaded = sp_user_is_loaded(self.user);
+
         if (!self.loaded) {
             [aSession addLoadingObject:self];
         } else {
