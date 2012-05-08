@@ -67,7 +67,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param userUrl The user URL to create an SPUser for.
  @param aSession The SPSession the user should exist in.
- @return Returns the created SPUser object, or `nil` if given an invalid user URL. 
+ @param block The block to be called with the created SPUser object, or `nil` if given an invalid user URL. 
  */
 +(void)userWithURL:(NSURL *)userUrl inSession:(SPSession *)aSession callback:(void (^)(SPUser *user))block;
 
@@ -75,7 +75,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @warning *Important:* For better performance and built-in caching, it is recommended
  you create SPUser objects using +[SPUser userWithUserStruct:inSession:], 
- +[SPUser userWithURL:inSession:] or the instance methods on SPSession.
+ +[SPUser userWithURL:inSession:callback:] or the instance methods on SPSession.
  
  @param aUser The sp_user struct to create an SPUser for.
  @param aSession The SPSession the user should exist in.

@@ -73,7 +73,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param albumURL The album URL to make an SPAlbumBrowse for.
  @param aSession The SPSession the browse should exist in.
- @return Returns the created SPAlbumBrowse object. 
+ @param block The block to be called with the created SPAlbumBrowse object. 
  */
 +(void)browseAlbumAtURL:(NSURL *)albumURL inSession:(SPSession *)aSession callback:(void (^)(SPAlbumBrowse *albumBrowse))block;
 

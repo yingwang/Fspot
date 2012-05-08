@@ -67,7 +67,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  @param playlistURL The playlist URL to create an SPPlaylist for.
  @param aSession The SPSession the playlist should exist in.
- @return Returns the created SPPlaylist object. 
+ @param block The block to be called with the created SPPlaylist object. 
  */
 +(void)playlistWithPlaylistURL:(NSURL *)playlistURL inSession:(SPSession *)aSession callback:(void (^)(SPPlaylist *playlist))block;
 
@@ -75,7 +75,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @warning *Important:* For better performance and built-in caching, it is recommended
  you create SPPlaylist objects using +[SPPlaylist playlistWithPlaylistStruct:inSession:], 
- +[SPPlaylist playlistWithPlaylistURL:inSession:] or the instance methods on SPSession.
+ +[SPPlaylist playlistWithPlaylistURL:inSession:callback:] or the instance methods on SPSession.
  
  @param pl The sp_playlist struct to create an SPPlaylist for.
  @param aSession The SPSession the playlist should exist in.
@@ -172,9 +172,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  `SPTrack` objects will automatically be wrapped inside an `SPPlaylistItem`.
  
  @warning *Important:* If you need to move an item from one location in this list to another, please
- use `-moveItemsAtIndexes:toIndex:error:` for performance reasons.
+ use `-moveItemsAtIndexes:toIndex:callback:` for performance reasons.
  
- @see -moveItemsAtIndexes:toIndex:error:
+ @see -moveItemsAtIndexes:toIndex:callback:
  */
 @property (nonatomic, readonly) NSMutableArray *items;
 
@@ -188,8 +188,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param indexes The indexes of the items to move.
  @param newLocation The index the items should be moved to.
- @param error An NSError pointer to be filled if the operation fails.
- @return Returns `YES` if the operation succeeded, otherwise `NO`. 
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
  */
 -(void)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation callback:(SPErrorableOperationCallback)block;
 

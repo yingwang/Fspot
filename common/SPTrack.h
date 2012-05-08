@@ -71,7 +71,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param trackURL The track URL to create an SPTrack for.
  @param aSession The SPSession the track should exist in.
- @return Returns the created SPTrack object, or `nil` if given an invalid track URL. 
+ @param block The block to be called with the created SPTrack object, or `nil` if given an invalid track URL. 
  */
 +(void)trackForTrackURL:(NSURL *)trackURL inSession:(SPSession *)aSession callback:(void (^)(SPTrack *track))block;
 
@@ -79,7 +79,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 @warning *Important:* For better performance and built-in caching, it is recommended
  you create SPTrack objects using +[SPTrack trackForTrackStruct:inSession:], 
- +[SPTrack trackForTrackURL:inSession:] or the instance methods on SPSession.
+ +[SPTrack trackForTrackURL:inSession:callback:] or the instance methods on SPSession.
  
  @param tr The sp_track struct to create an SPTrack for.
  @param aSession The SPSession the track should exist in.

@@ -91,7 +91,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param artistURL The artist URL to make an SPArtistBrowse for.
  @param aSession The SPSession the browse should exist in.
  @param browseMode The type of artist browse to perform.
- @return Returns the created SPArtistBrowse object. 
+ @param block The block to be called with the created SPArtistBrowse object. 
  */
 +(void)browseArtistAtURL:(NSURL *)artistURL inSession:(SPSession *)aSession type:(sp_artistbrowse_type)browseMode callback:(void (^)(SPArtistBrowse *artistBrowse))block;
 

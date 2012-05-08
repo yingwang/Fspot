@@ -69,7 +69,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param aURL The album URL to create an SPAlbum for.
  @param aSession The SPSession the album should exist in.
- @return Returns the created SPAlbum object, or `nil` if given an invalid album URL. 
+ @param block Block to be called with the created SPAlbum object, or `nil` if given an invalid album URL. 
  */
 +(void)albumWithAlbumURL:(NSURL *)aURL inSession:(SPSession *)aSession callback:(void (^)(SPAlbum *album))block;
 
@@ -77,7 +77,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @warning *Important:* For better performance and built-in caching, it is recommended
  you create SPAlbum objects using +[SPAlbum albumWithAlbumStruct:inSession:], 
- +[SPAlbum albumWithAlbumURL:inSession:] or the instance methods on SPSession.
+ +[SPAlbum albumWithAlbumURL:inSession:callback:] or the instance methods on SPSession.
  
  @param anAlbum The sp_album struct to create an SPAlbum for.
  @param aSession The SPSession the album should exist in.

@@ -68,13 +68,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(NSArray *)parentFolders;
 
 /** Returns an array of SPPlaylist and/or SPPlaylistFolders representing the folder's child playlists.
+  
+ @warning *Important:* If you need to move a playlist from one location in this list to another,
+ use `-[SPPlaylistContainer moveItem:toIndex:ofNewParent:callback:]`.
  
- This array is KVO compliant, and any changes made will be reflected in the user's account.
- 
- @warning *Important:* If you need to move a playlist from one location in this list to another, please
- use `-[SPPlaylistContainer movePlaylistOrFolderAtIndex:ofParent:toIndex:ofNewParent:error:]` for performance reasons.
- 
- @see [SPPlaylistContainer movePlaylistOrFolderAtIndex:ofParent:toIndex:ofNewParent:error:]
+ @see [SPPlaylistContainer moveItem:toIndex:ofNewParent:callback:]
  */
 @property (nonatomic, readonly, strong) NSArray *playlists;
 

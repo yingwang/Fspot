@@ -94,9 +94,8 @@
 
 /** Plays the given track.
  
- @param trackToPlay The track that should be played.
- @param error An `NSError` pointer reference that, if not `NULL`, will be filled with an error describing any failure. 
- @return Returns `YES` is playback started successfully, `NO` if not.
+ @param aTrack The track that should be played.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if playback failed or `nil` if playback started successfully.
  */
 -(void)playTrack:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block;
 

@@ -67,7 +67,7 @@
 	
 	<option value="//api/name/albumWithAlbumStruct:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;+ albumWithAlbumStruct:inSession:</option>
 	
-	<option value="//api/name/albumWithAlbumURL:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;+ albumWithAlbumURL:inSession:</option>
+	<option value="//api/name/albumWithAlbumURL:inSession:callback:">&nbsp;&nbsp;&nbsp;&nbsp;+ albumWithAlbumURL:inSession:callback:</option>
 	
 	
 	
@@ -134,7 +134,7 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/albumWithAlbumStruct:inSession:">albumWithAlbumStruct:inSession:</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/albumWithAlbumURL:inSession:">albumWithAlbumURL:inSession:</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/albumWithAlbumURL:inSession:callback:">albumWithAlbumURL:inSession:callback:</a></span></li>
 	
 </ul></li>
 
@@ -171,7 +171,7 @@
 	<td class="specification-value">NSObject</td>
 </tr><tr>
 	<td class="specification-title">Conforms to</td>
-	<td class="specification-value">SPPlaylistableItem</td>
+	<td class="specification-value"><a href="../Protocols/SPAsyncLoading.html">SPAsyncLoading</a><br /><a href="../Protocols/SPPlaylistableItem.html">SPPlaylistableItem</a></td>
 </tr><tr>
 	<td class="specification-title">Declared in</td>
 	<td class="specification-value">SPAlbum.h<br />SPAlbum.m</td>
@@ -211,7 +211,7 @@
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/albumWithAlbumURL:inSession:">+&nbsp;albumWithAlbumURL:inSession:</a></code>
+		<code><a href="#//api/name/albumWithAlbumURL:inSession:callback:">+&nbsp;albumWithAlbumURL:inSession:callback:</a></code>
 		<span class="tooltip"><p>Creates an SPAlbum from the given Spotify <a href="#//api/name/album">album</a> URL.</p></span>
 	</span>
 	
@@ -755,8 +755,8 @@ returns a cached SPAlbum if one already exists for the given struct.</p>
 </div>
 						
 						<div class="section-method">
-	<a name="//api/name/albumWithAlbumURL:inSession:" title="albumWithAlbumURL:inSession:"></a>
-	<h3 class="subsubtitle method-title">albumWithAlbumURL:inSession:</h3>
+	<a name="//api/name/albumWithAlbumURL:inSession:callback:" title="albumWithAlbumURL:inSession:callback:"></a>
+	<h3 class="subsubtitle method-title">albumWithAlbumURL:inSession:callback:</h3>
 	
 	
 	
@@ -765,7 +765,7 @@ returns a cached SPAlbum if one already exists for the given struct.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>+ (SPAlbum *)albumWithAlbumURL:(NSURL *)<em>aURL</em> inSession:(SPSession *)<em>aSession</em></code></div>
+	<div class="method-subsection method-declaration"><code>+ (void)albumWithAlbumURL:(NSURL *)<em>aURL</em> inSession:(SPSession *)<em>aSession</em> callback:(void ( ^ ) ( SPAlbum *album ))<em>block</em></code></div>
 	
 	
 	<div class="method-subsection arguments-section parameters">
@@ -781,14 +781,14 @@ returns a cached SPAlbum if one already exists for the given struct.</p>
 			<dd><p>The <a href="../Classes/SPSession.html">SPSession</a> the <a href="#//api/name/album">album</a> should exist in.</p></dd>
 		</dl>
 		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>Block to be called with the created SPAlbum object, or <code>nil</code> if given an invalid <a href="#//api/name/album">album</a> URL.</p></dd>
+		</dl>
+		
 	</div>
 	
 	
-	
-	<div class="method-subsection return">
-		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created SPAlbum object, or <code>nil</code> if given an invalid <a href="#//api/name/album">album</a> URL.</p>
-	</div>
 	
 	
 	
@@ -867,7 +867,7 @@ starting <code>spotify:album:</code>, this method will return <code>nil</code>.<
 		<h4 class="method-subtitle">Discussion</h4>
 		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> For better performance and built-in caching, it is recommended
 you create SPAlbum objects using <a href="#//api/name/albumWithAlbumStruct:inSession:">[SPAlbum albumWithAlbumStruct:inSession:]</a>,
-<a href="#//api/name/albumWithAlbumURL:inSession:">[SPAlbum albumWithAlbumURL:inSession:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
+<a href="#//api/name/albumWithAlbumURL:inSession:callback:">[SPAlbum albumWithAlbumURL:inSession:callback:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
 	</div>
 	
 	
@@ -897,7 +897,7 @@ you create SPAlbum objects using <a href="#//api/name/albumWithAlbumStruct:inSes
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-04-02)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-08)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

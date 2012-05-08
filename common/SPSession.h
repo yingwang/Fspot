@@ -78,7 +78,7 @@ Playback
  store your SPSession object using this convenience method or yourself using -[SPSession init],
  make sure you only have _one_ instance of SPSession active in your process at a time.
  
- @warning *Important:* This will return `nil` until +[SPSession initializeSharedSessionWithApplicationKey:userAgent:error:] is
+ @warning *Important:* This will return `nil` until +[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:] is
  successfully called.
 
  
@@ -91,7 +91,7 @@ Playback
  
  @warning *Important:* The C API that CocoaLibSpotify uses (LibSpotify) doesn't 
  support using multiple sessions in the same process. While you can either create and 
- store your SPSession object using this convenience method or yourself using -[SPSession initWithApplicationKey:userAgent:error:],
+ store your SPSession object using this convenience method or yourself using -[SPSession initWithApplicationKey:userAgent:loadingPolicy:error:],
  make sure you only have _one_ instance of SPSession active in your process at a time.
  
  @param appKey Your application key as an NSData.
@@ -174,7 +174,7 @@ Playback
 
 /** The username saved in the stored credentials.
  
- @return Returns the username that will be logged in with -[SPSession attemptLoginWithStoredCredentials:], or 
+ @param block The block to be called with the username that will be logged in with -[SPSession attemptLoginWithStoredCredentials:], or 
  `nil` if there are no stored credentials.
  */
 -(void)fetchStoredCredentialsUserName:(void (^)(NSString *storedUserName))block;
@@ -190,6 +190,8 @@ Playback
  
  This method will force libSpotify to flush its caches. If you're writing an iOS application, call
  this when your application is put into the background to ensure correct operation.
+ 
+ @param completionBlock The block to be called when the operation has completed.
  */
 -(void)beginFlushingCaches:(void (^)())completionBlock;
 
@@ -197,6 +199,8 @@ Playback
  
  This method will cleanly log out from the Spotify service and clear any in-memory caches. 
  Called automatically when the instance is deallocated.
+ 
+ @param completionBlock The block to be called when the logout process has started.
  */
 -(void)beginLogout:(void (^)())completionBlock;
 
@@ -274,7 +278,10 @@ Playback
 /** Returns a dictionary containing information about any offline sync activity. See Contants for keys. */
 @property (nonatomic, readonly, copy) NSDictionary *offlineStatistics;
 
-/** Returns the time until the user needs to reconnect to Spotify to renew offline syncing keys. */
+/** Get the time until the user needs to reconnect to Spotify to renew offline syncing keys.
+
+ @param block The block to be called with the remaining time.
+ */
 -(void)fetchOfflineKeyTimeRemaining:(void (^)(NSTimeInterval remainingTime))block;
 
 /** Returns the last error encountered during offline syncing, or `nil` if there is no problem. */
@@ -339,45 +346,52 @@ Playback
 /// @name Accessing Content by URL
 ///----------------------------
 
-/** Returns an SPAlbum object representing the given URL, or `nil` if the URL is not a valid album URL. 
+/** Get an SPAlbum object representing the given URL, or `nil` if the URL is not a valid album URL. 
  
  @param url The URL of the album.
+ @param block The block to be called with the album, or `nil` if given an invalid URL.
  */
 -(void)albumForURL:(NSURL *)url callback:(void (^)(SPAlbum *album))block;
 
-/** Returns an SPArtist object representing the given URL, or `nil` if the URL is not a valid artist URL.
+/** Get an SPArtist object representing the given URL, or `nil` if the URL is not a valid artist URL.
  
  @param url The URL of the artist.
+ @param block The block to be called with the artist, or `nil` if given an invalid URL.
  */
 -(void)artistForURL:(NSURL *)url callback:(void (^)(SPArtist *artist))block;
 
 /** Returns an SPImage object representing the given URL, or `nil` if the URL is not a valid image URL.
  
  @param url The URL of the image.
+ @param block The block to be called with the image, or `nil` if given an invalid URL.
  */
 -(void)imageForURL:(NSURL *)url callback:(void (^)(SPImage *image))block;
 
 /** Returns an SPPlaylist object representing the given URL, or `nil` if the URL is not a valid playlist URL.
  
  @param url The URL of the playlist.
+ @param block The block to be called with the playlist, or `nil` if given an invalid URL.
  */
 -(void)playlistForURL:(NSURL *)url callback:(void (^)(SPPlaylist *playlist))block;
 
 /** Returns an SPSearch object representing the given URL, or `nil` if the URL is not a valid search URL. 
  
  @param url The URL of the search query.
+ @param block The block to be called with the search, or `nil` if given an invalid URL.
  */
 -(void)searchForURL:(NSURL *)url callback:(void (^)(SPSearch *search))block;
 
 /** Returns an SPTrack object representing the given URL, or `nil` if the URL is not a valid track URL. 
  
  @param url The URL of the track.
+ @param block The block to be called with the track, or `nil` if given an invalid URL.
  */
 -(void)trackForURL:(NSURL *)url callback:(void (^)(SPTrack *track))block;
 
 /** Returns an SPUser object representing the given URL, or `nil` if the URL is not a valid user URL. 
  
  @param url The URL of the user.
+ @param block The block to be called with the user, or `nil` if given an invalid URL.
  */
 -(void)userForURL:(NSURL *)url callback:(void (^)(SPUser *user))block;
 
@@ -387,8 +401,7 @@ Playback
  what the given URL represents and returns that for you.
  
  @param aSpotifyUrlOfSomeKind A Spotify URL (starting `spotify:`).
- @param linkType A pointer to an sp_linktype variable, which will be filled with the link type if not NULL.
- @return Returns an SPAlbum, SPArtist, SPPlaylist, SPSearch, SPTrack or SPUser object for the given URL, or `nil` if the URL is invalid.
+ @param block The block to be called with the `sp_linktype` and object representation of the URL, or `nil` if given an invalid URL.
  */
 -(void)objectRepresentationForSpotifyURL:(NSURL *)aSpotifyUrlOfSomeKind callback:(void (^)(sp_linktype linkType, id objectRepresentation))block;
 
