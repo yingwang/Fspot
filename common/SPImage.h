@@ -39,7 +39,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static NSUInteger const SPImageIdLength = 20;
 
-@interface SPImage : NSObject
+@interface SPImage : NSObject <SPAsyncLoading, SPDelayableAsyncLoading>
 
 ///----------------------------
 /// @name Creating and Initializing Images
@@ -86,7 +86,7 @@ static NSUInteger const SPImageIdLength = 20;
 /** Begins loading the image if it hasn't already been loaded. 
  
  This is called automatically if you request the image property. */
--(void)beginLoading;
+-(void)startLoading;
 
 ///----------------------------
 /// @name Properties

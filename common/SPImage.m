@@ -64,10 +64,21 @@ static void image_loaded(sp_image *image, void *userdata) {
 	if (!proxy.image) return;
 	
 	BOOL isLoaded = sp_image_is_loaded(image);
-	dispatch_async(dispatch_get_main_queue(), ^{ [proxy.image setLoaded:isLoaded]; });
-}
+	SPPlatformNativeImage *im = nil;
+	
+	if (isLoaded) {
+		size_t size;
+		const byte *data = sp_image_data(proxy.image.spImage, &size);
+		
+		if (size > 0)
+			im = [[SPPlatformNativeImage alloc] initWithData:[NSData dataWithBytes:data length:size]];
+	}
 
-static NSString * const kSPImageKVOContext = @"kSPImageKVOContext";
+	dispatch_async(dispatch_get_main_queue(), ^{
+		proxy.image.image = im;
+		proxy.image.loaded = isLoaded;
+	});
+}
 
 @implementation SPImage {
 	BOOL hasRequestedImage;
@@ -136,11 +147,6 @@ static NSMutableDictionary *imageCache;
 		
 		self.session = aSession;
 		self.imageId = anId;
-        
-        [self addObserver:self
-               forKeyPath:@"loaded"
-                  options:0
-                  context:(__bridge void *)kSPImageKVOContext];
 		
 		if (anImage != NULL) {
 			self.spImage = anImage;
@@ -154,40 +160,24 @@ static NSMutableDictionary *imageCache;
 									   (__bridge void *)(self.callbackProxy));
 			
 			BOOL isLoaded = sp_image_is_loaded(self.spImage);
+			SPPlatformNativeImage *im = nil;
+			
+			if (isLoaded) {
+				size_t size;
+				const byte *data = sp_image_data(self.spImage, &size);
+				
+				if (size > 0)
+					im = [[SPPlatformNativeImage alloc] initWithData:[NSData dataWithBytes:data length:size]];
+			}
+
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self cacheSpotifyURL];
+				self.image = im;
 				self.loaded = isLoaded;
 			});
         }
     }
     return self;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    
-	if (context == (__bridge void *)kSPImageKVOContext) {
-        if ([keyPath isEqualToString:@"loaded"] && self.isLoaded && (self.image == nil)) {
-			
-			NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"This should be on the main queue!");
-			
-			dispatch_async([SPSession libSpotifyQueue], ^{
-				
-				if (sp_image_format(self.spImage) == SP_IMAGE_FORMAT_JPEG) {
-					
-					size_t size;
-					const byte *data = sp_image_data(self.spImage, &size);
-					
-					if (size > 0) {
-						NSData *imageData = [NSData dataWithBytes:data length:size];
-						SPPlatformNativeImage *im = [[SPPlatformNativeImage alloc] initWithData:imageData];
-						dispatch_async(dispatch_get_main_queue(), ^{ self.image = im; });
-					}
-				}
-			});
-        }
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
 }
 
 -(sp_image *)spImage {
@@ -206,7 +196,7 @@ static NSMutableDictionary *imageCache;
 
 -(SPPlatformNativeImage *)image {
 	if (_image == nil && !hasRequestedImage)
-		[self beginLoading];
+		[self startLoading];
 	return _image;
 }
 
@@ -218,7 +208,7 @@ static NSMutableDictionary *imageCache;
 
 #pragma mark -
 
--(void)beginLoading {
+-(void)startLoading {
 	
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		
@@ -240,9 +230,19 @@ static NSMutableDictionary *imageCache;
 			
 			sp_image_add_load_callback(self.spImage, &image_loaded, (__bridge void *)(self.callbackProxy));
 			BOOL isLoaded = sp_image_is_loaded(self.spImage);
+			SPPlatformNativeImage *im = nil;
+			
+			if (isLoaded) {
+				size_t size;
+				const byte *data = sp_image_data(self.spImage, &size);
+				
+				if (size > 0)
+					im = [[SPPlatformNativeImage alloc] initWithData:[NSData dataWithBytes:data length:size]];
+			}
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				hasRequestedImage = YES;
+				self.image = im;
 				self.loaded = isLoaded;
 			});
 		}
@@ -251,9 +251,7 @@ static NSMutableDictionary *imageCache;
 }
 
 -(void)dealloc {
-    
-    [self removeObserver:self forKeyPath:@"loaded"];
-	
+
 	sp_image *outgoing_image = _spImage;
 	SPImageCallbackProxy *outgoingProxy = self.callbackProxy;
 	self.callbackProxy.image = nil;
