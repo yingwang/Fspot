@@ -167,11 +167,14 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
-	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	NSInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	
+	if (itemCount == -1) return nil;
+	
 	NSMutableArray *rootPlaylistList = [NSMutableArray arrayWithCapacity:itemCount];
 	SPPlaylistFolder *folderAtTopOfStack = nil;
 	
-	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+	for (int currentItem = 0; currentItem < itemCount; currentItem++) {
 		
 		sp_playlist_type type = sp_playlistcontainer_playlist_type(self.container, currentItem);
 		
@@ -274,9 +277,9 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	if (!folder) return NSMakeRange(0, sp_playlistcontainer_num_playlists(self.container));
 	
 	NSRange folderRange = NSMakeRange(NSNotFound, 0);
-	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	NSInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
 	
-	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+	for (int currentItem = 0; currentItem < itemCount; currentItem++) {
 		
 		sp_playlist_type type = sp_playlistcontainer_playlist_type(self.container, currentItem);
 		
@@ -391,7 +394,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		
 		NSUInteger playlistCount = sp_playlistcontainer_num_playlists(self.container);
 		
-		for (NSUInteger currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
+		for (int currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
 			sp_playlist *playlist = sp_playlistcontainer_playlist(self.container, currentIndex);
 			if (playlist == aPlaylist.playlist) {
 				sp_playlistcontainer_remove_playlist(self.container, currentIndex);
@@ -424,7 +427,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		NSUInteger entriesToRemove = folderRange.length;
 		
 		while (entriesToRemove > 0) {
-			sp_playlistcontainer_remove_playlist(self.container, folderRange.location);
+			sp_playlistcontainer_remove_playlist(self.container, (int)folderRange.location);
 			entriesToRemove--;
 		}
 		
@@ -454,7 +457,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			
 			NSUInteger playlistCount = sp_playlistcontainer_num_playlists(self.container);
 			
-			for (NSUInteger currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
+			for (int currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
 				sp_playlist *playlist = sp_playlistcontainer_playlist(self.container, currentIndex);
 				if (playlist == sourcePlaylist.playlist) {
 					sourceIndex = currentIndex;
@@ -474,7 +477,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 				return;
 			}
 			
-			sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, sourceIndex, destinationIndex, false);
+			sp_error errorCode = sp_playlistcontainer_move_playlist(self.container, (int)sourceIndex, (int)destinationIndex, false);
 			
 			if (errorCode != SP_ERROR_OK)
 				dispatch_async(dispatch_get_main_queue(), ^{ if (block) block([NSError spotifyErrorWithCode:errorCode]); });
@@ -578,9 +581,13 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
-	NSUInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	NSInteger itemCount = sp_playlistcontainer_num_playlists(self.container);
+	if (itemCount == -1) {
+		NSLog(@"Item count of container is -1.");
+		return;
+	}
 	
-	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+	for (int currentItem = 0; currentItem < itemCount; currentItem++) {
 		
 		sp_playlist_type type = sp_playlistcontainer_playlist_type(self.container, currentItem);
 		
@@ -594,12 +601,12 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			if (nameError == SP_ERROR_OK)
 				folderName = [NSString stringWithUTF8String:nameChars];
 			
-			NSLog(@"%lu: ---- Folder Start Marker: %llu ---- (%@)", currentItem, folderId, folderName);
+			NSLog(@"%u: ---- Folder Start Marker: %llu ---- (%@)", currentItem, folderId, folderName);
 			
 		} else if (type == SP_PLAYLIST_TYPE_END_FOLDER) {
 			
 			sp_uint64 folderId = sp_playlistcontainer_playlist_folder_id(self.container, currentItem);
-			NSLog(@"%lu: ---- Folder End Marker: %llu ----", currentItem, folderId);
+			NSLog(@"%u: ---- Folder End Marker: %llu ----", currentItem, folderId);
 			
 		} else if (type == SP_PLAYLIST_TYPE_PLAYLIST) {
 			
@@ -614,10 +621,10 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			free(link);
 			link = NULL;
 			
-			NSLog(@"%lu: Playlist: %@ (%@)", currentItem, playlistUrl, playlistName);
+			NSLog(@"%u: Playlist: %@ (%@)", currentItem, playlistUrl, playlistName);
 			
 		} else if (type == SP_PLAYLIST_TYPE_PLACEHOLDER) {
-			NSLog(@"%lu: Placeholder Playlist", currentItem);
+			NSLog(@"%u: Placeholder Playlist", currentItem);
 		}
 	}
 	
