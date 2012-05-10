@@ -605,6 +605,13 @@ static SPSession *sharedSession;
 				  context:(__bridge void *)kSPSessionKVOContext];
 		
 		if (appKey == nil || [aUserAgent length] == 0) {
+			
+			if (error && appKey == nil)
+				*error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_APPLICATION_KEY];
+			
+			if (error && [aUserAgent length] == 0)
+				*error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_USER_AGENT];
+			
 			return nil;
 		}
 		
