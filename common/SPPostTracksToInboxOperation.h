@@ -56,14 +56,14 @@
  @param user The username of the user to send the tracks to.
  @param aFriendlyGreeting The message to send with the tracks, if any.
  @param aSession The session to send the tracks with.
- @param completionDelegate The delegate to send success/failure messages to.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
  @return Returns the created SPPostTracksToInboxOperation object. 
  */
 +(SPPostTracksToInboxOperation *)sendTracks:(NSArray *)tracksToSend
 									 toUser:(NSString *)user 
 									message:(NSString *)aFriendlyGreeting
 								  inSession:(SPSession *)aSession
-								   delegate:(id <SPPostTracksToInboxOperationDelegate>)completionDelegate;
+								   callback:(SPErrorableOperationCallback)block;
 
 /** Initializes an SPPostTracksToInboxOperation for the given details.
  
@@ -74,21 +74,18 @@
  @param user The username of the user to send the tracks to.
  @param aFriendlyGreeting The message to send with the tracks, if any.
  @param aSession The session to send the tracks with.
- @param completionDelegate The delegate to send success/failure messages to.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
  @return Returns the created SPPostTracksToInboxOperation object. 
  */
 -(id)initBySendingTracks:(NSArray *)tracksToSend
 				  toUser:(NSString *)user 
 				 message:(NSString *)aFriendlyGreeting
 			   inSession:(SPSession *)aSession
-				delegate:(id <SPPostTracksToInboxOperationDelegate>)completionDelegate;
+				callback:(SPErrorableOperationCallback)block;
 
 ///----------------------------
 /// @name Properties
 ///----------------------------
-
-/** Returns the operation's delegate. */
-@property (nonatomic, readonly, assign) __unsafe_unretained id <SPPostTracksToInboxOperationDelegate> delegate;
 
 /** Returns the username of the user the tracks the operation is sending tracks to. */
 @property (nonatomic, readonly, copy) NSString *destinationUser;
@@ -109,25 +106,5 @@
 
 /** Returns the tracks being sent. */
 @property (nonatomic, readonly, copy) NSArray *tracks;
-
-@end
-
-/** Delegate callbacks from SPPostTracksToInboxOperation on success or failure. */
-
-@protocol SPPostTracksToInboxOperationDelegate <NSObject>
-@optional
-
-/** Called when the given post operation succeeded. 
- 
- @param operation The operation that succeeded.
- */
--(void)postTracksToInboxOperationDidSucceed:(SPPostTracksToInboxOperation *)operation;
-
-/** Called when the given post operation failed. 
- 
- @param operation The operation that failed.
- @param error The error that caused the failure.
- */
--(void)postTracksToInboxOperation:(SPPostTracksToInboxOperation *)operation didFailWithError:(NSError *)error;
 
 @end

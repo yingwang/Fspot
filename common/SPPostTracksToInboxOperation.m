@@ -43,7 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSString *message;
 
 @property (nonatomic, readwrite, assign) sp_inbox *inboxOperation;
-@property (nonatomic, readwrite, assign) __unsafe_unretained id <SPPostTracksToInboxOperationDelegate> delegate;
+@property (nonatomic, readwrite, copy) SPErrorableOperationCallback completionBlock;
 
 @end
 
@@ -64,15 +64,8 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 			error = [NSError spotifyErrorWithCode:errorCode];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			if (errorCode != SP_ERROR_OK) {
-				if ([operation.delegate respondsToSelector:@selector(postTracksToInboxOperation:didFailWithError:)]) {
-					[(id <SPPostTracksToInboxOperationDelegate>)operation.delegate postTracksToInboxOperation:operation didFailWithError:error];
-				}
-			} else {
-				if ([operation.delegate respondsToSelector:@selector(postTracksToInboxOperationDidSucceed:)]) {
-					[(id <SPPostTracksToInboxOperationDelegate>)operation.delegate postTracksToInboxOperationDidSucceed:operation];
-				}
-			}
+			if (operation.completionBlock) operation.completionBlock(error);
+			operation.completionBlock = nil;
 		});
 	}
 }
@@ -83,20 +76,20 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 									 toUser:(NSString *)user 
 									message:(NSString *)aFriendlyGreeting
 								  inSession:(SPSession *)aSession
-								   delegate:(id <SPPostTracksToInboxOperationDelegate>)completionDelegate {
+								   callback:(SPErrorableOperationCallback)block {
 	
 	return [[SPPostTracksToInboxOperation alloc] initBySendingTracks:tracksToSend
 															   toUser:user
 															  message:aFriendlyGreeting
 															inSession:aSession
-															 delegate:completionDelegate];
+															 callback:block];
 }
 
 -(id)initBySendingTracks:(NSArray *)tracksToSend
 				  toUser:(NSString *)user 
 				 message:(NSString *)aFriendlyGreeting
 			   inSession:(SPSession *)aSession
-				delegate:(id <SPPostTracksToInboxOperationDelegate>)completionDelegate {
+				callback:(SPErrorableOperationCallback)block {
 
 	if ((self = [super init])) {
 		
@@ -106,7 +99,7 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 			self.destinationUser = user;
 			self.message = aFriendlyGreeting;
 			self.tracks = tracksToSend;
-			self.delegate = (id)completionDelegate;
+			self.completionBlock = block;
 			
 			dispatch_async([SPSession libSpotifyQueue], ^{
 				
@@ -145,7 +138,7 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 @synthesize tracks;
 @synthesize message;
 
-@synthesize delegate;
+@synthesize completionBlock;
 @synthesize inboxOperation = _inboxOperation;
 
 -(sp_inbox *)inboxOperation {
@@ -156,7 +149,7 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 }
 
 - (void)dealloc {
-	self.delegate = nil;
+	self.completionBlock = nil;
 }
 
 @end

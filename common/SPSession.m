@@ -1143,13 +1143,13 @@ static SPSession *sharedSession;
 -(SPPostTracksToInboxOperation *)postTracks:(NSArray *)tracks 
                               toInboxOfUser:(NSString *)targetUserName
                                 withMessage:(NSString *)aFriendlyMessage
-                                   delegate:(id <SPPostTracksToInboxOperationDelegate>)operationDelegate {
+                                   callback:(SPErrorableOperationCallback)block {
 	
 	return [[SPPostTracksToInboxOperation alloc] initBySendingTracks:tracks
 															  toUser:targetUserName
 															 message:aFriendlyMessage
 														   inSession:self
-															delegate:operationDelegate];	
+															callback:block];	
 }
 
 -(void)addLoadingObject:(id)object;

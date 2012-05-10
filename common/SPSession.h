@@ -332,15 +332,14 @@ Playback
  @param tracks An array of SPTrack objects to send.
  @param targetUserName The username of the user to send the tracks to.
  @param aFriendlyMessage The message to send with the tracks, if any.
- @param operationDelegate The delegate to send success/failure messages to.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
  @return Returns an SPPostTracksToInboxOperation object representing the operation.
  @see SPPostTracksToInboxOperation
- @see SPPostTracksToInboxOperationDelegate
  */
 -(SPPostTracksToInboxOperation *)postTracks:(NSArray *)tracks 
 							  toInboxOfUser:(NSString *)targetUserName
 								withMessage:(NSString *)aFriendlyMessage
-								   delegate:(id <SPPostTracksToInboxOperationDelegate>)operationDelegate;
+								   callback:(SPErrorableOperationCallback)block;
 
 ///----------------------------
 /// @name Accessing Content by URL
