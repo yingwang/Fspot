@@ -33,6 +33,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPArtist.h"
 #import "SPURLExtensions.h"
 #import "SPSession.h"
+#import "SPSessionInternal.h"
 
 @interface SPArtist ()
 

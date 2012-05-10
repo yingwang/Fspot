@@ -35,6 +35,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPImage.h"
 #import "SPArtist.h"
 #import "SPURLExtensions.h"
+#import "SPSessionInternal.h"
 
 @interface SPAlbum ()
 

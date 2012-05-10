@@ -36,6 +36,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "SPArtist.h"
 #import "SPSession.h"
 #import "SPURLExtensions.h"
+#import "SPSessionInternal.h"
 
 @interface SPTrack ()
 

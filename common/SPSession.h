@@ -517,9 +517,6 @@ Playback
  */
 -(void)unloadPlayback;
 
-
-//Internal
--(void)addLoadingObject:(id)object;
 @end
 
 /** General delegate callbacks from SPSession. For playback-related callbacks, see SPSessionPlaybackDelegate. */
