@@ -1,8 +1,8 @@
 //
-//  SPSessionTests.h
+//  SPPostTracksToInboxTests.h
 //  CocoaLibSpotify Mac Framework
 //
-//  Created by Daniel Kennett on 09/05/2012.
+//  Created by Daniel Kennett on 10/05/2012.
 /*
  Copyright (c) 2011, Spotify AB
  All rights reserved.
@@ -30,11 +30,7 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <Foundation/Foundation.h>
 #import "SPTests.h"
 
-static NSString * const kTestUserNameUserDefaultsKey = @"TestUserName";
-static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
-
-@interface SPSessionTests : SPTests
+@interface SPPostTracksToInboxTests : SPTests
 @end

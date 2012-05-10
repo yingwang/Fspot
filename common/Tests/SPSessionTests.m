@@ -33,11 +33,13 @@
 #import "SPSessionTests.h"
 #import <CocoaLibSpotify/CocoaLibSpotify.h>
 
+static NSTimeInterval const kSessionLoadingTimeout = 15.0;
 
 @implementation SPSessionTests
 
+#pragma mark - Initialising SPSession
 
--(void)testInvalidSessionInit {
+-(void)test1InvalidSessionInit {
 	
 	NSError *error = nil;
 	
@@ -60,11 +62,13 @@
 	SPPassTest();
 }
 
--(void)testValidSessionInit {
+-(void)test2ValidSessionInit {
 	
 	NSError *error = nil;
 	
-	[SPSession initializeSharedSessionWithApplicationKey:nil
+#include "appkey.c"
+	
+	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:g_appkey length:g_appkey_size]
 											   userAgent:@"com.spotify.CocoaLSUnitTests"
 										   loadingPolicy:SPAsyncLoadingManual
 												   error:&error];
@@ -73,6 +77,74 @@
 	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
 	
 	SPPassTest();
+}
+
+#pragma mark - Logging In
+
+-(void)test3SessionLogin {
+	
+	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
+	
+	NSString *userName = [[NSUserDefaults standardUserDefaults] valueForKey:kTestUserNameUserDefaultsKey];
+	NSString *password = [[NSUserDefaults standardUserDefaults] valueForKey:kTestPasswordUserDefaultsKey];
+	
+	SPTestAssert(userName.length > 0, @"Test username is nil.");
+	SPTestAssert(password.length > 0, @"Test password is nil.");
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(loginDidSucceed:)
+												 name:SPSessionLoginDidSucceedNotification
+											   object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(loginDidFail:)
+												 name:SPSessionLoginDidFailNotification
+											   object:nil];
+	
+	[[SPSession sharedSession] attemptLoginWithUserName:userName
+											   password:password
+									rememberCredentials:NO];	
+}
+
+-(void)loginDidSucceed:(NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[self passTest:@selector(test3SessionLogin)];
+}
+
+-(void)loginDidFail:(NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[self failTest:@selector(test3SessionLogin) format:@"Login failed: %@", [[notification userInfo] valueForKey:SPSessionLoginDidFailErrorKey]];
+}
+
+#pragma mark - Misc
+
+-(void)test4UserDetails {
+	
+	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSessionLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
+		
+		SPTestAssert(notLoadedItems.count == 0, @"Session loading timed out for %@", [SPSession sharedSession]);
+		
+		[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession].user timeout:kSessionLoadingTimeout then:^(NSArray *loadedUsers, NSArray *notLoadedUsers) {
+			
+			SPTestAssert(notLoadedUsers.count == 0, @"User loading timed out for %@", [SPSession sharedSession].user);
+			
+			SPUser *user = [SPSession sharedSession].user;
+			SPTestAssert(user.canonicalName.length > 0, @"User has no canonical name: %@", user);
+			SPTestAssert(user.displayName.length > 0, @"User has no display name: %@", user);
+			SPTestAssert(user.spotifyURL != nil, @"User has no Spotify URI: %@", user);
+			SPPassTest();
+		}];
+	}];
+}
+
+-(void)test5SessionLocale {
+	
+	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSessionLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
+		
+		SPTestAssert(notLoadedItems.count == 0, @"Session loading timed out for %@", [SPSession sharedSession]);
+		SPTestAssert([SPSession sharedSession].locale != nil, @"Session has no locale.");
+		SPPassTest();
+	}];
 }
 
 @end

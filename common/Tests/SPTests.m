@@ -33,17 +33,24 @@
 #import "SPTests.h"
 #import <objc/runtime.h>
 
-@implementation SPTests
+@interface SPTests ()
+@property (nonatomic, readwrite, copy) NSArray *testSelectorNames;
+@property (nonatomic, readwrite, copy) void (^completionBlock)(BOOL);
+@end
+
+@implementation SPTests {
+	NSUInteger nextTestIndex;
+	BOOL allSuccessful;
+}
+
+@synthesize testSelectorNames;
+@synthesize completionBlock;
 
 -(void)passTest:(SEL)testSelector {
 	
-	NSString *selString = NSStringFromSelector(testSelector);
+	NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [self prettyNameForTestSelector:testSelector]);
 	
-	if ([selString hasPrefix:@"test"])
-		selString = [selString stringByReplacingCharactersInRange:NSMakeRange(0, @"test".length) withString:@""];
-	
-	NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), selString);
-	
+	[self runNextTest];
 }
 
 -(void)failTest:(SEL)testSelector format:(NSString *)format, ... {
@@ -54,29 +61,83 @@
 	va_end(src);
 	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
 	
-	NSString *selString = NSStringFromSelector(testSelector);
+	NSLog(@"[%@ %@]: %@: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [self prettyNameForTestSelector:testSelector], msg);
+	
+	allSuccessful = NO;
+	[self runNextTest];
+}
+
+-(NSString *)prettyNameForTestSelector:(SEL)selector {
+	
+	NSString *selString = NSStringFromSelector(selector);
 	
 	if ([selString hasPrefix:@"test"])
 		selString = [selString stringByReplacingCharactersInRange:NSMakeRange(0, @"test".length) withString:@""];
 	
-	NSLog(@"[%@ %@]: %@: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), selString, msg);
+	// Skip leading digits
+	NSScanner *scanner = [NSScanner scannerWithString:selString];
+	[scanner scanCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet] intoString:nil];
+	return [selString substringFromIndex:[scanner scanLocation]];
 }
 
--(void)runTests {
+#pragma mark - Automatic Running
+
+-(void)runTests:(void (^)(BOOL allSuccessful))block {
 	
-	unsigned int methodCount = 0;
-	Method *methods = class_copyMethodList([self class], &methodCount);
-	
-	for (int currentMethod = 0; currentMethod < methodCount; currentMethod++) {
-		
-		Method method = methods[currentMethod];
-		SEL methodName = method_getName(method);
-		
-		if ([NSStringFromSelector(methodName) hasPrefix:@"test"])
-			[self performSelector:methodName];
+	if (self.testSelectorNames != nil) {
+		self.testSelectorNames = nil;
 	}
 	
-	free(methods);
+	self.completionBlock = block;
+	
+	unsigned int methodCount = 0;
+	Method *testList = class_copyMethodList([self class], &methodCount);
+	
+	NSMutableArray *testMethods = [NSMutableArray arrayWithCapacity:methodCount];
+	
+	for (unsigned int currentMethodIndex = 0; currentMethodIndex < methodCount; currentMethodIndex++) {
+		Method method = testList[currentMethodIndex];
+		SEL methodSel = method_getName(method);
+		NSString *methodName = NSStringFromSelector(methodSel);
+		if ([methodName hasPrefix:@"test"])
+			[testMethods addObject:methodName];
+	}
+	
+	self.testSelectorNames = [testMethods sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+	nextTestIndex = 0;
+	allSuccessful = YES;
+	free(testList);
+	
+	[self runNextTest];
+}
+
+-(void)runNextTest {
+	
+	if (self.testSelectorNames == nil)
+		return; // Not part of auto-running
+	
+	if (nextTestIndex >= self.testSelectorNames.count) {
+		
+		self.testSelectorNames = nil;
+		nextTestIndex = 0;
+		
+		[self testsCompleted];
+		return;
+	}
+	
+	SEL methodName = NSSelectorFromString([self.testSelectorNames objectAtIndex:nextTestIndex]);
+	nextTestIndex++;
+	
+	if ([NSStringFromSelector(methodName) hasPrefix:@"test"])
+		[self performSelector:methodName];
+	else
+		[self runNextTest];
+
+}
+
+-(void)testsCompleted {
+	NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"Complete");
+	if (self.completionBlock) self.completionBlock(allSuccessful);
 }
 
 @end

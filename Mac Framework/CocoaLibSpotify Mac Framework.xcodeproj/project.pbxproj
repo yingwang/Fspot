@@ -76,6 +76,11 @@
 		50DE7F42147E757E005403A9 /* SPPlaylistInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DE7F40147E757D005403A9 /* SPPlaylistInternal.h */; };
 		50DE7F4F147E7CCC005403A9 /* SPTrackInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DE7F4D147E7CCC005403A9 /* SPTrackInternal.h */; };
 		50E8ED4B155BB55900F14186 /* SPTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED4A155BB55900F14186 /* SPTests.m */; };
+		50E8ED56155BE46500F14186 /* SPMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED55155BE46500F14186 /* SPMetadataTests.m */; };
+		50E8ED59155BFA1200F14186 /* SPSearchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED58155BFA1200F14186 /* SPSearchTests.m */; };
+		50E8ED5C155C018B00F14186 /* SPPostTracksToInboxTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED5B155C018A00F14186 /* SPPostTracksToInboxTests.m */; };
+		50E8ED5F155C093100F14186 /* SPSessionInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50E8ED5D155C093100F14186 /* SPSessionInternal.h */; };
+		50E8ED63155C0F3E00F14186 /* SPAudioDeliveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED62155C0F3E00F14186 /* SPAudioDeliveryTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -186,6 +191,15 @@
 		50DE7F4D147E7CCC005403A9 /* SPTrackInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTrackInternal.h; path = ../common/SPTrackInternal.h; sourceTree = "<group>"; };
 		50E8ED49155BB55900F14186 /* SPTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTests.h; path = ../../common/Tests/SPTests.h; sourceTree = "<group>"; };
 		50E8ED4A155BB55900F14186 /* SPTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTests.m; path = ../../common/Tests/SPTests.m; sourceTree = "<group>"; };
+		50E8ED54155BE46500F14186 /* SPMetadataTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPMetadataTests.h; path = ../../common/Tests/SPMetadataTests.h; sourceTree = "<group>"; };
+		50E8ED55155BE46500F14186 /* SPMetadataTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPMetadataTests.m; path = ../../common/Tests/SPMetadataTests.m; sourceTree = "<group>"; };
+		50E8ED57155BFA1100F14186 /* SPSearchTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPSearchTests.h; path = ../../common/Tests/SPSearchTests.h; sourceTree = "<group>"; };
+		50E8ED58155BFA1200F14186 /* SPSearchTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSearchTests.m; path = ../../common/Tests/SPSearchTests.m; sourceTree = "<group>"; };
+		50E8ED5A155C018A00F14186 /* SPPostTracksToInboxTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPostTracksToInboxTests.h; path = ../../common/Tests/SPPostTracksToInboxTests.h; sourceTree = "<group>"; };
+		50E8ED5B155C018A00F14186 /* SPPostTracksToInboxTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPPostTracksToInboxTests.m; path = ../../common/Tests/SPPostTracksToInboxTests.m; sourceTree = "<group>"; };
+		50E8ED5D155C093100F14186 /* SPSessionInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPSessionInternal.h; path = ../common/SPSessionInternal.h; sourceTree = "<group>"; };
+		50E8ED61155C0F3E00F14186 /* SPAudioDeliveryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPAudioDeliveryTests.h; path = ../../common/Tests/SPAudioDeliveryTests.h; sourceTree = "<group>"; };
+		50E8ED62155C0F3E00F14186 /* SPAudioDeliveryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPAudioDeliveryTests.m; path = ../../common/Tests/SPAudioDeliveryTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -286,6 +300,7 @@
 				50AB044C1312D00400357CD2 /* SPUser.h */,
 				50AB044D1312D00900357CD2 /* SPUser.m */,
 				5028ECB6130937B200BF0B22 /* SPSession.h */,
+				50E8ED5D155C093100F14186 /* SPSessionInternal.h */,
 				5028ECB7130937B200BF0B22 /* SPSession.m */,
 				5028ECB913093B5800BF0B22 /* SPPlaylist.h */,
 				50DE7F40147E757D005403A9 /* SPPlaylistInternal.h */,
@@ -353,6 +368,14 @@
 				50E8ED4A155BB55900F14186 /* SPTests.m */,
 				504E4955155AB29100E1C0F7 /* SPSessionTests.h */,
 				504E4956155AB29100E1C0F7 /* SPSessionTests.m */,
+				50E8ED54155BE46500F14186 /* SPMetadataTests.h */,
+				50E8ED55155BE46500F14186 /* SPMetadataTests.m */,
+				50E8ED57155BFA1100F14186 /* SPSearchTests.h */,
+				50E8ED58155BFA1200F14186 /* SPSearchTests.m */,
+				50E8ED5A155C018A00F14186 /* SPPostTracksToInboxTests.h */,
+				50E8ED5B155C018A00F14186 /* SPPostTracksToInboxTests.m */,
+				50E8ED61155C0F3E00F14186 /* SPAudioDeliveryTests.h */,
+				50E8ED62155C0F3E00F14186 /* SPAudioDeliveryTests.m */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -436,6 +459,7 @@
 				50BED5A1152202E1000D0919 /* SPCoreAudioController.h in Headers */,
 				50BED5B5152208E5000D0919 /* SPPlaybackManager.h in Headers */,
 				50C3CDF81536FFA800B1F2C3 /* SPAsyncLoading.h in Headers */,
+				50E8ED5F155C093100F14186 /* SPSessionInternal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -598,6 +622,10 @@
 				504E4945155AA85500E1C0F7 /* AppDelegate.m in Sources */,
 				504E4957155AB29100E1C0F7 /* SPSessionTests.m in Sources */,
 				50E8ED4B155BB55900F14186 /* SPTests.m in Sources */,
+				50E8ED56155BE46500F14186 /* SPMetadataTests.m in Sources */,
+				50E8ED59155BFA1200F14186 /* SPSearchTests.m in Sources */,
+				50E8ED5C155C018B00F14186 /* SPPostTracksToInboxTests.m in Sources */,
+				50E8ED63155C0F3E00F14186 /* SPAudioDeliveryTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

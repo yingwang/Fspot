@@ -32,16 +32,52 @@
 
 #import "AppDelegate.h"
 #import "SPSessionTests.h"
+#import "SPMetadataTests.h"
+#import "SPSearchTests.h"
+#import "SPPostTracksToInboxTests.h"
+#import "SPAudioDeliveryTests.h"
+
+@interface AppDelegate ()
+@property (nonatomic, strong) SPTests *sessionTests;
+@property (nonatomic, strong) SPTests *metadataTests;
+@property (nonatomic, strong) SPTests *searchTests;
+@property (nonatomic, strong) SPTests *inboxTests;
+@property (nonatomic, strong) SPTests *audioTests;
+@end
 
 @implementation AppDelegate
 
 @synthesize window = _window;
+@synthesize sessionTests;
+@synthesize metadataTests;
+@synthesize searchTests;
+@synthesize inboxTests;
+@synthesize audioTests;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	// Insert code here to initialize your application
-	SPSessionTests *test = [SPSessionTests new];
-	[test runTests];
+	self.sessionTests = [SPSessionTests new];
+	[self.sessionTests runTests:^(BOOL allSuccessful) {
+		if (!allSuccessful) return;
+		
+		self.audioTests = [SPAudioDeliveryTests new];
+		[self.audioTests runTests:^(BOOL allSuccessful) {
+			
+			self.searchTests = [SPSearchTests new];
+			[self.searchTests runTests:^(BOOL allSuccessful) {
+				
+				self.inboxTests = [SPPostTracksToInboxTests new];
+				[self.inboxTests runTests:^(BOOL allSuccessful) {
+					
+					self.metadataTests = [SPMetadataTests new];
+					[self.metadataTests runTests:^(BOOL allSuccessful) {
+						
+					}];
+				}];
+			}];
+		}];
+	}];
 }
 
 @end

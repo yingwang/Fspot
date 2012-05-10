@@ -1,8 +1,8 @@
 //
-//  SPSessionTests.h
+//  SPPostTracksToInboxTests.m
 //  CocoaLibSpotify Mac Framework
 //
-//  Created by Daniel Kennett on 09/05/2012.
+//  Created by Daniel Kennett on 10/05/2012.
 /*
  Copyright (c) 2011, Spotify AB
  All rights reserved.
@@ -30,11 +30,32 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <Foundation/Foundation.h>
-#import "SPTests.h"
+#import "SPPostTracksToInboxTests.h"
+#import "SPSession.h"
+#import "SPTrack.h"
+#import "SPPostTracksToInboxOperation.h"
 
-static NSString * const kTestUserNameUserDefaultsKey = @"TestUserName";
-static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
+static NSString * const kTargetUserName = @"alana-test";
+static NSString * const kOperationMessage = @"Hello from the CocoaLibSpotify test suite!";
+static NSString * const kTrackToSendURI = @"spotify:track:3O0kOIdSdb3xQnjoi1AjRD";
 
-@interface SPSessionTests : SPTests
+@implementation SPPostTracksToInboxTests
+
+-(void)testPostTracksToInbox {
+	
+	[SPTrack trackForTrackURL:[NSURL URLWithString:kTrackToSendURI] inSession:[SPSession sharedSession] callback:^(SPTrack *track) {
+		
+		SPTestAssert(track != nil, @"SPTrack returned nil for %@", kTrackToSendURI);
+		
+		[SPPostTracksToInboxOperation sendTracks:[NSArray arrayWithObject:track]
+										  toUser:kTargetUserName
+										  message:kOperationMessage
+									   inSession:[SPSession sharedSession]
+										callback:^(NSError *error) {
+											SPTestAssert(error == nil, @"Post to inbox operation encountered error: %@", error);
+											SPPassTest();
+										}];
+	}];
+}
+
 @end
