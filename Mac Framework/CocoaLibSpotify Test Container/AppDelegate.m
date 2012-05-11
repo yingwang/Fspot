@@ -36,6 +36,8 @@
 #import "SPSearchTests.h"
 #import "SPPostTracksToInboxTests.h"
 #import "SPAudioDeliveryTests.h"
+#import "SPSessionTeardownTests.h"
+#import "SPPlaylistTests.h"
 
 @interface AppDelegate ()
 @property (nonatomic, strong) SPTests *sessionTests;
@@ -43,6 +45,8 @@
 @property (nonatomic, strong) SPTests *searchTests;
 @property (nonatomic, strong) SPTests *inboxTests;
 @property (nonatomic, strong) SPTests *audioTests;
+@property (nonatomic, strong) SPTests *teardownTests;
+@property (nonatomic, strong) SPTests *playlistTests;
 @end
 
 @implementation AppDelegate
@@ -53,6 +57,8 @@
 @synthesize searchTests;
 @synthesize inboxTests;
 @synthesize audioTests;
+@synthesize teardownTests;
+@synthesize playlistTests;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -61,18 +67,26 @@
 	[self.sessionTests runTests:^(BOOL allSuccessful) {
 		if (!allSuccessful) return;
 		
-		self.audioTests = [SPAudioDeliveryTests new];
-		[self.audioTests runTests:^(BOOL allSuccessful) {
+		self.playlistTests = [SPPlaylistTests new];
+		[self.playlistTests runTests:^(BOOL allSuccessful) {
 			
-			self.searchTests = [SPSearchTests new];
-			[self.searchTests runTests:^(BOOL allSuccessful) {
+			self.audioTests = [SPAudioDeliveryTests new];
+			[self.audioTests runTests:^(BOOL allSuccessful) {
 				
-				self.inboxTests = [SPPostTracksToInboxTests new];
-				[self.inboxTests runTests:^(BOOL allSuccessful) {
+				self.searchTests = [SPSearchTests new];
+				[self.searchTests runTests:^(BOOL allSuccessful) {
 					
-					self.metadataTests = [SPMetadataTests new];
-					[self.metadataTests runTests:^(BOOL allSuccessful) {
+					self.inboxTests = [SPPostTracksToInboxTests new];
+					[self.inboxTests runTests:^(BOOL allSuccessful) {
 						
+						self.metadataTests = [SPMetadataTests new];
+						[self.metadataTests runTests:^(BOOL allSuccessful) {
+							
+							self.teardownTests = [SPSessionTeardownTests new];
+							[self.teardownTests runTests:^(BOOL allSuccessful) {
+								NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"All complete!");
+							}];
+						}];
 					}];
 				}];
 			}];
