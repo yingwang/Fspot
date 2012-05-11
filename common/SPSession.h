@@ -193,16 +193,16 @@ Playback
  
  @param completionBlock The block to be called when the operation has completed.
  */
--(void)beginFlushingCaches:(void (^)())completionBlock;
+-(void)flushCaches:(void (^)())completionBlock;
 
 /** Log out from the Spotify service.
  
  This method will cleanly log out from the Spotify service and clear any in-memory caches. 
  Called automatically when the instance is deallocated.
  
- @param completionBlock The block to be called when the logout process has started.
+ @param completionBlock The block to be called when the logout process has completed.
  */
--(void)beginLogout:(void (^)())completionBlock;
+-(void)logout:(void (^)())completionBlock;
 
 /** Returns the current connection state.
  

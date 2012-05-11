@@ -81,6 +81,8 @@
 @property (nonatomic, copy, readwrite) NSString *userAgent;
 @property (nonatomic, readwrite) SPAsyncLoadingPolicy loadingPolicy;
 
+@property (nonatomic, readwrite, copy) void (^logoutCompletionBlock) ();
+
 -(void)checkLoadingObjects;
 -(void)prodSession;
 
@@ -170,6 +172,12 @@ static void logged_out(sp_session *session) {
 			if ([sess.delegate respondsToSelector:@selector(sessionDidLogOut:)]) {
 				[sess.delegate sessionDidLogOut:sess];
 			}
+			
+			if (sess.logoutCompletionBlock) {
+				sess.logoutCompletionBlock();
+				sess.logoutCompletionBlock = nil;
+			}
+			
 		});
     }
 }
@@ -712,7 +720,7 @@ static SPSession *sharedSession;
 	if (userName.length == 0 || password.length == 0)
 		return;
 	
-	[self beginLogout:^{
+	[self logout:^{
 		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], rememberMe, NULL); });
 	}];
 }
@@ -724,7 +732,7 @@ static SPSession *sharedSession;
 	if ([userName length] == 0 || [credential length] == 0)
 		return;
 	
-	[self beginLogout:^{
+	[self logout:^{
 		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], NULL, rememberMe, [credential UTF8String]); });
 	}];
 }
@@ -770,7 +778,7 @@ static SPSession *sharedSession;
 	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_forget_me(self.session); });
 }
 
--(void)beginFlushingCaches:(void (^)())completionBlock {
+-(void)flushCaches:(void (^)())completionBlock {
 	dispatch_async([SPSession libSpotifyQueue], ^() {
 		if (self.session) sp_session_flush_caches(self.session); 
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -877,7 +885,7 @@ static SPSession *sharedSession;
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
--(void)beginLogout:(void (^)())completionBlock {
+-(void)logout:(void (^)())completionBlock {
 	[self.trackCache removeAllObjects];
 	[self.userCache removeAllObjects];
 	[self.playlistCache removeAllObjects];
@@ -890,11 +898,26 @@ static SPSession *sharedSession;
 	
 	sp_session *outgoing_session = _session;
 	
-	dispatch_async([SPSession libSpotifyQueue], ^() { 
-		if (outgoing_session) sp_session_logout(outgoing_session);
-		dispatch_async(dispatch_get_main_queue(), ^{
-			if (completionBlock) completionBlock();
-		});
+	if (!outgoing_session) {
+		if (completionBlock) completionBlock();
+		return;
+	}
+	
+	self.logoutCompletionBlock = completionBlock;
+	
+	dispatch_async([SPSession libSpotifyQueue], ^() {
+		
+		sp_connectionstate state = sp_session_connectionstate(outgoing_session);
+		
+		if (state == SP_CONNECTION_STATE_LOGGED_OUT || state == SP_CONNECTION_STATE_UNDEFINED) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.logoutCompletionBlock = nil;
+				if (completionBlock) completionBlock();
+				return;
+			});
+		}
+		
+		sp_session_logout(outgoing_session);
 	});
 }
 
@@ -926,6 +949,7 @@ static SPSession *sharedSession;
 @synthesize userAgent;
 @synthesize loadingPolicy;
 @synthesize loadingObjects;
+@synthesize logoutCompletionBlock;
 
 +(NSSet *)keyPathsForValuesAffectingLoaded {
 	return [NSSet setWithObjects:@"inboxPlaylist", @"starredPlaylist", @"user", @"locale", @"userPlaylists", nil];
