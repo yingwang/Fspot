@@ -197,7 +197,9 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 			
 			SPTestAssert(notLoadedItems.count == 0, @"Playlist container loading timed out for %@", container);
 			
-			[container removeItem:self.playlist callback:^{
+			[container removeItem:self.playlist callback:^(NSError *error) {
+				
+				SPTestAssert(error == nil, @"Removal operation returned error: %@", error);
 				SPTestAssert(![container.flattenedPlaylists containsObject:self.playlist], @"Playlist container still contains playlist: %@", self.playlist);
 				self.playlist = nil;
 				SPPassTest();

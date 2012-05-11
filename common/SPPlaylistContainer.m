@@ -61,29 +61,60 @@
 @property (nonatomic, readwrite, strong) NSMutableDictionary *folderCache;
 @property (nonatomic, readwrite, strong) SPPlaylistContainerCallbackProxy *callbackProxy;
 
+@property (nonatomic, readwrite, strong) NSMutableArray *playlistAddCallbackStack;
+@property (nonatomic, readwrite, strong) NSMutableArray *playlistRemoveCallbackStack;
+
 @property (nonatomic, readwrite) sp_playlistcontainer *container;
 
 -(NSRange)rangeOfFolderInRootList:(SPPlaylistFolder *)folder;
 -(NSInteger)indexInFlattenedListForIndex:(NSUInteger)virtualIndex inFolder:(SPPlaylistFolder *)parentFolder;
--(void)removeFolderFromTree:(SPPlaylistFolder *)aPlaylistOrFolderIndex callback:(void (^)())block;
--(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(void (^)())block;
+-(void)removeFolderFromTree:(SPPlaylistFolder *)aPlaylistOrFolderIndex callback:(SPErrorableOperationCallback)block;
+-(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(SPErrorableOperationCallback)block;
 -(NSArray *)playlistsInFolder:(SPPlaylistFolder *)folder;
 
 @end
 
 static void playlist_added(sp_playlistcontainer *pc, sp_playlist *playlist, int position, void *userdata) {
 	// Find the object model container, add the playlist to it
-	return;
-	if (sp_playlistcontainer_playlist_type(pc, position) == SP_PLAYLIST_TYPE_END_FOLDER)
-		return; // We'll deal with this when the folder itself is added 
+	
+	SPPlaylistContainerCallbackProxy *proxy = (__bridge SPPlaylistContainerCallbackProxy *)userdata;
+	SPPlaylistContainer *container = proxy.container;
+	if (!container) return;
+	
+	NSArray *newTree = [container createPlaylistTree];
+	SPPlaylist *newPlaylist = [SPPlaylist playlistWithPlaylistStruct:playlist inSession:container.session];
+	
+	void (^callback)(SPPlaylist *) = nil;
+	if (container.playlistAddCallbackStack.count > 0) {
+		callback = [container.playlistAddCallbackStack objectAtIndex:0];
+		[container.playlistAddCallbackStack removeObjectAtIndex:0];
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^() {
+		container.playlists = newTree;
+		if (callback) callback(newPlaylist);
+	});
 }
 
 
 static void playlist_removed(sp_playlistcontainer *pc, sp_playlist *playlist, int position, void *userdata) {
-	// Find the object model container, remove the playlist from it
-	return;
-	if (sp_playlistcontainer_playlist_type(pc, position) == SP_PLAYLIST_TYPE_END_FOLDER)
-		return; // We'll deal with this when the folder itself is removed 
+	
+	SPPlaylistContainerCallbackProxy *proxy = (__bridge SPPlaylistContainerCallbackProxy *)userdata;
+	SPPlaylistContainer *container = proxy.container;
+	if (!container) return;
+	
+	NSArray *newTree = [container createPlaylistTree];
+	SPErrorableOperationCallback callback = nil;
+	
+	if (container.playlistRemoveCallbackStack.count > 0) {
+		callback = [container.playlistRemoveCallbackStack objectAtIndex:0];
+		[container.playlistRemoveCallbackStack removeObjectAtIndex:0];
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^() {
+		container.playlists = newTree;
+		if (callback) callback(nil);
+	});
 }
 
 static void playlist_moved(sp_playlistcontainer *pc, sp_playlist *playlist, int position, int new_position, void *userdata) {
@@ -92,7 +123,7 @@ static void playlist_moved(sp_playlistcontainer *pc, sp_playlist *playlist, int 
 
 
 static void container_loaded(sp_playlistcontainer *pc, void *userdata) {
-	
+		
 	SPPlaylistContainerCallbackProxy *proxy = (__bridge SPPlaylistContainerCallbackProxy *)userdata;
 	SPPlaylistContainer *container = proxy.container;
 	if (!container) return;
@@ -129,6 +160,8 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 @synthesize folderCache;
 @synthesize playlists;
 @synthesize callbackProxy;
+@synthesize playlistAddCallbackStack;
+@synthesize playlistRemoveCallbackStack;
 
 -(sp_playlistcontainer *)container {
 #if DEBUG
@@ -343,13 +376,14 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 			return;
 		}
 		
-		SPPlaylist *createdPlaylist = nil;
-		
+		if (block)
+			[self.playlistAddCallbackStack addObject:block];
+			
 		sp_playlist *newPlaylist = sp_playlistcontainer_add_new_playlist(self.container, [name UTF8String]);
-		if (newPlaylist != NULL)
-			createdPlaylist = [SPPlaylist playlistWithPlaylistStruct:newPlaylist inSession:self.session];
-		
-		dispatch_async(dispatch_get_main_queue(), ^() { if (block) block(createdPlaylist); });
+		if (newPlaylist == NULL && block) {
+			[self.playlistAddCallbackStack removeObject:block];
+			dispatch_async(dispatch_get_main_queue(), ^{ block(nil); });
+		}
 	});
 }
 
@@ -374,46 +408,54 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	});
 }
 
--(void)removeItem:(id)playlistOrFolder callback:(void (^)())block {
+-(void)removeItem:(id)playlistOrFolder callback:(SPErrorableOperationCallback)block {
 	
 	if ([playlistOrFolder isKindOfClass:[SPPlaylistFolder class]])
 		[self removeFolderFromTree:playlistOrFolder callback:block];
 	else if ([playlistOrFolder isKindOfClass:[SPPlaylist class]])
 		[self removePlaylist:playlistOrFolder callback:block];
 	else if (block)
-		block();
+		block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]);
 	
 }
 
--(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(void (^)())block {
+-(void)removePlaylist:(SPPlaylist *)aPlaylist callback:(SPErrorableOperationCallback)block {
 	
 	if (aPlaylist == nil)
-		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block(); });
+		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]); });
 	
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		
 		NSUInteger playlistCount = sp_playlistcontainer_num_playlists(self.container);
 		
+		if (block)
+			[self.playlistRemoveCallbackStack addObject:block];
+		
+		NSError *error = [NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA];
+		
 		for (int currentIndex = 0; currentIndex < playlistCount; currentIndex++) {
 			sp_playlist *playlist = sp_playlistcontainer_playlist(self.container, currentIndex);
 			if (playlist == aPlaylist.playlist) {
-				sp_playlistcontainer_remove_playlist(self.container, currentIndex);
+				sp_error errorCode = sp_playlistcontainer_remove_playlist(self.container, currentIndex);
+				if (errorCode != SP_ERROR_OK)
+					error = [NSError spotifyErrorWithCode:errorCode];
+				else
+					error = nil;
 				break;
 			}
 		}
 		
-		NSArray *newTree = [self createPlaylistTree];
-		dispatch_async(dispatch_get_main_queue(), ^{
-			self.playlists = newTree;
-			if (block) block();
-		});
+		if (error) {
+			[self.playlistRemoveCallbackStack removeObject:block];
+			dispatch_async(dispatch_get_main_queue(), ^{ block(error); });
+		}
 	});
 }
 
--(void)removeFolderFromTree:(SPPlaylistFolder *)aFolder callback:(void (^)())block {
+-(void)removeFolderFromTree:(SPPlaylistFolder *)aFolder callback:(SPErrorableOperationCallback)block {
 	
 	if (aFolder == nil)
-		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block(); });
+		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]); });
 	
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		
@@ -438,7 +480,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		NSArray *newTree = [self createPlaylistTree];
 		dispatch_async(dispatch_get_main_queue(), ^{
 			self.playlists = newTree;
-			if (block) block();
+			if (block) block(nil);
 		});
 	});
 }
@@ -570,6 +612,8 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
         self.container = aContainer;
         sp_playlistcontainer_add_ref(self.container);
         self.session = aSession;
+		self.playlistAddCallbackStack = [NSMutableArray new];
+		self.playlistRemoveCallbackStack = [NSMutableArray new];
 		
 		if (self.session.loadingPolicy == SPAsyncLoadingImmediate)
 			dispatch_async(dispatch_get_main_queue(), ^() { [self startLoading]; });

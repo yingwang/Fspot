@@ -96,7 +96,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param playlistOrFolder The Playlist or Folder to remove.
  @param block The callback block to execute when the operation has completed.
  */
--(void)removeItem:(id)playlistOrFolder callback:(void (^)())block;
+-(void)removeItem:(id)playlistOrFolder callback:(SPErrorableOperationCallback)block;
 
 /** Move a playlist or folder to another location in the list. 
  
