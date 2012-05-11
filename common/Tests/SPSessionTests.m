@@ -31,7 +31,8 @@
  */
 
 #import "SPSessionTests.h"
-#import <CocoaLibSpotify/CocoaLibSpotify.h>
+#import "SPSession.h"
+#import "SPUser.h"
 
 static NSTimeInterval const kSessionLoadingTimeout = 15.0;
 
