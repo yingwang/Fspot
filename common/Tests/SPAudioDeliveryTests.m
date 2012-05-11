@@ -95,6 +95,7 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 	
 	aSession.playing = NO;
 	[aSession unloadPlayback];
+	[(SPSession *)aSession setAudioDeliveryDelegate:nil];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self passTest:@selector(testAudioDelivery)];
