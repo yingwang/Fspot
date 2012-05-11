@@ -1331,13 +1331,17 @@ static SPSession *sharedSession;
 #pragma mark -
 
 -(void)dealloc {
-    
-    [self removeObserver:self forKeyPath:@"connectionState"];
+	
+	[self removeObserver:self forKeyPath:@"connectionState"];
 	[self removeObserver:self forKeyPath:@"starredPlaylist.items"];
-	if (self.session != NULL) {
-		[self unloadPlayback];
-        [self beginLogout:nil];
-    }
+	
+	sp_session *outgoing_session = _session;
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		if (!outgoing_session) return;
+		sp_session_player_unload(outgoing_session);
+		sp_session_logout(outgoing_session);
+	});
 }
 
 @end
