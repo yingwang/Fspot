@@ -41,15 +41,16 @@
 @implementation SPTests {
 	NSUInteger nextTestIndex;
 	BOOL allSuccessful;
+	NSUInteger passCount;
+	NSUInteger failCount;
 }
 
 @synthesize testSelectorNames;
 @synthesize completionBlock;
 
 -(void)passTest:(SEL)testSelector {
-	
-	NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [self prettyNameForTestSelector:testSelector]);
-	
+	printf(" Passed.\n");
+	passCount++;
 	[self runNextTest];
 }
 
@@ -61,8 +62,8 @@
 	va_end(src);
 	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
 	
-	NSLog(@"[%@ %@]: %@: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [self prettyNameForTestSelector:testSelector], msg);
-	
+	printf(" Failed. Reason: %s\n", msg.UTF8String);
+	failCount++;
 	allSuccessful = NO;
 	[self runNextTest];
 }
@@ -105,9 +106,12 @@
 	
 	self.testSelectorNames = [testMethods sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 	nextTestIndex = 0;
+	passCount = 0;
+	failCount = 0;
 	allSuccessful = YES;
 	free(testList);
 	
+	printf("---- Starting %lu tests in %s ----\n", self.testSelectorNames.count, NSStringFromClass([self class]).UTF8String);
 	[self runNextTest];
 }
 
@@ -128,15 +132,16 @@
 	SEL methodName = NSSelectorFromString([self.testSelectorNames objectAtIndex:nextTestIndex]);
 	nextTestIndex++;
 	
-	if ([NSStringFromSelector(methodName) hasPrefix:@"test"])
+	if ([NSStringFromSelector(methodName) hasPrefix:@"test"]) {
+		printf("Running test %s…", [self prettyNameForTestSelector:methodName].UTF8String);
 		[self performSelector:methodName];
-	else
+	} else {
 		[self runNextTest];
-
+	}
 }
 
 -(void)testsCompleted {
-	NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"Complete");
+	printf("---- Tests in %s complete with %lu passed, %lu failed ----\n", NSStringFromClass([self class]).UTF8String, passCount, failCount);
 	if (self.completionBlock) self.completionBlock(allSuccessful);
 }
 
