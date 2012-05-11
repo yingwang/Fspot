@@ -147,29 +147,34 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 				SPTestAssert(track1 != nil, @"SPTrack returned nil for %@", kTrack1TestURI);
 				SPTestAssert(track2 != nil, @"SPTrack returned nil for %@", kTrack2TestURI);
 				
-				[self.playlist.items addObject:track1];
-				[self.playlist.items addObject:track2];
-				
-				// Tracks get converted to items.
-				NSArray *originalPlaylistTracks = [self.playlist.items valueForKey:@"item"];
-				SPTestAssert(originalPlaylistTracks.count == 2, @"Playlist doesn't have 2 tracks, instead has: %u", originalPlaylistTracks.count);
-				SPTestAssert([originalPlaylistTracks objectAtIndex:0] == track1, @"Playlist track 0 should be %@, is actually %@", track1, [originalPlaylistTracks objectAtIndex:0]);
-				SPTestAssert([originalPlaylistTracks objectAtIndex:1] == track2, @"Playlist track 1 should be %@, is actually %@", track2, [originalPlaylistTracks objectAtIndex:1]);
-				
-				[self.playlist moveItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] toIndex:1 callback:^(NSError *error) {
-					SPTestAssert(error == nil, @"Move operation returned error: %@", error);
+				[self.playlist addItems:[NSArray arrayWithObjects:track1, track2, nil] atIndex:0 callback:^(NSError *error) {
 					
-					NSArray *movedPlaylistTracks = [self.playlist.items valueForKey:@"item"];
-					SPTestAssert(movedPlaylistTracks.count == 2, @"Playlist doesn't have 2 tracks after move, instead has: %u", movedPlaylistTracks.count);
-					SPTestAssert([movedPlaylistTracks objectAtIndex:0] == track2, @"Playlist track 0 should be %@, is actually %@", track2, [movedPlaylistTracks objectAtIndex:0]);
-					SPTestAssert([movedPlaylistTracks objectAtIndex:1] == track1, @"Playlist track 1 should be %@, is actually %@", track1, [movedPlaylistTracks objectAtIndex:1]);
+					SPTestAssert(error == nil, @"Got error when adding to playlist: %@", error);
 					
-					[self.playlist.items removeObject:[self.playlist.items objectAtIndex:0]];
+					// Tracks get converted to items.
+					NSArray *originalPlaylistTracks = [self.playlist.items valueForKey:@"item"];
+					SPTestAssert(originalPlaylistTracks.count == 2, @"Playlist doesn't have 2 tracks, instead has: %u", originalPlaylistTracks.count);
+					SPTestAssert([originalPlaylistTracks objectAtIndex:0] == track1, @"Playlist track 0 should be %@, is actually %@", track1, [originalPlaylistTracks objectAtIndex:0]);
+					SPTestAssert([originalPlaylistTracks objectAtIndex:1] == track2, @"Playlist track 1 should be %@, is actually %@", track2, [originalPlaylistTracks objectAtIndex:1]);
 					
-					NSArray *afterDeletionPlaylistTracks = [self.playlist.items valueForKey:@"item"];
-					SPTestAssert(afterDeletionPlaylistTracks.count == 1, @"Playlist doesn't have 1 tracks after track remove, instead has: %u", afterDeletionPlaylistTracks.count);
-					SPTestAssert([afterDeletionPlaylistTracks objectAtIndex:0] == track2, @"Playlist track 0 should be %@, is actually %@", track2, [afterDeletionPlaylistTracks objectAtIndex:0]);
-					SPPassTest();
+					[self.playlist moveItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] toIndex:2 callback:^(NSError *moveError) {
+						SPTestAssert(moveError == nil, @"Move operation returned error: %@", moveError);
+						
+						NSArray *movedPlaylistTracks = [self.playlist.items valueForKey:@"item"];
+						SPTestAssert(movedPlaylistTracks.count == 2, @"Playlist doesn't have 2 tracks after move, instead has: %u", movedPlaylistTracks.count);
+						SPTestAssert([movedPlaylistTracks objectAtIndex:0] == track2, @"Playlist track 0 should be %@ after move, is actually %@", track2, [movedPlaylistTracks objectAtIndex:0]);
+						SPTestAssert([movedPlaylistTracks objectAtIndex:1] == track1, @"Playlist track 1 should be %@ after move, is actually %@", track1, [movedPlaylistTracks objectAtIndex:1]);
+						
+						[self.playlist removeItemAtIndex:0 callback:^(NSError *deletionError) {
+							
+							SPTestAssert(deletionError == nil, @"Removal operation returned error: %@", deletionError);
+							
+							NSArray *afterDeletionPlaylistTracks = [self.playlist.items valueForKey:@"item"];
+							SPTestAssert(afterDeletionPlaylistTracks.count == 1, @"Playlist doesn't have 1 tracks after track remove, instead has: %u", afterDeletionPlaylistTracks.count);
+							SPTestAssert([afterDeletionPlaylistTracks objectAtIndex:0] == track1, @"Playlist track 0 should be %@ after track remove, is actually %@", track1, [afterDeletionPlaylistTracks objectAtIndex:0]);
+							SPPassTest();
+						}];
+					}];
 				}];
 			}];
 		}];

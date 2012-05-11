@@ -164,19 +164,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// @name Working with Items
 ///----------------------------
 
-/** Returns an array of SPPlaylistItem objects representing playlist's item order.
- 
- This array is KVO compliant, and any changes made will be reflected in the user's account.
- 
- @warning *Important:* You can add both `SPTrack` and `SPPlaylistItem` objects to this array.
- `SPTrack` objects will automatically be wrapped inside an `SPPlaylistItem`.
- 
- @warning *Important:* If you need to move an item from one location in this list to another, please
- use `-moveItemsAtIndexes:toIndex:callback:` for performance reasons.
- 
- @see -moveItemsAtIndexes:toIndex:callback:
- */
-@property (nonatomic, readonly) NSMutableArray *items;
+/** Returns an array of SPPlaylistItem objects representing playlist's item order. */
+@property (nonatomic, readonly, copy) NSArray *items;
 
 /** Move item(s) to another location in the list. 
  
@@ -191,6 +180,39 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
  */
 -(void)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation callback:(SPErrorableOperationCallback)block;
+
+/** Add an item to the playlist at the given location.
+ 
+ @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ you check the result of this method.
+ 
+ @param item The item to add.
+ @param index The target index for the item. Must be within the range 0..`playlist.length`.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
+ */
+-(void)addItem:(SPTrack *)item atIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block;
+
+/** Add items to the playlist at the given location.
+ 
+ @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ you check the result of this method.
+ 
+ @param item An array of `SPTrack` objects to add.
+ @param index The target index for the items. Must be within the range 0..`playlist.length`.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
+ */
+-(void)addItems:(NSArray *)items atIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block;
+
+
+/** Remove an item from the playlist at the given location.
+ 
+ @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ you check the result of this method.
+ 
+ @param index The target index for the item. Must be a valid index.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
+ */
+-(void)removeItemAtIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block;
 
 @end
 

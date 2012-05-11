@@ -61,16 +61,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
 @property (nonatomic, readwrite, strong) SPImage *image;
 @property (nonatomic, readwrite, strong) SPUser *owner;
-@property (nonatomic, readwrite) BOOL trackChangesAreFromLibSpotifyCallback;
-@property (nonatomic, readwrite, strong) NSMutableArray *itemWrapper;
 @property (nonatomic, readwrite, strong) NSArray *subscribers;
 @property (nonatomic, readwrite) float offlineDownloadProgress;
 @property (nonatomic, readwrite) sp_playlist_offline_status offlineStatus;
 @property (nonatomic, readwrite) sp_playlist *playlist;
 @property (nonatomic, readwrite, assign) __unsafe_unretained SPSession *session;
 @property (nonatomic, readwrite, strong) SPPlaylistCallbackProxy *callbackProxy;
+@property (nonatomic, readwrite, copy) NSArray *items;
 
--(void)rebuildItems;
+@property (nonatomic, readwrite, strong) NSMutableArray *moveCallbackStack;
+@property (nonatomic, readwrite, strong) NSMutableArray *addCallbackStack;
+@property (nonatomic, readwrite, strong) NSMutableArray *removeCallbackStack;
+
 -(void)loadPlaylistData;
 -(void)rebuildSubscribers;
 -(void)resetItemIndexes;
@@ -109,12 +111,19 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist willAddItems:newItems atIndexes:incomingIndexes];
 		}
 		
-		playlist.trackChangesAreFromLibSpotifyCallback = YES;
-		[playlist.items insertObjects:newItems atIndexes:incomingIndexes];
-		playlist.trackChangesAreFromLibSpotifyCallback = NO;
+		NSMutableArray *mutableItems = [playlist.items mutableCopy];
+		[mutableItems insertObjects:newItems atIndexes:incomingIndexes];
+		playlist.items = [NSArray arrayWithArray:mutableItems];
+		[playlist resetItemIndexes];
 		
 		if ([[playlist delegate] respondsToSelector:@selector(playlist:didAddItems:atIndexes:)]) {
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didAddItems:newItems atIndexes:incomingIndexes];
+		}
+		
+		if (playlist.addCallbackStack.count > 0) {
+			SPErrorableOperationCallback callback = [playlist.addCallbackStack objectAtIndex:0];
+			[playlist.addCallbackStack removeObjectAtIndex:0];
+			callback(nil);
 		}
 	});
 }
@@ -141,12 +150,19 @@ static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, v
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist willRemoveItems:outgoingItems atIndexes:indexes];
 		}
 		
-		playlist.trackChangesAreFromLibSpotifyCallback = YES;
-		[playlist.items removeObjectsAtIndexes:indexes];
-		playlist.trackChangesAreFromLibSpotifyCallback = NO;
+		NSMutableArray *mutableItems = [playlist.items mutableCopy];
+		[mutableItems removeObjectsAtIndexes:indexes];
+		playlist.items = [NSArray arrayWithArray:mutableItems];
+		[playlist resetItemIndexes];
 		
 		if ([[playlist delegate] respondsToSelector:@selector(playlist:didRemoveItems:atIndexes:)]) {
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didRemoveItems:outgoingItems atIndexes:indexes];
+		}
+		
+		if (playlist.removeCallbackStack.count > 0) {
+			SPErrorableOperationCallback callback = [playlist.removeCallbackStack objectAtIndex:0];
+			[playlist.removeCallbackStack removeObjectAtIndex:0];
+			callback(nil);
 		}
 	});
 }
@@ -171,7 +187,7 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSMutableArray *playlistItems = playlist.items;
+		NSMutableArray *playlistItems = [playlist.items mutableCopy];
 		NSArray *movedItems = [playlistItems objectsAtIndexes:indexes];
 		NSMutableIndexSet *newIndexes = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(newStartIndex, [movedItems count])];
 		
@@ -183,15 +199,17 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 		[newItemArray removeObjectsAtIndexes:indexes];
 		[newItemArray insertObjects:movedItems atIndexes:newIndexes];
 		
-		playlist.trackChangesAreFromLibSpotifyCallback = YES;
-		[playlist willChangeValueForKey:@"items"];
-		playlist.itemWrapper = newItemArray;
+		playlist.items = [NSArray arrayWithArray:newItemArray];
 		[playlist resetItemIndexes];
-		[playlist didChangeValueForKey:@"items"];
-		playlist.trackChangesAreFromLibSpotifyCallback = NO;
 		
 		if ([[playlist delegate] respondsToSelector:@selector(playlist:didMoveItems:atIndexes:toIndexes:)]) {
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didMoveItems:movedItems atIndexes:indexes toIndexes:newIndexes];
+		}
+		
+		if (playlist.moveCallbackStack.count > 0) {
+			SPErrorableOperationCallback callback = [playlist.moveCallbackStack objectAtIndex:0];
+			[playlist.moveCallbackStack removeObjectAtIndex:0];
+			callback(nil);
 		}
 	});
 }
@@ -408,7 +426,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     if ((self = [super init])) {
         self.session = aSession;
         self.playlist = pl;
-		self.itemWrapper = [[NSMutableArray alloc] init];
 
 		// Add Observers
         
@@ -434,9 +451,15 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		
 		if (self.playlist != NULL) {
 			sp_playlist_add_ref(self.playlist);
+			
+			self.moveCallbackStack = [NSMutableArray new];
+			self.addCallbackStack = [NSMutableArray new];
+			self.removeCallbackStack = [NSMutableArray new];
 		
 			if (aSession.loadingPolicy == SPAsyncLoadingImmediate)
-				dispatch_async(dispatch_get_main_queue(), ^() { [self startLoading]; });
+				dispatch_async(dispatch_get_main_queue(), ^() { 
+					[self startLoading];
+				});
 		}
         
     }
@@ -466,12 +489,12 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 @synthesize image;
 @synthesize session;
 @synthesize owner;
-@synthesize itemWrapper;
 @synthesize subscribers;
 @synthesize callbackProxy;
-
-@dynamic items;
-@synthesize trackChangesAreFromLibSpotifyCallback;
+@synthesize items;
+@synthesize moveCallbackStack;
+@synthesize addCallbackStack;
+@synthesize removeCallbackStack;
 
 -(void)setMarkedForOfflinePlayback:(BOOL)isMarkedForOfflinePlayback {
 	dispatch_async([SPSession libSpotifyQueue], ^{
@@ -526,11 +549,13 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		newOwner = [SPUser userWithUserStruct:sp_playlist_owner(self.playlist) inSession:self.session];
 		newCollaborative = sp_playlist_is_collaborative(self.playlist);
 		newHasPendingChanges = sp_playlist_has_pending_changes(self.playlist);
+		NSArray *newItems = [self playlistSnapshot];
 		
 		dispatch_async(dispatch_get_main_queue(), ^() {
 			self.spotifyURL = newURL;
 			self.image = newImage;
 			self.owner = newOwner;
+			self.items = newItems;
 			self.hasPendingChanges = newHasPendingChanges;
 			[self setPlaylistNameFromLibSpotifyUpdate:newName];
 			[self setPlaylistDescriptionFromLibSpotifyUpdate:newDesc];
@@ -538,7 +563,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		});
 		
 		[self offlineSyncStatusMayHaveChanged];
-		[self rebuildItems];
 		sp_playlist_update_subscribers(self.session.session, self.playlist);
 		
 	});
@@ -549,19 +573,23 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	dispatch_async([SPSession libSpotifyQueue], ^() {
 		
 		if (self.callbackProxy != nil) return;
-		
+	
 		// We should build a (probably incomplete right now) list of 
 		// tracks to the delta callbacks can safely be applied.
-		[self rebuildItems];
+		NSArray *newItems = [self playlistSnapshot];
 		
-		self.callbackProxy = [[SPPlaylistCallbackProxy alloc] init];
-		self.callbackProxy.playlist = self;
-		sp_playlist_add_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self.callbackProxy);
-		sp_playlist_set_in_ram(self.session.session, self.playlist, true);
-		
-		BOOL isLoaded = sp_playlist_is_loaded(self.playlist);
-		dispatch_async(dispatch_get_main_queue(), ^() { self.loaded = isLoaded; });
-		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.items = newItems;
+			dispatch_async([SPSession libSpotifyQueue], ^() {
+				self.callbackProxy = [[SPPlaylistCallbackProxy alloc] init];
+				self.callbackProxy.playlist = self;
+				sp_playlist_add_callbacks(self.playlist, &_playlistCallbacks, (__bridge void *)self.callbackProxy);
+				sp_playlist_set_in_ram(self.session.session, self.playlist, true);
+				
+				BOOL isLoaded = sp_playlist_is_loaded(self.playlist);
+				dispatch_async(dispatch_get_main_queue(), ^() { self.loaded = isLoaded; });
+			});
+		});
 	});
 }
 				   
@@ -653,44 +681,104 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	});
 }
 
--(void)rebuildItems {
+-(void)resetItemIndexes {
+	NSUInteger itemCount = [self.items count];
+	for (NSUInteger currentItemIndex = 0; currentItemIndex < itemCount; currentItemIndex++)
+		[(SPPlaylistItem *)[self.items objectAtIndex:currentItemIndex] setItemIndexFromLibSpotify:(int)currentItemIndex];
+}
+
+-(NSArray *)playlistSnapshot {
 	
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
-    NSUInteger itemCount = sp_playlist_num_tracks(self.playlist);
-    NSMutableArray *newItems = [NSMutableArray arrayWithCapacity:itemCount];
-    
-    NSUInteger currentItemIndex = 0;
-    for (currentItemIndex = 0; currentItemIndex < itemCount; currentItemIndex++) {
-        
-        sp_track *trackStruct = sp_playlist_track(self.playlist, (int)currentItemIndex);
-        
-        if (trackStruct != NULL) {
-			[newItems addObject:[[SPPlaylistItem alloc] initWithPlaceholderTrack:trackStruct
-																		  atIndex:(int)currentItemIndex
-																	   inPlaylist:self]];
-        }
-    }
+	int itemCount = sp_playlist_num_tracks(self.playlist);
+	NSMutableArray *newitems = [NSMutableArray arrayWithCapacity:itemCount];
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		NSMutableArray *itemContainer = self.items;
-		if ([newItems isEqualToArray:itemContainer])
+	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+		sp_track *thisTrack = sp_playlist_track(self.playlist, currentItem);
+		if (thisTrack != NULL) {
+			[newitems addObject:[[SPPlaylistItem alloc] initWithPlaceholderTrack:thisTrack
+																	  atIndex:currentItem
+																   inPlaylist:self]];
+		}
+	}
+	
+	return [NSArray arrayWithArray:newitems];
+}
+
+-(void)addItem:(SPTrack *)anItem atIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block {
+	[self addItems:[NSArray arrayWithObject:anItem] atIndex:index callback:block];
+}
+
+-(void)addItems:(NSArray *)newItems atIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		if (newItems.count == 0) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				if (block) block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]);
+			});
 			return;
+		}
 		
-		self.trackChangesAreFromLibSpotifyCallback = YES;
+		sp_track **tracks = malloc(sizeof(sp_track *) * newItems.count);
 		
-		[self willChangeValueForKey:@"items"];
-		itemWrapper = [newItems mutableCopy];
-		[self didChangeValueForKey:@"items"];
+		// libSpotify iterates through the array and inserts each track at the given index, 
+		// which ends up reversing the expected order. Defeat this by constructing a backwards
+		// array.
+		for (int currentTrack = newItems.count - 1; currentTrack >= 0; currentTrack--) {
+			
+			sp_track *track;
+			id item = [newItems objectAtIndex:currentTrack];
+			
+			if ([item isKindOfClass:[SPTrack class]])
+				track = [item track];
+			else
+				track = [(SPTrack *)((SPPlaylistItem *)item).item track];
+			
+			tracks[currentTrack] = track;
+		}
+		sp_track *const *trackPointer = tracks;
 		
-		self.trackChangesAreFromLibSpotifyCallback = NO;
+		if (block)
+			[self.addCallbackStack addObject:block];
+		
+		sp_error errorCode = sp_playlist_add_tracks(self.playlist, trackPointer, newItems.count, (int)index, self.session.session);
+		free(tracks);
+		tracks = NULL;
+		
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		if (error && block) {
+			[self.addCallbackStack removeObject:block];
+			dispatch_async(dispatch_get_main_queue(), ^{ block(error); });
+		}
 	});
 }
 
--(void)resetItemIndexes {
-	NSUInteger itemCount = [itemWrapper count];
-	for (NSUInteger currentItemIndex = 0; currentItemIndex < itemCount; currentItemIndex++)
-		[(SPPlaylistItem *)[itemWrapper objectAtIndex:currentItemIndex] setItemIndexFromLibSpotify:(int)currentItemIndex];
+-(void)removeItemAtIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block {
+
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		if (block)
+			[self.removeCallbackStack addObject:block];
+		
+		int intIndex = (int)index; 
+		const int *indexPtr = &intIndex;
+		sp_error errorCode = sp_playlist_remove_tracks(self.playlist, indexPtr, 1);
+		
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		if (error && block) {
+			[self.removeCallbackStack removeObject:block];
+			dispatch_async(dispatch_get_main_queue(), ^{ block(error); });
+		}
+	});
+
 }
 
 -(void)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation callback:(SPErrorableOperationCallback)block {
@@ -706,6 +794,9 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 			index = [indexes indexGreaterThanIndex:index];
 		}
 		
+		if (block)
+			[self.moveCallbackStack addObject:block];
+		
 		const int *indexArrayPtr = (const int *)&indexArray;
 		sp_error errorCode = sp_playlist_reorder_tracks(self.playlist, indexArrayPtr, count, (int)newLocation);
 		
@@ -713,96 +804,11 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		if (errorCode != SP_ERROR_OK)
 			error = [NSError spotifyErrorWithCode:errorCode];
 		
-		if (block) block(error);
-		
-	});
-}
-
-#pragma mark -
-
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
-	if (sel == @selector(items)) {
-		return [super methodSignatureForSelector:@selector(mutableArrayValueForKey:)];
-	} else {
-		return [super methodSignatureForSelector:sel];
-	}
-}
-
-- (void)forwardInvocation:(NSInvocation *)invocation {
-	
-	if ([invocation selector] == @selector(items)) {
-		__unsafe_unretained id value = [self mutableArrayValueForKey:@"items"];
-		[invocation setReturnValue:&value];
-	}
-}
-
-#pragma mark -
-#pragma mark Mutable Array KVC
-
--(NSInteger)countOfItems {
-	return [itemWrapper count];
-}
-
--(SPPlaylistItem *)objectInItemsAtIndex:(NSInteger)anIndex {
-	return [itemWrapper objectAtIndex:anIndex];
-}
-
--(void)insertObject:(id)anItem inItemsAtIndex:(NSInteger)anIndex {
-	if (anItem != nil) {
-		if (self.trackChangesAreFromLibSpotifyCallback) {
-			[itemWrapper insertObject:anItem atIndex:anIndex];
-			[self resetItemIndexes];
-			
-		} else if (([anItem isKindOfClass:[SPTrack class]]) || ([anItem isKindOfClass:[SPPlaylistItem class]] && ((SPPlaylistItem *)anItem).itemClass == [SPTrack class])) {
-			
-			dispatch_async([SPSession libSpotifyQueue], ^{
-				
-				sp_track *track;
-				
-				if ([anItem isKindOfClass:[SPTrack class]])
-					track = [anItem track];
-				else
-					track = [(SPTrack *)((SPPlaylistItem *)anItem).item track];
-				
-				sp_track *const *trackPointer = &track;
-				sp_playlist_add_tracks(self.playlist, trackPointer, 1, (int)anIndex, self.session.session);
-			});
+		if (error && block) {
+			[self.moveCallbackStack removeObject:block];
+			dispatch_async(dispatch_get_main_queue(), ^{ block(error); });
 		}
-	}
-}
-
--(void)removeObjectFromItemsAtIndex:(NSInteger)anIndex {
-	if (self.trackChangesAreFromLibSpotifyCallback) {
-		[itemWrapper removeObjectAtIndex:anIndex];
-		[self resetItemIndexes];
-	} else {
-		dispatch_async([SPSession libSpotifyQueue], ^{
-			int intIndex = (int)anIndex; 
-			const int *indexPtr = &intIndex;
-			sp_playlist_remove_tracks(self.playlist, indexPtr, 1);
-		});
-	}
-}
-
--(void)removeItemsAtIndexes:(NSIndexSet *)indexes {
-	if (self.trackChangesAreFromLibSpotifyCallback) {
-		[itemWrapper removeObjectsAtIndexes:indexes];
-		[self resetItemIndexes];
-	} else {
-		dispatch_async([SPSession libSpotifyQueue], ^{
-			int count = (int)[indexes count];
-			int indexArray[count];
-			
-			NSUInteger index = [indexes firstIndex];
-			for (NSUInteger i = 0; i < [indexes count]; i++) {
-				indexArray[i] = (int)index;
-				index = [indexes indexGreaterThanIndex:index];
-			}
-			
-			const int *indexArrayPtr = (const int *)&indexArray;
-			sp_playlist_remove_tracks(self.playlist, indexArrayPtr, count);
-		});
-	}
+	});
 }
 
 -(void)dealloc {
