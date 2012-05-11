@@ -69,7 +69,9 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 -(void)timeOutAudioDeliveryTest {
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeOutAudioDeliveryTest) object:nil];
 	if (!gotAudioDelivery)
-		[self failTest:@selector(testAudioDelivery) format:@"Timeout waiting for audio delivery."];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self failTest:@selector(testAudioDelivery) format:@"Timeout waiting for audio delivery."];
+		});
 }
 
 -(void)sessionDidLosePlayToken:(id <SPSessionPlaybackProvider>)aSession {}
@@ -79,7 +81,9 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 	
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeOutAudioDeliveryTest) object:nil];
 	if (!gotAudioDelivery)
-		[self failTest:@selector(testAudioDelivery) format:@"Streaming error waiting for audio delivery: %@", error];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self failTest:@selector(testAudioDelivery) format:@"Streaming error waiting for audio delivery: %@", error];
+		});
 }
 
 -(NSInteger)session:(id <SPSessionPlaybackProvider>)aSession shouldDeliverAudioFrames:(const void *)audioFrames ofCount:(NSInteger)frameCount streamDescription:(AudioStreamBasicDescription)audioDescription {
@@ -92,7 +96,9 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 	aSession.playing = NO;
 	[aSession unloadPlayback];
 	
-	[self passTest:@selector(testAudioDelivery)];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self passTest:@selector(testAudioDelivery)];
+	});
 	return 0;
 }
 
