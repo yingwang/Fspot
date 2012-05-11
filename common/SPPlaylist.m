@@ -250,10 +250,11 @@ static void	playlist_state_changed(sp_playlist *pl, void *userdata) {
 	
 	[playlist offlineSyncStatusMayHaveChanged];
 	
+	BOOL isLoaded = sp_playlist_is_loaded(pl);
+	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[playlist setLoaded:sp_playlist_is_loaded(pl)];
-		[playlist setCollaborativeFromLibSpotifyUpdate:sp_playlist_is_collaborative(pl)];
-		[playlist setHasPendingChanges:sp_playlist_has_pending_changes(pl)];
+		if (isLoaded)
+			[playlist loadPlaylistData];
 	});
 }
 
@@ -449,11 +450,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
                forKeyPath:@"collaborative"
                   options:0
                   context:(__bridge void *)kSPPlaylistKVOContext];
-        
-        [self addObserver:self
-               forKeyPath:@"loaded"
-                  options:NSKeyValueObservingOptionOld
-                  context:(__bridge void *)kSPPlaylistKVOContext];
 		
 		if (self.playlist != NULL) {
 			sp_playlist_add_ref(self.playlist);
@@ -525,6 +521,11 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		if (self.playlist == NULL)
 			return;
 		
+		BOOL isLoaded = sp_playlist_is_loaded(self.playlist);
+		
+		if (!isLoaded)
+			return;
+		
 		NSURL *newURL = nil;
 		NSString *newName = nil;
 		NSString *newDesc = nil;
@@ -566,6 +567,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 			[self setPlaylistNameFromLibSpotifyUpdate:newName];
 			[self setPlaylistDescriptionFromLibSpotifyUpdate:newDesc];
 			[self setCollaborativeFromLibSpotifyUpdate:newCollaborative];
+			self.loaded = isLoaded;
 		});
 		
 		[self offlineSyncStatusMayHaveChanged];
@@ -593,7 +595,11 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 				sp_playlist_set_in_ram(self.session.session, self.playlist, true);
 				
 				BOOL isLoaded = sp_playlist_is_loaded(self.playlist);
-				dispatch_async(dispatch_get_main_queue(), ^() { self.loaded = isLoaded; });
+
+				dispatch_async(dispatch_get_main_queue(), ^() {
+					if (isLoaded)
+						[self loadPlaylistData];
+				});
 			});
 		});
 	});
@@ -607,11 +613,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
             return;
         } else if ([keyPath isEqualToString:@"collaborative"]) {
             dispatch_async([SPSession libSpotifyQueue], ^() { sp_playlist_set_collaborative(self.playlist, self.isCollaborative); });
-            return;
-        } else if ([keyPath isEqualToString:@"loaded"]) {
-			if (self.isLoaded)
-                [self loadPlaylistData];
-
             return;
         }
     } 
@@ -822,7 +823,6 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     [self removeObserver:self forKeyPath:@"name"];
     [self removeObserver:self forKeyPath:@"playlistDescription"];
     [self removeObserver:self forKeyPath:@"collaborative"];
-    [self removeObserver:self forKeyPath:@"loaded"];
     
     self.delegate = nil;
     self.session = nil;
