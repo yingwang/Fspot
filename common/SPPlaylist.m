@@ -103,6 +103,12 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 		}
 	}
 	
+	SPErrorableOperationCallback callback = nil;
+	if (playlist.addCallbackStack.count > 0) {
+		callback = [playlist.addCallbackStack objectAtIndex:0];
+		[playlist.addCallbackStack removeObjectAtIndex:0];
+	}
+	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSIndexSet *incomingIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(position, [newItems count])];
@@ -120,11 +126,7 @@ static void tracks_added(sp_playlist *pl, sp_track *const *tracks, int num_track
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didAddItems:newItems atIndexes:incomingIndexes];
 		}
 		
-		if (playlist.addCallbackStack.count > 0) {
-			SPErrorableOperationCallback callback = [playlist.addCallbackStack objectAtIndex:0];
-			[playlist.addCallbackStack removeObjectAtIndex:0];
-			callback(nil);
-		}
+		if (callback) callback(nil);
 	});
 }
 
@@ -140,6 +142,12 @@ static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, v
 	for (NSUInteger currentIndex = 0; currentIndex < num_tracks; currentIndex++) {
 		int thisIndex = tracks[currentIndex];
 		[indexes addIndex:thisIndex];
+	}
+	
+	SPErrorableOperationCallback callback = nil;
+	if (playlist.removeCallbackStack.count > 0) {
+		callback = [playlist.removeCallbackStack objectAtIndex:0];
+		[playlist.removeCallbackStack removeObjectAtIndex:0];
 	}
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -159,11 +167,7 @@ static void	tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, v
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didRemoveItems:outgoingItems atIndexes:indexes];
 		}
 		
-		if (playlist.removeCallbackStack.count > 0) {
-			SPErrorableOperationCallback callback = [playlist.removeCallbackStack objectAtIndex:0];
-			[playlist.removeCallbackStack removeObjectAtIndex:0];
-			callback(nil);
-		}
+		if (callback) callback(nil);
 	});
 }
 
@@ -183,6 +187,12 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 		if (thisIndex < new_position) {
 			newStartIndex--;
 		}
+	}
+	
+	SPErrorableOperationCallback callback = nil;
+	if (playlist.moveCallbackStack.count > 0) {
+		callback = [playlist.moveCallbackStack objectAtIndex:0];
+		[playlist.moveCallbackStack removeObjectAtIndex:0];
 	}
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -206,11 +216,7 @@ static void	tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int
 			[(id <SPPlaylistDelegate>)[playlist delegate] playlist:playlist didMoveItems:movedItems atIndexes:indexes toIndexes:newIndexes];
 		}
 		
-		if (playlist.moveCallbackStack.count > 0) {
-			SPErrorableOperationCallback callback = [playlist.moveCallbackStack objectAtIndex:0];
-			[playlist.moveCallbackStack removeObjectAtIndex:0];
-			callback(nil);
-		}
+		 if (callback) callback(nil);
 	});
 }
 
