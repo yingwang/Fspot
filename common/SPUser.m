@@ -72,9 +72,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         self.session = aSession;
 
 		sp_user_add_ref(self.user);
-		self.loaded = sp_user_is_loaded(self.user);
 
-        if (!self.loaded) {
+        if (!sp_user_is_loaded(self.user)) {
             [aSession addLoadingObject:self];
         } else {
             [self loadUserData];
@@ -127,10 +126,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			self.loaded = userLoaded;
 			self.canonicalName = [canonicalString length] > 0 ? canonicalString : nil;
 			self.displayName = [displayString length] > 0 ? displayString : nil;
 			self.spotifyURL = url;
+			self.loaded = userLoaded;
 		});
 	}
 }
