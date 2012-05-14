@@ -76,6 +76,7 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 		
 		NSString *newBio = nil;
 		NSArray *newTracks = nil;
+		NSArray *newTopTracks = nil;
 		NSArray *newRelatedArtists = nil;
 		NSArray *newAlbums = nil;
 		NSArray *newPortraits = nil;
@@ -97,14 +98,14 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 			
 			int topTrackCount = sp_artistbrowse_num_tophit_tracks(result);
 			NSMutableArray *topTracks = [NSMutableArray arrayWithCapacity:topTrackCount];
-			for (int currentTopTrack =  0; currentTopTrack < trackCount; currentTopTrack++) {
+			for (int currentTopTrack =  0; currentTopTrack < topTrackCount; currentTopTrack++) {
 				sp_track *track = sp_artistbrowse_tophit_track(result, currentTopTrack);
 				if (track != NULL) {
 					[topTracks addObject:[SPTrack trackForTrackStruct:track inSession:artistBrowse.session]];
 				}
 			}
 			
-			artistBrowse.topTracks = [NSArray arrayWithArray:topTracks];
+			newTopTracks = [NSArray arrayWithArray:topTracks];
 			
 			int albumCount = sp_artistbrowse_num_albums(result);
 			NSMutableArray *albums = [NSMutableArray arrayWithCapacity:albumCount];
@@ -142,13 +143,14 @@ void artistbrowse_complete(sp_artistbrowse *result, void *userdata) {
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			artistBrowse.loaded = isLoaded;
 			artistBrowse.loadError = error;
 			artistBrowse.biography = newBio;
 			artistBrowse.tracks = newTracks;
 			artistBrowse.relatedArtists = newRelatedArtists;
 			artistBrowse.albums = newAlbums;
 			artistBrowse.portraits = newPortraits;
+			artistBrowse.topTracks = newTopTracks;
+			artistBrowse.loaded = isLoaded;
 		});
 	}
 }
