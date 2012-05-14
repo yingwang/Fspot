@@ -121,6 +121,7 @@ void search_complete(sp_search *result, void *userdata) {
 		self.tracks = [NSArray array];
 		self.albums = [NSArray array];
 		self.artists = [NSArray array];
+		self.playlists = [NSArray array];
 	}
 	return self;
 }
@@ -438,7 +439,7 @@ void search_complete(sp_search *result, void *userdata) {
 	}
 	
 	if (searchPlaylist && !self.hasExhaustedPlaylistResults) {
-		playlistOffset = (int)self.tracks.count;
+		playlistOffset = (int)self.playlists.count;
 		playlistCount = (int)pageSize;
 	}
 	
