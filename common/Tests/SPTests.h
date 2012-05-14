@@ -45,6 +45,6 @@ return; \
 -(void)passTest:(SEL)testSelector;
 -(void)failTest:(SEL)testSelector format:(NSString *)format, ...;
 
--(void)runTests:(void (^)(BOOL allSuccessful))block;
+-(void)runTests:(void (^)(NSUInteger passCount, NSUInteger failCount))block;
 
 @end

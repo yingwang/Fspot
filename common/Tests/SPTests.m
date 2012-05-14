@@ -35,12 +35,11 @@
 
 @interface SPTests ()
 @property (nonatomic, readwrite, copy) NSArray *testSelectorNames;
-@property (nonatomic, readwrite, copy) void (^completionBlock)(BOOL);
+@property (nonatomic, readwrite, copy) void (^completionBlock)(NSUInteger, NSUInteger);
 @end
 
 @implementation SPTests {
 	NSUInteger nextTestIndex;
-	BOOL allSuccessful;
 	NSUInteger passCount;
 	NSUInteger failCount;
 }
@@ -64,7 +63,6 @@
 	
 	printf(" Failed. Reason: %s\n", msg.UTF8String);
 	failCount++;
-	allSuccessful = NO;
 	[self runNextTest];
 }
 
@@ -83,7 +81,7 @@
 
 #pragma mark - Automatic Running
 
--(void)runTests:(void (^)(BOOL allSuccessful))block {
+-(void)runTests:(void (^)(NSUInteger passCount, NSUInteger failCount))block {
 	
 	if (self.testSelectorNames != nil) {
 		self.testSelectorNames = nil;
@@ -108,7 +106,6 @@
 	nextTestIndex = 0;
 	passCount = 0;
 	failCount = 0;
-	allSuccessful = YES;
 	free(testList);
 	
 	printf("---- Starting %lu tests in %s ----\n", self.testSelectorNames.count, NSStringFromClass([self class]).UTF8String);
@@ -142,7 +139,7 @@
 
 -(void)testsCompleted {
 	printf("---- Tests in %s complete with %lu passed, %lu failed ----\n", NSStringFromClass([self class]).UTF8String, passCount, failCount);
-	if (self.completionBlock) self.completionBlock(allSuccessful);
+	if (self.completionBlock) self.completionBlock(passCount, failCount);
 }
 
 @end

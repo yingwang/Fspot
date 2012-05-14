@@ -77,6 +77,8 @@
 		50DB843B155D296E00608BFB /* SPPlaylistTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50DB8438155D296B00608BFB /* SPPlaylistTests.m */; };
 		50DE7F42147E757E005403A9 /* SPPlaylistInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DE7F40147E757D005403A9 /* SPPlaylistInternal.h */; };
 		50DE7F4F147E7CCC005403A9 /* SPTrackInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DE7F4D147E7CCC005403A9 /* SPTrackInternal.h */; };
+		50DEFADB156136630009E492 /* RunTests.sh in Resources */ = {isa = PBXBuildFile; fileRef = 50DEFADA156136630009E492 /* RunTests.sh */; };
+		50DEFADD156136810009E492 /* RunTests.sh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 50DEFADA156136630009E492 /* RunTests.sh */; };
 		50E8ED4B155BB55900F14186 /* SPTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED4A155BB55900F14186 /* SPTests.m */; };
 		50E8ED56155BE46500F14186 /* SPMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED55155BE46500F14186 /* SPMetadataTests.m */; };
 		50E8ED59155BFA1200F14186 /* SPSearchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ED58155BFA1200F14186 /* SPSearchTests.m */; };
@@ -113,6 +115,16 @@
 			dstSubfolderSpec = 10;
 			files = (
 				504E4951155AA88900E1C0F7 /* CocoaLibSpotify.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		50DEFADC156136790009E492 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				50DEFADD156136810009E492 /* RunTests.sh in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +207,7 @@
 		50DB8438155D296B00608BFB /* SPPlaylistTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPPlaylistTests.m; path = ../../common/Tests/SPPlaylistTests.m; sourceTree = "<group>"; };
 		50DE7F40147E757D005403A9 /* SPPlaylistInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistInternal.h; path = ../common/SPPlaylistInternal.h; sourceTree = "<group>"; };
 		50DE7F4D147E7CCC005403A9 /* SPTrackInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTrackInternal.h; path = ../common/SPTrackInternal.h; sourceTree = "<group>"; };
+		50DEFADA156136630009E492 /* RunTests.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = RunTests.sh; path = "CocoaLibSpotify Test Container/RunTests.sh"; sourceTree = "<group>"; };
 		50E8ED49155BB55900F14186 /* SPTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTests.h; path = ../../common/Tests/SPTests.h; sourceTree = "<group>"; };
 		50E8ED4A155BB55900F14186 /* SPTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTests.m; path = ../../common/Tests/SPTests.m; sourceTree = "<group>"; };
 		50E8ED54155BE46500F14186 /* SPMetadataTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPMetadataTests.h; path = ../../common/Tests/SPMetadataTests.h; sourceTree = "<group>"; };
@@ -284,7 +297,7 @@
 				5028ECBC1309479600BF0B22 /* Extensions */,
 				5028ECB5130931D000BF0B22 /* Model */,
 				50BED599152202B6000D0919 /* Playback */,
-				504E4937155AA85500E1C0F7 /* CocoaLibSpotify Test Container */,
+				504E4937155AA85500E1C0F7 /* Unit Tests */,
 				5028EC9213092B7C00BF0B22 /* Supporting Files */,
 			);
 			name = CocoaLibSpotify;
@@ -293,6 +306,7 @@
 		5028EC9213092B7C00BF0B22 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				50DEFADA156136630009E492 /* RunTests.sh */,
 				50749E0E1406E44500063404 /* CocoaLibSpotify-Info.plist */,
 				50749E0F1406E44500063404 /* CocoaLibSpotify-Prefix.pch */,
 			);
@@ -343,7 +357,7 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
-		504E4937155AA85500E1C0F7 /* CocoaLibSpotify Test Container */ = {
+		504E4937155AA85500E1C0F7 /* Unit Tests */ = {
 			isa = PBXGroup;
 			children = (
 				504E4943155AA85500E1C0F7 /* AppDelegate.h */,
@@ -352,6 +366,7 @@
 				504E4954155AB26C00E1C0F7 /* Tests */,
 				504E4938155AA85500E1C0F7 /* Supporting Files */,
 			);
+			name = "Unit Tests";
 			path = "CocoaLibSpotify Test Container";
 			sourceTree = "<group>";
 		};
@@ -497,21 +512,22 @@
 			productReference = 503D630F13258041007772CA /* CocoaLibSpotify.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		504E4933155AA85400E1C0F7 /* CocoaLibSpotify Test Container */ = {
+		504E4933155AA85400E1C0F7 /* CocoaLSTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 504E494B155AA85500E1C0F7 /* Build configuration list for PBXNativeTarget "CocoaLibSpotify Test Container" */;
+			buildConfigurationList = 504E494B155AA85500E1C0F7 /* Build configuration list for PBXNativeTarget "CocoaLSTests" */;
 			buildPhases = (
 				504E4930155AA85400E1C0F7 /* Sources */,
 				504E4931155AA85400E1C0F7 /* Frameworks */,
 				504E4932155AA85400E1C0F7 /* Resources */,
 				504E4950155AA87C00E1C0F7 /* CopyFiles */,
+				50DEFADC156136790009E492 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				504E494E155AA87600E1C0F7 /* PBXTargetDependency */,
 			);
-			name = "CocoaLibSpotify Test Container";
+			name = CocoaLSTests;
 			productName = "CocoaLibSpotify Test Container";
 			productReference = 504E4934155AA85400E1C0F7 /* CocoaLibSpotify Test Container.app */;
 			productType = "com.apple.product-type.application";
@@ -539,7 +555,7 @@
 			projectRoot = "";
 			targets = (
 				503D630E13258041007772CA /* CocoaLibSpotify */,
-				504E4933155AA85400E1C0F7 /* CocoaLibSpotify Test Container */,
+				504E4933155AA85400E1C0F7 /* CocoaLSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -559,6 +575,7 @@
 				504E493C155AA85500E1C0F7 /* InfoPlist.strings in Resources */,
 				504E4942155AA85500E1C0F7 /* Credits.rtf in Resources */,
 				504E4948155AA85500E1C0F7 /* MainMenu.xib in Resources */,
+				50DEFADB156136630009E492 /* RunTests.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -835,7 +852,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		504E494B155AA85500E1C0F7 /* Build configuration list for PBXNativeTarget "CocoaLibSpotify Test Container" */ = {
+		504E494B155AA85500E1C0F7 /* Build configuration list for PBXNativeTarget "CocoaLSTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				504E4949155AA85500E1C0F7 /* Debug */,

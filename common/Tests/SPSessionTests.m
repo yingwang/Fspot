@@ -35,6 +35,8 @@
 #import "SPUser.h"
 
 static NSTimeInterval const kSessionLoadingTimeout = 15.0;
+static NSString * const kTestUserNameUserDefaultsKey = @"TestUserName";
+static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 
 @implementation SPSessionTests
 
@@ -121,6 +123,8 @@ static NSTimeInterval const kSessionLoadingTimeout = 15.0;
 
 -(void)test4UserDetails {
 	
+	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
+	
 	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSessionLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
 		
 		SPTestAssert(notLoadedItems.count == 0, @"Session loading timed out for %@", [SPSession sharedSession]);
@@ -139,6 +143,8 @@ static NSTimeInterval const kSessionLoadingTimeout = 15.0;
 }
 
 -(void)test5SessionLocale {
+	
+	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
 	
 	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSessionLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
 		

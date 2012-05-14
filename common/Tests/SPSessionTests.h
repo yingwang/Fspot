@@ -33,8 +33,5 @@
 #import <Foundation/Foundation.h>
 #import "SPTests.h"
 
-static NSString * const kTestUserNameUserDefaultsKey = @"TestUserName";
-static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
-
 @interface SPSessionTests : SPTests
 @end

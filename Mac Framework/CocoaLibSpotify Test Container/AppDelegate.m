@@ -60,31 +60,67 @@
 @synthesize teardownTests;
 @synthesize playlistTests;
 
+-(void)completeTestsWithPassCount:(NSUInteger)passCount failCount:(NSUInteger)failCount {
+	printf("**** Completed %lu tests with %lu passes and %lu failures ****\n", passCount + failCount, passCount, failCount);
+	exit(failCount > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	// Insert code here to initialize your application
 	self.sessionTests = [SPSessionTests new];
-	[self.sessionTests runTests:^(BOOL allSuccessful) {
-		if (!allSuccessful) return;
+	
+	__block NSUInteger totalPassCount = 0;
+	__block NSUInteger totalFailCount = 0;
+	
+	[self.sessionTests runTests:^(NSUInteger sessionPassCount, NSUInteger sessionFailCount) {
+		
+		totalPassCount += sessionPassCount;
+		totalFailCount += sessionFailCount;
+		
+		if (totalFailCount > 0) {
+			[self completeTestsWithPassCount:totalPassCount failCount:totalFailCount];
+			return;
+		}
 		
 		self.playlistTests = [SPPlaylistTests new];
-		[self.playlistTests runTests:^(BOOL allSuccessful) {
+		[self.playlistTests runTests:^(NSUInteger playlistPassCount, NSUInteger playlistFailCount) {
+			
+			totalPassCount += playlistPassCount;
+			totalFailCount += playlistFailCount;
 			
 			self.audioTests = [SPAudioDeliveryTests new];
-			[self.audioTests runTests:^(BOOL allSuccessful) {
+			[self.audioTests runTests:^(NSUInteger audioPassCount, NSUInteger audioFailCount) {
+				
+				totalPassCount += audioPassCount;
+				totalFailCount += audioFailCount;
 				
 				self.searchTests = [SPSearchTests new];
-				[self.searchTests runTests:^(BOOL allSuccessful) {
+				[self.searchTests runTests:^(NSUInteger searchPassCount, NSUInteger searchFailCount) {
+					
+					totalPassCount += searchPassCount;
+					totalFailCount += searchFailCount;
 					
 					self.inboxTests = [SPPostTracksToInboxTests new];
-					[self.inboxTests runTests:^(BOOL allSuccessful) {
+					[self.inboxTests runTests:^(NSUInteger inboxPassCount, NSUInteger inboxFailCount) {
+						
+						totalPassCount += inboxPassCount;
+						totalFailCount += inboxFailCount;
 						
 						self.metadataTests = [SPMetadataTests new];
-						[self.metadataTests runTests:^(BOOL allSuccessful) {
+						[self.metadataTests runTests:^(NSUInteger metadataPassCount, NSUInteger metadataFailCount) {
+							
+							totalPassCount += metadataPassCount;
+							totalFailCount += metadataFailCount;
 							
 							self.teardownTests = [SPSessionTeardownTests new];
-							[self.teardownTests runTests:^(BOOL allSuccessful) {
-								NSLog(@"[%@ %@]: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), @"All complete!");
+							[self.teardownTests runTests:^(NSUInteger teardownPassCount, NSUInteger teardownFailCount) {
+								
+								totalPassCount += teardownPassCount;
+								totalFailCount += teardownFailCount;
+								
+								[self completeTestsWithPassCount:totalPassCount failCount:totalFailCount];
+								
 							}];
 						}];
 					}];
