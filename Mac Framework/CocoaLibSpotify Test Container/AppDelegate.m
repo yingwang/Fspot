@@ -39,6 +39,8 @@
 #import "SPSessionTeardownTests.h"
 #import "SPPlaylistTests.h"
 
+static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
+
 @interface AppDelegate ()
 @property (nonatomic, strong) SPTests *sessionTests;
 @property (nonatomic, strong) SPTests *metadataTests;
@@ -62,11 +64,40 @@
 
 -(void)completeTestsWithPassCount:(NSUInteger)passCount failCount:(NSUInteger)failCount {
 	printf("**** Completed %lu tests with %lu passes and %lu failures ****\n", passCount + failCount, passCount, failCount);
+	[self pushColorToStatusServer:failCount > 0 ? [NSColor redColor] : [NSColor greenColor]];
 	exit(failCount > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
+-(void)pushColorToStatusServer:(NSColor *)color {
+	
+	NSString *statusServerAddress = [[NSUserDefaults standardUserDefaults] stringForKey:kTestStatusServerUserDefaultsKey];
+	if (statusServerAddress.length == 0) return;
+	
+	NSColor *colorToSend = [color colorUsingColorSpace:[NSColorSpace genericRGBColorSpace]];
+	
+	NSString *requestUrlString = [NSString stringWithFormat:@"http://%@/push-color?red=%lu&green=%lu&blue=%lu",
+								  statusServerAddress,
+								  (NSUInteger)colorToSend.redComponent * 255,
+								  (NSUInteger)colorToSend.greenComponent * 255,
+								  (NSUInteger)colorToSend.blueComponent * 255];
+	
+	NSURL *requestUrl = [NSURL URLWithString:requestUrlString];							  
+	NSURLRequest *request = [NSURLRequest requestWithURL:requestUrl 
+											 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+										 timeoutInterval:1.0];
+	
+	[NSURLConnection sendSynchronousRequest:request
+						  returningResponse:nil
+									  error:nil];
+	
+}
+
+#pragma mark - Running Tests
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	[self pushColorToStatusServer:[NSColor yellowColor]];
+	
 	// Insert code here to initialize your application
 	self.sessionTests = [SPSessionTests new];
 	
