@@ -770,7 +770,7 @@ static SPSession *sharedSession;
 			}
 		}
 		
-		if (block) block(name);
+		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(name); });
 	});
 }
 
