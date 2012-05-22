@@ -67,8 +67,6 @@ When the tracks in the search are updated, you'll get a callback:
 
 Key-Value Observing is a core technology in the Mac and iOS SDKs, and extensive documentation and examples can be found in Apple's [developer documentation](http://developer.apple.com/library/ios/#documentation/General/Conceptual/DevPedia-CocoaCore/KVO.html).
 
-In addition to this, 
-
 ## Building -  Mac OS X ##
 
 The Xcode project requires Xcode 4.3 and Mac OS X 10.7 to build since it uses ARC. However, the built binary can be deployed on 64-bit systems running Mac OS X 10.6 or higher.
@@ -116,6 +114,18 @@ Once everything is set up, simply import the following header to get started wit
 ## Documentation ##
 
 The headers of CocoaLibSpotify are well documented, and we've provided an Xcode DocSet to provide documentation right in Xcode. With these and the sample projects, you should have everything you need to dive right in!
+
+## Unit Tests ##
+
+CocoaLibSpotify now ships with a number of unit tests, which run inside a standalone application built by the project. If you find a bug in CocoaLibSpotify, please fork the project, add or modify a unit test so it fails (demonstrating the bug), then issue a pull request. We can then fix the underlying bug and keep your test so it stays that way.
+
+To run the tests, open the "CocoaLibSpotify Mac Framework" or "CocoaLibSpotify iOS Library" project as needed, then switch to the "CocoaLSTests" scheme in Xcode. Then:
+
+- Edit the scheme to pass the following arguments on launch: -TestUserName MyAwesomeUser -TestPassword MyAwesomePassword
+- Add your `appkey.c` file to the `common/Tests` folder in the repository. DO NOT commit your key!
+- Run the "CocoaLSTests" target.
+
+You'll find examples on how to make a good test in the tests themselves.
 
 ## Contact ##
 
