@@ -130,7 +130,7 @@
 	nextTestIndex++;
 	
 	if ([NSStringFromSelector(methodName) hasPrefix:@"test"]) {
-		printf("Running test %s…", [self prettyNameForTestSelector:methodName].UTF8String);
+		printf("Running test %s...", [self prettyNameForTestSelector:methodName].UTF8String);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 		[self performSelector:methodName];
