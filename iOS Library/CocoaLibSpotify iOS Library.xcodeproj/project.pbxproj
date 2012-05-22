@@ -111,6 +111,7 @@
 		50D4F585156BCF0200E237DD /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D4F584156BCF0200E237DD /* libstdc++.dylib */; };
 		50D4F587156BCF0A00E237DD /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D4F586156BCF0A00E237DD /* CFNetwork.framework */; };
 		50D4F589156BCF1700E237DD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D4F588156BCF1700E237DD /* AVFoundation.framework */; };
+		50D4F58B156BD37700E237DD /* SPLoginResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 50D4F58A156BD37700E237DD /* SPLoginResources.bundle */; };
 		50DB47FA1523166A0037A206 /* SPCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DB47F41523166A0037A206 /* SPCircularBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50DB47FB1523166A0037A206 /* SPCircularBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 50DB47F51523166A0037A206 /* SPCircularBuffer.m */; };
 		50DB47FC1523166A0037A206 /* SPCoreAudioController.h in Headers */ = {isa = PBXBuildFile; fileRef = 50DB47F61523166A0037A206 /* SPCoreAudioController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -214,6 +215,7 @@
 		50D4F584156BCF0200E237DD /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		50D4F586156BCF0A00E237DD /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		50D4F588156BCF1700E237DD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		50D4F58A156BD37700E237DD /* SPLoginResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SPLoginResources.bundle; sourceTree = SOURCE_ROOT; };
 		50DB47F41523166A0037A206 /* SPCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPCircularBuffer.h; path = ../common/SPCircularBuffer.h; sourceTree = "<group>"; };
 		50DB47F51523166A0037A206 /* SPCircularBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPCircularBuffer.m; path = ../common/SPCircularBuffer.m; sourceTree = "<group>"; };
 		50DB47F61523166A0037A206 /* SPCoreAudioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPCoreAudioController.h; path = ../common/SPCoreAudioController.h; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 		50D4F533156BCDE800E237DD /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				50D4F58A156BD37700E237DD /* SPLoginResources.bundle */,
 				50D4F534156BCDE800E237DD /* CocoaLibSpotify iOS Test Container-Info.plist */,
 				50D4F535156BCDE800E237DD /* InfoPlist.strings */,
 				50D4F538156BCDE800E237DD /* main.m */,
@@ -586,6 +589,7 @@
 				50D4F537156BCDE800E237DD /* InfoPlist.strings in Resources */,
 				50D4F543156BCDE800E237DD /* ViewController_iPhone.xib in Resources */,
 				50D4F546156BCDE800E237DD /* ViewController_iPad.xib in Resources */,
+				50D4F58B156BD37700E237DD /* SPLoginResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
