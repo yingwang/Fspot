@@ -46,8 +46,9 @@
 
 -(void)applicationWillFinishLaunching:(NSNotification *)notification {
 	
-	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size] 
+	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
 											   userAgent:@"com.spotify.SimplePlayer"
+										   loadingPolicy:SPAsyncLoadingManual
 												   error:nil];
 	[self.window center];
 	[self.window orderFront:nil];
@@ -77,7 +78,9 @@
 		[SPSession sharedSession].connectionState == SP_CONNECTION_STATE_UNDEFINED) 
 		return NSTerminateNow;
 	
-	[[SPSession sharedSession] logout];
+	[[SPSession sharedSession] logout:^{
+		[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
+	}];
 	return NSTerminateLater;
 }
 
@@ -141,10 +144,7 @@
             contextInfo:nil];
 }
 
--(void)sessionDidLogOut:(SPSession *)aSession; {
-	[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
-}
-
+-(void)sessionDidLogOut:(SPSession *)aSession; {}
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {}
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage; {}
 -(void)sessionDidChangeMetadata:(SPSession *)aSession; {}

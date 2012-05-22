@@ -82,6 +82,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 	
 	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
 											   userAgent:@"com.spotify.GuessTheIntro"
+										   loadingPolicy:SPAsyncLoadingImmediate
 												   error:nil];
 	 
 	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -125,7 +126,9 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 		[SPSession sharedSession].connectionState == SP_CONNECTION_STATE_UNDEFINED) 
 		return NSTerminateNow;
 	
-	[[SPSession sharedSession] beginLogout:nil];
+	[[SPSession sharedSession] logout:^{
+		[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
+	}];
 	return NSTerminateLater;
 }
 
@@ -191,10 +194,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
             contextInfo:nil];
 }
 
--(void)sessionDidLogOut:(SPSession *)aSession; {
-	[[NSApplication sharedApplication] replyToApplicationShouldTerminate:YES];
-}
-
+-(void)sessionDidLogOut:(SPSession *)aSession; {}
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {}
 -(void)session:(SPSession *)aSession didLogMessage:(NSString *)aMessage; {}
 -(void)sessionDidChangeMetadata:(SPSession *)aSession; {}
@@ -444,8 +444,11 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 
 -(void)startNewRound {
 	
-	if (self.playbackManager.currentTrack != nil)
-		[self.playlist.items addObject:self.playbackManager.currentTrack];
+	if (self.playbackManager.currentTrack != nil) {
+		[self.playlist addItem:self.playbackManager.currentTrack atIndex:self.playlist.items.count callback:^(NSError *error) {
+			if (error) NSLog(@"%@", error);
+		}];
+	}
 	
 	// Starting a new round means resetting, selecting tracks then starting the timer again 
 	// when the audio starts playing.
@@ -533,21 +536,11 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 
 - (void)startPlaybackOfTrack:(SPTrack *)aTrack {
 	
-	if (aTrack != nil) {
-		
-		if (!aTrack.isLoaded) {
-			// Since we're trying to play a brand new track that may not be loaded, 
-			// we may have to wait for a moment before playing. Tracks that are present 
-			// in the user's "library" (playlists, starred, inbox, etc) are automatically loaded
-			// on login. All this happens on an internal thread, so we'll just try again in a moment.
-			[self performSelector:@selector(startPlaybackOfTrack:) withObject:aTrack afterDelay:0.1];
-			return;
-		}
-	
+	[SPAsyncLoading waitUntilLoaded:aTrack timeout:5.0 then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
 		[self.playbackManager playTrack:aTrack callback:^(NSError *error) {
 			if (error) [self.window presentError:error];
 		}];
-	}
+	}];
 }
 
 -(void)playbackManagerWillStartPlayingAudio:(SPPlaybackManager *)aPlaybackManager {

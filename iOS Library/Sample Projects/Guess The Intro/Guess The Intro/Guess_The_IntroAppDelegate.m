@@ -24,6 +24,7 @@
 	
 	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
 											   userAgent:@"com.spotify.GuessTheIntro"
+										   loadingPolicy:SPAsyncLoadingImmediate
 												   error:nil];
 	
 	[SPSession sharedSession].delegate = (id)self.viewController;
@@ -85,7 +86,7 @@
 	 Save data if appropriate.
 	 See also applicationDidEnterBackground:.
 	 */
-	[[SPSession sharedSession] logout];
+	[[SPSession sharedSession] logout:nil];
 }
 
 

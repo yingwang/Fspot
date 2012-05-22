@@ -139,7 +139,7 @@
 	 See also applicationDidEnterBackground:.
 	 */
 	
-	[[SPSession sharedSession] beginLogout:^{}];
+	[[SPSession sharedSession] logout:^{}];
 }
 
 #pragma mark -
