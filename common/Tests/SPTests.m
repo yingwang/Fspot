@@ -108,7 +108,7 @@
 	failCount = 0;
 	free(testList);
 	
-	printf("---- Starting %lu tests in %s ----\n", self.testSelectorNames.count, NSStringFromClass([self class]).UTF8String);
+	printf("---- Starting %lu tests in %s ----\n", (unsigned long)self.testSelectorNames.count, NSStringFromClass([self class]).UTF8String);
 	[self runNextTest];
 }
 
@@ -131,14 +131,17 @@
 	
 	if ([NSStringFromSelector(methodName) hasPrefix:@"test"]) {
 		printf("Running test %s…", [self prettyNameForTestSelector:methodName].UTF8String);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 		[self performSelector:methodName];
+#pragma clang diagnostic pop
 	} else {
 		[self runNextTest];
 	}
 }
 
 -(void)testsCompleted {
-	printf("---- Tests in %s complete with %lu passed, %lu failed ----\n", NSStringFromClass([self class]).UTF8String, passCount, failCount);
+	printf("---- Tests in %s complete with %lu passed, %lu failed ----\n", NSStringFromClass([self class]).UTF8String, (unsigned long)passCount, (unsigned long)failCount);
 	if (self.completionBlock) self.completionBlock(passCount, failCount);
 }
 
