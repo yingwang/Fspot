@@ -49,7 +49,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
- @warning *Important:* This should only be used if you plan to directly use the 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning This should only be used if you plan to directly use the 
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
@@ -100,7 +103,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Move a playlist or folder to another location in the list. 
  
- @warning *Important:* This operation can fail, for example if you give invalid indexes or try to move 
+ @warning This operation can fail, for example if you give invalid indexes or try to move 
  a folder into itself. Please make sure you check the result in the completion callback.
  
  @param playlistOrFolder A playlist or folder to move.

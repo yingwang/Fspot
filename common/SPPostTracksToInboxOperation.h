@@ -49,7 +49,7 @@
  This convenience method is simply returns a new, autoreleased SPPostTracksToInboxOperation
  object. No caching is performed.
  
- @warning *Important:* Tracks will be posted to the given user as soon as a SPPostTracksToInboxOperation
+ @warning Tracks will be posted to the given user as soon as a SPPostTracksToInboxOperation
  object is created. Be sure you want to post the tracks before creating the object!
  
  @param tracksToSend An array of SPTrack objects to send.
@@ -67,7 +67,7 @@
 
 /** Initializes an SPPostTracksToInboxOperation for the given details.
  
- @warning *Important:* Tracks will be posted to the given user as soon as a SPPostTracksToInboxOperation
+ @warning Tracks will be posted to the given user as soon as a SPPostTracksToInboxOperation
  object is created. Be sure you want to post the tracks before creating the object!
  
  @param tracksToSend An array of SPTrack objects to send.
@@ -92,7 +92,10 @@
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
- @warning *Important:* This should only be used if you plan to directly use the 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning This should only be used if you plan to directly use the 
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */

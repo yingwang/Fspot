@@ -53,10 +53,10 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  This convenience method is simply returns a new, autoreleased SPSearch
  object. No caching is performed.
  
- @warning *Important:* If you pass in an invalid search URL (i.e., any URL not
+ @warning If you pass in an invalid search URL (i.e., any URL not
  starting `spotify:search:`, this method will return `nil`.
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchURL The search URL to create an SPSearch for.
@@ -70,7 +70,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  This convenience method is simply returns a new, autoreleased SPSearch
  object. No caching is performed.
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchQuery The search query to create an SPSearch for.
@@ -85,7 +85,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  UI as the user is typing into a search field. This convenience method is simply returns a new, 
  autoreleased SPSearch object. No caching is performed.
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchQuery The search query to create an SPSearch for.
@@ -96,7 +96,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
 /** Initializes a new SPSearch with the default page size from the given Spotify search URL. 
 
- @warning *Important:* If you pass in an invalid search URL (i.e., any URL not
+ @warning If you pass in an invalid search URL (i.e., any URL not
  starting `spotify:search:`, this method will return `nil`.
  
  @param searchURL The search URL to create an SPSearch for.
@@ -108,10 +108,10 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
 /** Initializes a new SPSearch from the given Spotify search URL. 
  
- @warning *Important:* If you pass in an invalid search URL (i.e., any URL not
+ @warning If you pass in an invalid search URL (i.e., any URL not
  starting `spotify:search:`, this method will return `nil`.
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchURL The search URL to create an SPSearch for.
@@ -125,7 +125,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
 /** Initializes a new SPSearch with the default page size for the given query. 
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchString The search query to create an SPSearch for.
@@ -141,7 +141,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  UI as the user is typing into a search field — pass `SP_SEARCH_SUGGEST` to `type` 
  for more appropriate results.
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchString The search query to create an SPSearch for.
@@ -155,7 +155,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
 /** Initializes a new SPSearch for the given query. 
  
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchString The search query to create an SPSearch for.
@@ -173,7 +173,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  UI as the user is typing into a search field — pass `SP_SEARCH_SUGGEST` to `type` 
  for more appropriate results.
 
- @warning *Important:* The search query will be sent to the Spotify search service
+ @warning The search query will be sent to the Spotify search service
  immediately. Be sure you want to perform the search before creating the object!
  
  @param searchString The search query to create an SPSearch for.
@@ -195,7 +195,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  
  The albums property will be updated when new results are returned.
  
- @warning *Important:* If you want to request more than just albums, use 
+ @warning If you want to request more than just albums, use 
  `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
@@ -207,7 +207,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  
   The artists property will be updated when new results are returned.
  
- @warning *Important:* If you want to request more than just artists, use 
+ @warning If you want to request more than just artists, use 
  `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
@@ -219,7 +219,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  
   The tracks property will be updated when new results are returned.
  
- @warning *Important:* If you want to request more than just tracks, use 
+ @warning If you want to request more than just tracks, use 
  `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch
@@ -231,7 +231,7 @@ static SInt32 const kSPSearchDoNotSearchPageSize = 0;
  
  The playlists property will be updated when new results are returned.
  
- @warning *Important:* If you want to request more than just playlists, use 
+ @warning If you want to request more than just playlists, use 
  `-addPageForArtists:albums:tracks:playlists:` for better performance.
  
  @return Returns `YES` if a search request was created, `NO` if there are no more results to fetch

@@ -73,15 +73,13 @@ Playback
  
  This is a convenience method for creating and storing a single SPSession instance.
  
- @warning *Important:* The C API that CocoaLibSpotify uses (LibSpotify) doesn't 
+ @warning The C API that CocoaLibSpotify uses (LibSpotify) doesn't 
  support using multiple sessions in the same process. While you can either create and 
  store your SPSession object using this convenience method or yourself using -[SPSession init],
  make sure you only have _one_ instance of SPSession active in your process at a time.
  
- @warning *Important:* This will return `nil` until +[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:] is
+ @warning This will return `nil` until +[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:] is
  successfully called.
-
- 
  */
 +(SPSession *)sharedSession;
 
@@ -89,7 +87,7 @@ Playback
  
  Your application key and user agent must be valid to create an SPSession object.
  
- @warning *Important:* The C API that CocoaLibSpotify uses (LibSpotify) doesn't 
+ @warning The C API that CocoaLibSpotify uses (LibSpotify) doesn't 
  support using multiple sessions in the same process. While you can either create and 
  store your SPSession object using this convenience method or yourself using -[SPSession initWithApplicationKey:userAgent:loadingPolicy:error:],
  make sure you only have _one_ instance of SPSession active in your process at a time.
@@ -137,7 +135,7 @@ Playback
  
  Login success or fail methods will be called on the session's delegate.
  
-@warning *Important:* You must have successfully logged in to the Spotify service before using 
+@warning You must have successfully logged in to the Spotify service before using 
  most other API methods.
  
  @param userName The username of the user who wishes to log in.
@@ -152,7 +150,7 @@ Playback
  
  Login success or fail methods will be called on the session's delegate.
  
- @warning *Important:* You must have successfully logged in to the Spotify service before using 
+ @warning You must have successfully logged in to the Spotify service before using 
  most other API methods.
  
  @param userName The username of the user who wishes to log in.
@@ -250,7 +248,10 @@ Playback
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
- @warning *Important:* This should only be used if you plan to directly use the 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning This should only be used if you plan to directly use the 
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
@@ -326,7 +327,7 @@ Playback
 
 /** Send tracks to another Spotify user.
  
- @warning *Important:* Tracks will be posted to the given user as soon as this
+ @warning Tracks will be posted to the given user as soon as this
  method is called. Be sure you want to post the tracks before doing so!
  
  @param tracks An array of SPTrack objects to send.
@@ -413,6 +414,9 @@ Playback
  This method caches SPPlaylist objects using the same cache the +[SPPlaylist playlist...] 
  convenience methods use.
  
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
  @param playlist The sp_playlist struct.
  @return Returns the created or cached SPPlaylist object.
  */
@@ -421,6 +425,9 @@ Playback
 /** Create and cache an SPPlaylistFolder for the given folder ID from the C LibSpotify API.
  
  This method caches SPPlaylistFolder objects by ID.
+ 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
  
  @param playlistId The folder ID.
  @param aContainer The SPPlaylistContainer that contains the given folder.
@@ -443,6 +450,9 @@ Playback
  This method caches SPTrack objects using the same cache the +[SPTrack track...] 
  convenience methods use.
  
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
  @param track The sp_track struct.
  @return Returns the created or cached SPTrack object.
  */
@@ -452,6 +462,9 @@ Playback
  
  This method caches SPUser objects using the same cache the +[SPUser user...] 
  convenience methods use.
+ 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
  
  @param user The sp_user struct.
  @return Returns the created or cached SPUser object.
@@ -465,7 +478,7 @@ Playback
 /** Returns `YES` if the session is employing volume normalization (that is, attempts to keep the 
  sound level of each track the same), otherwise `NO`.
  
- @warning *Important:* This property currently has no effect on iOS platforms.
+ @warning This property currently has no effect on iOS platforms.
  */
 @property (nonatomic, readwrite, getter=isUsingVolumeNormalization) BOOL usingVolumeNormalization;
 
@@ -600,7 +613,7 @@ Playback
 
 /** Called when a log-worthy message is generated by the Spotify service.
  
- @warning *Important:* This method will be called very frequently if implemented. Please
+ @warning This method will be called very frequently if implemented. Please
  refrain from mindlessly logging these to the console in a release application to aid the user's 
  sainity.
  
@@ -614,7 +627,7 @@ Playback
 /** Called when the session needs to present a view controller to allow the user to login, sign up
  or confirm Facebook access permissions.
  
- @warning *Important:* While this typically happens around login, it can happen at any point. When this method
+ @warning While this typically happens around login, it can happen at any point. When this method
  is called, your application should make sure it's in a state appropriate for displaying a login view.
  
  @param aSession The session needing to display UI.
@@ -658,14 +671,14 @@ Playback
  
  @deprecated
  
- @warning *Important:* This function is called from an internal session thread - you need to have 
+ @warning This function is called from an internal session thread - you need to have 
  proper synchronization!
  
- @warning *Important:* If this method is called with a frameCount of 0, an "audio discontinuity" has occurred - 
+ @warning If this method is called with a frameCount of 0, an "audio discontinuity" has occurred - 
  for example, the user has seeked playback to another part of the track. You should clear audio buffers and prepare
  for new audio.
  
- @warning *Important:* This function must never block. If your output buffers are full you must 
+ @warning This function must never block. If your output buffers are full you must 
  return 0 to signal that the library should retry delivery in a short while.
  
  @param aSession The session providing the audio data.
@@ -691,14 +704,14 @@ Playback
  
  See the SimplePlayback sample project for an example of how to implement audio playback.
  
- @warning *Important:* This function is called from an internal session thread - you need to have 
+ @warning This function is called from an internal session thread - you need to have 
  proper synchronization!
  
- @warning *Important:* If this method is called with a frameCount of 0, an "audio discontinuity" has occurred - 
+ @warning If this method is called with a frameCount of 0, an "audio discontinuity" has occurred - 
  for example, the user has seeked playback to another part of the track. You should clear audio buffers and prepare
  for new audio.
  
- @warning *Important:* This function must never block. If your output buffers are full you must 
+ @warning This function must never block. If your output buffers are full you must 
  return 0 to signal that the library should retry delivery in a short while.
  
  @param aSession The session providing the audio data.

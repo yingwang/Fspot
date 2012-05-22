@@ -106,19 +106,19 @@
 	
 	<option value="//api/name/attemptLoginWithUserName:password:rememberCredentials:">&nbsp;&nbsp;&nbsp;&nbsp;- attemptLoginWithUserName:password:rememberCredentials:</option>
 	
-	<option value="//api/name/beginFlushingCaches:">&nbsp;&nbsp;&nbsp;&nbsp;- beginFlushingCaches:</option>
-	
-	<option value="//api/name/beginLogout:">&nbsp;&nbsp;&nbsp;&nbsp;- beginLogout:</option>
-	
 	<option value="//api/name/fetchOfflineKeyTimeRemaining:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchOfflineKeyTimeRemaining:</option>
 	
 	<option value="//api/name/fetchStoredCredentialsUserName:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchStoredCredentialsUserName:</option>
+	
+	<option value="//api/name/flushCaches:">&nbsp;&nbsp;&nbsp;&nbsp;- flushCaches:</option>
 	
 	<option value="//api/name/forgetStoredCredentials">&nbsp;&nbsp;&nbsp;&nbsp;- forgetStoredCredentials</option>
 	
 	<option value="//api/name/imageForURL:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- imageForURL:callback:</option>
 	
 	<option value="//api/name/initWithApplicationKey:userAgent:loadingPolicy:error:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithApplicationKey:userAgent:loadingPolicy:error:</option>
+	
+	<option value="//api/name/logout:">&nbsp;&nbsp;&nbsp;&nbsp;- logout:</option>
 	
 	<option value="//api/name/objectRepresentationForSpotifyURL:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- objectRepresentationForSpotifyURL:callback:</option>
 	
@@ -260,19 +260,19 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attemptLoginWithUserName:password:rememberCredentials:">attemptLoginWithUserName:password:rememberCredentials:</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/beginFlushingCaches:">beginFlushingCaches:</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/beginLogout:">beginLogout:</a></span></li>
-	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchOfflineKeyTimeRemaining:">fetchOfflineKeyTimeRemaining:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchStoredCredentialsUserName:">fetchStoredCredentialsUserName:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/flushCaches:">flushCaches:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/forgetStoredCredentials">forgetStoredCredentials</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/imageForURL:callback:">imageForURL:callback:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithApplicationKey:userAgent:loadingPolicy:error:">initWithApplicationKey:userAgent:loadingPolicy:error:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/logout:">logout:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/objectRepresentationForSpotifyURL:callback:">objectRepresentationForSpotifyURL:callback:</a></span></li>
 	
@@ -452,14 +452,14 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/beginFlushingCaches:">&ndash;&nbsp;beginFlushingCaches:</a></code>
+		<code><a href="#//api/name/flushCaches:">&ndash;&nbsp;flushCaches:</a></code>
 		<span class="tooltip"><p>Manually flush libSpotify&rsquo;s caches.</p></span>
 	</span>
 	
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/beginLogout:">&ndash;&nbsp;beginLogout:</a></code>
+		<code><a href="#//api/name/logout:">&ndash;&nbsp;logout:</a></code>
 		<span class="tooltip"><p>Log out from the Spotify service.</p></span>
 	</span>
 	
@@ -717,7 +717,7 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/unknownPlaylistForPlaylistStruct:">&ndash;&nbsp;unknownPlaylistForPlaylistStruct:</a></code>
-		<span class="tooltip"><p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
+		<span class="tooltip"><p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
 	</span>
 	
 	
@@ -1355,7 +1355,8 @@ playback ending or being paused because the account is being used for playback e
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This should only be used if you plan to directly use the
+		<div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div><div class="warning"><p><strong>Warning:</strong> This should only be used if you plan to directly use the
 C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
 API directly on items that have CocoaLibSpotify objects associated with them.</p></div>
 	</div>
@@ -1548,7 +1549,7 @@ sound level of each track the same), otherwise <code>NO</code>.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This property currently has no effect on iOS platforms.</p></div>
+		<div class="warning"><p><strong>Warning:</strong> This property currently has no effect on iOS platforms.</p></div>
 	</div>
 	
 	
@@ -1625,7 +1626,7 @@ sound level of each track the same), otherwise <code>NO</code>.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Your application key and <a href="#//api/name/user">user</a> agent must be valid to create an SPSession object.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
+		<p>Your application key and <a href="#//api/name/user">user</a> agent must be valid to create an SPSession object.</p><div class="warning"><p><strong>Warning:</strong> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
 support using multiple sessions in the same process. While you can either create and
 store your SPSession object using this convenience method or yourself using <a href="#//api/name/initWithApplicationKey:userAgent:loadingPolicy:error:">[SPSession initWithApplicationKey:userAgent:loadingPolicy:error:]</a>,
 make sure you only have <em>one</em> instance of SPSession active in your process at a time.</p></div>
@@ -1712,10 +1713,10 @@ case you (or Spotify) would like to know the exact version running.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This is a convenience method for creating and storing a single SPSession instance.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
+		<p>This is a convenience method for creating and storing a single SPSession instance.</p><div class="warning"><p><strong>Warning:</strong> The C API that CocoaLibSpotify uses (LibSpotify) doesn&rsquo;t
 support using multiple sessions in the same process. While you can either create and
 store your SPSession object using this convenience method or yourself using <a href="#//api/name/init">[SPSession init]</a>,
-make sure you only have <em>one</em> instance of SPSession active in your process at a time.</p></div><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This will return <code>nil</code> until <a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:">[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:]</a> is
+make sure you only have <em>one</em> instance of SPSession active in your process at a time.</p></div><div class="warning"><p><strong>Warning:</strong> This will return <code>nil</code> until <a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:">[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:]</a> is
 successfully called.</p></div>
 	</div>
 	
@@ -1930,7 +1931,7 @@ successfully called.</p></div>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> You must have successfully logged in to the Spotify service before using
+		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Warning:</strong> You must have successfully logged in to the Spotify service before using
 most other API methods.</p></div>
 	</div>
 	
@@ -1990,108 +1991,8 @@ most other API methods.</p></div>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> You must have successfully logged in to the Spotify service before using
+		<p>Login success or fail methods will be called on the session&rsquo;s <a href="#//api/name/delegate">delegate</a>.</p><div class="warning"><p><strong>Warning:</strong> You must have successfully logged in to the Spotify service before using
 most other API methods.</p></div>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPSession.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/beginFlushingCaches:" title="beginFlushingCaches:"></a>
-	<h3 class="subsubtitle method-title">beginFlushingCaches:</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Manually flush libSpotify&rsquo;s caches.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (void)beginFlushingCaches:(void ( ^ ) ( ))<em>completionBlock</em></code></div>
-	
-	
-	<div class="method-subsection arguments-section parameters">
-		<h4 class="method-subtitle parameter-title">Parameters</h4>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>completionBlock</em></dt>
-			<dd><p>The block to be called when the operation has completed.</p></dd>
-		</dl>
-		
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>This method will force libSpotify to flush its caches. If you&rsquo;re writing an iOS application, call
-this when your application is put into the background to ensure correct operation.</p>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">SPSession.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/beginLogout:" title="beginLogout:"></a>
-	<h3 class="subsubtitle method-title">beginLogout:</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Log out from the Spotify service.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (void)beginLogout:(void ( ^ ) ( ))<em>completionBlock</em></code></div>
-	
-	
-	<div class="method-subsection arguments-section parameters">
-		<h4 class="method-subtitle parameter-title">Parameters</h4>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>completionBlock</em></dt>
-			<dd><p>The block to be called when the logout process has started.</p></dd>
-		</dl>
-		
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>This method will cleanly log out from the Spotify service and clear any in-memory caches.
-Called automatically when the instance is deallocated.</p>
 	</div>
 	
 	
@@ -2182,6 +2083,56 @@ Called automatically when the instance is deallocated.</p>
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/flushCaches:" title="flushCaches:"></a>
+	<h3 class="subsubtitle method-title">flushCaches:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Manually flush libSpotify&rsquo;s caches.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)flushCaches:(void ( ^ ) ( ))<em>completionBlock</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>completionBlock</em></dt>
+			<dd><p>The block to be called when the operation has completed.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method will force libSpotify to flush its caches. If you&rsquo;re writing an iOS application, call
+this when your application is put into the background to ensure correct operation.</p>
+	</div>
 	
 	
 	
@@ -2356,6 +2307,56 @@ Called automatically when the instance is deallocated.</p>
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/logout:" title="logout:"></a>
+	<h3 class="subsubtitle method-title">logout:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Log out from the Spotify service.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)logout:(void ( ^ ) ( ))<em>completionBlock</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>completionBlock</em></dt>
+			<dd><p>The block to be called when the logout process has completed.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>This method will cleanly log out from the Spotify service and clear any in-memory caches.
+Called automatically when the instance is deallocated.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/objectRepresentationForSpotifyURL:callback:" title="objectRepresentationForSpotifyURL:callback:"></a>
 	<h3 class="subsubtitle method-title">objectRepresentationForSpotifyURL:callback:</h3>
 	
@@ -2501,7 +2502,8 @@ what the given URL represents and returns that for you.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>This method caches <a href="../Classes/SPPlaylistFolder.html">SPPlaylistFolder</a> objects by ID.</p>
+		<p>This method caches <a href="../Classes/SPPlaylistFolder.html">SPPlaylistFolder</a> objects by ID.</p><div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div>
 	</div>
 	
 	
@@ -2556,7 +2558,8 @@ what the given URL represents and returns that for you.</p>
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method caches SPPlaylist objects using the same cache the [SPPlaylist playlist&hellip;]
-convenience methods use.</p>
+convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div>
 	</div>
 	
 	
@@ -2674,7 +2677,7 @@ convenience methods use.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> Tracks will be posted to the given <a href="#//api/name/user">user</a> as soon as this
+		<div class="warning"><p><strong>Warning:</strong> Tracks will be posted to the given <a href="#//api/name/user">user</a> as soon as this
 method is called. Be sure you want to post the tracks before doing so!</p></div>
 	</div>
 	
@@ -2986,7 +2989,8 @@ to the next track during normal playback.</p>
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method caches SPTrack objects using the same cache the [SPTrack track&hellip;]
-convenience methods use.</p>
+convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div>
 	</div>
 	
 	
@@ -3059,7 +3063,7 @@ convenience methods use.</p>
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
+		<p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
 	</div>		
 	
 	
@@ -3080,7 +3084,7 @@ convenience methods use.</p>
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created or cached SPUnknownPlaylist object.</p>
+		<p>Returns the created or cached <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> object.</p>
 	</div>
 	
 	
@@ -3234,7 +3238,8 @@ instance deallocation.</p>
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This method caches SPUser objects using the same cache the [SPUser user&hellip;]
-convenience methods use.</p>
+convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div>
 	</div>
 	
 	
@@ -3264,7 +3269,7 @@ convenience methods use.</p>
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-10)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-22)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

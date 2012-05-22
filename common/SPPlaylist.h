@@ -62,7 +62,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  This convenience method creates an SPPlaylist object if one doesn't exist, or 
  returns a cached SPPlaylist if one already exists for the given URL.
  
- @warning *Important:* If you pass in an invalid playlist URL (i.e., any URL not
+ @warning If you pass in an invalid playlist URL (i.e., any URL not
  starting `spotify:user:XXXX:playlist:`, this method will return `nil`.
 
  @param playlistURL The playlist URL to create an SPPlaylist for.
@@ -73,7 +73,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Initializes an SPPlaylist from the given opaque sp_playlist struct. 
  
- @warning *Important:* For better performance and built-in caching, it is recommended
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning For better performance and built-in caching, it is recommended
  you create SPPlaylist objects using +[SPPlaylist playlistWithPlaylistStruct:inSession:], 
  +[SPPlaylist playlistWithPlaylistURL:inSession:callback:] or the instance methods on SPSession.
  
@@ -132,7 +135,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
- @warning *Important:* This should only be used if you plan to directly use the 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning This should only be used if you plan to directly use the 
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
@@ -172,7 +178,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  All indexes are given relative to the state of the item order before the move is executed. Therefore, you
  *don't* need to adjust the destination index to take into account items that will be moved from above it.
  
- @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ @warning This operation can fail, for example if you give invalid indexes. Please make sure 
  you check the result of this method.
  
  @param indexes The indexes of the items to move.
@@ -183,7 +189,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Add an item to the playlist at the given location.
  
- @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ @warning This operation can fail, for example if you give invalid indexes. Please make sure 
  you check the result of this method.
  
  @param item The item to add.
@@ -194,10 +200,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Add items to the playlist at the given location.
  
- @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ @warning This operation can fail, for example if you give invalid indexes. Please make sure 
  you check the result of this method.
  
- @param item An array of `SPTrack` objects to add.
+ @param items An array of `SPTrack` objects to add.
  @param index The target index for the items. Must be within the range 0..`playlist.length`.
  @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
  */
@@ -206,7 +212,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Remove an item from the playlist at the given location.
  
- @warning *Important:* This operation can fail, for example if you give invalid indexes. Please make sure 
+ @warning This operation can fail, for example if you give invalid indexes. Please make sure 
  you check the result of this method.
  
  @param index The target index for the item. Must be a valid index.
@@ -241,7 +247,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Called after one or more items in the playlist were removed from the playlist. 
  
- @warning *Important:* The index set passed to this method is not valid for the given items.
+ @warning The index set passed to this method is not valid for the given items.
  
  @param aPlaylist The playlist in which items were removed.
  @param items The items that were be removed.
@@ -255,7 +261,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Called before one or more items are added to the playlist. 
  
- @warning *Important:* The index set passed to this method is not valid for the given items.
+ @warning The index set passed to this method is not valid for the given items.
  
  @param aPlaylist The playlist to which items will be added.
  @param items The items that will be added.

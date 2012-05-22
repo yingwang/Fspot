@@ -49,7 +49,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Returns the folder's ID, as used in the C LibSpotify API. 
  
- @warning *Important:* This should only be used if you plan to directly use the 
+ @warning This should only be used if you plan to directly use the 
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
@@ -69,7 +69,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Returns an array of SPPlaylist and/or SPPlaylistFolders representing the folder's child playlists.
   
- @warning *Important:* If you need to move a playlist from one location in this list to another,
+ @warning If you need to move a playlist from one location in this list to another,
  use `-[SPPlaylistContainer moveItem:toIndex:ofNewParent:callback:]`.
  
  @see [SPPlaylistContainer moveItem:toIndex:ofNewParent:callback:]

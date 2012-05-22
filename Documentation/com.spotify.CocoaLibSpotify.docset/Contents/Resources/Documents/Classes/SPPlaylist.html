@@ -88,9 +88,15 @@
 	
 	<option value="instance_methods">Instance Methods</option>
 	
+	<option value="//api/name/addItem:atIndex:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- addItem:atIndex:callback:</option>
+	
+	<option value="//api/name/addItems:atIndex:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- addItems:atIndex:callback:</option>
+	
 	<option value="//api/name/initWithPlaylistStruct:inSession:">&nbsp;&nbsp;&nbsp;&nbsp;- initWithPlaylistStruct:inSession:</option>
 	
 	<option value="//api/name/moveItemsAtIndexes:toIndex:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- moveItemsAtIndexes:toIndex:callback:</option>
+	
+	<option value="//api/name/removeItemAtIndex:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- removeItemAtIndex:callback:</option>
 	
 	<option value="//api/name/startLoading">&nbsp;&nbsp;&nbsp;&nbsp;- startLoading</option>
 	
@@ -176,9 +182,15 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addItem:atIndex:callback:">addItem:atIndex:callback:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/addItems:atIndex:callback:">addItems:atIndex:callback:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initWithPlaylistStruct:inSession:">initWithPlaylistStruct:inSession:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/moveItemsAtIndexes:toIndex:callback:">moveItemsAtIndexes:toIndex:callback:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/removeItemAtIndex:callback:">removeItemAtIndex:callback:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/startLoading">startLoading</a></span></li>
 	
@@ -409,6 +421,27 @@
 	</span>
 	
 	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addItem:atIndex:callback:">&ndash;&nbsp;addItem:atIndex:callback:</a></code>
+		<span class="tooltip"><p>Add an item to the <a href="#//api/name/playlist">playlist</a> at the given location.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/addItems:atIndex:callback:">&ndash;&nbsp;addItems:atIndex:callback:</a></code>
+		<span class="tooltip"><p>Add <a href="#//api/name/items">items</a> to the <a href="#//api/name/playlist">playlist</a> at the given location.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/removeItemAtIndex:callback:">&ndash;&nbsp;removeItemAtIndex:callback:</a></code>
+		<span class="tooltip"><p>Remove an item from the <a href="#//api/name/playlist">playlist</a> at the given location.</p></span>
+	</span>
+	
+	
 </li>
 						</ul>
 						
@@ -584,7 +617,7 @@
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly) NSMutableArray *items</code></div>
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readonly, copy) NSArray *items</code></div>
 	
 	
 	
@@ -593,25 +626,9 @@
 	
 	
 	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>This array is KVO compliant, and any changes made will be reflected in the user&rsquo;s account.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> You can add both <a href="../Classes/SPTrack.html"><code>SPTrack</code></a> and <a href="../Classes/SPPlaylistItem.html"><code>SPPlaylistItem</code></a> objects to this array.
-<a href="../Classes/SPTrack.html"><code>SPTrack</code></a> objects will automatically be wrapped inside an <a href="../Classes/SPPlaylistItem.html"><code>SPPlaylistItem</code></a>.</p></div><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> If you need to move an item from one location in this list to another, please
-use <a href="#//api/name/moveItemsAtIndexes:toIndex:callback:"><code>moveItemsAtIndexes:toIndex:callback:</code></a> for performance reasons.</p></div>
-	</div>
 	
 	
 	
-	
-	
-	<div class="method-subsection see-also-section">
-		<h4 class="method-subtitle">See Also</h4>
-		<ul>
-			
-			<li><code><p><a href="#//api/name/moveItemsAtIndexes:toIndex:callback:">&ndash; moveItemsAtIndexes:toIndex:callback:</a></p></code></li>
-			
-		</ul>
-	</div>
 	
 	
 	
@@ -864,7 +881,8 @@ Playlist is queued for download.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This should only be used if you plan to directly use the
+		<div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div><div class="warning"><p><strong>Warning:</strong> This should only be used if you plan to directly use the
 C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
 API directly on <a href="#//api/name/items">items</a> that have CocoaLibSpotify objects associated with them.</p></div>
 	</div>
@@ -1169,7 +1187,7 @@ returns a cached SPPlaylist if one already exists for the given struct.</p>
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This convenience method creates an SPPlaylist object if one doesn&rsquo;t exist, or
-returns a cached SPPlaylist if one already exists for the given URL.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> If you pass in an invalid <a href="#//api/name/playlist">playlist</a> URL (i.e., any URL not
+returns a cached SPPlaylist if one already exists for the given URL.</p><div class="warning"><p><strong>Warning:</strong> If you pass in an invalid <a href="#//api/name/playlist">playlist</a> URL (i.e., any URL not
 starting <code>spotify:user:XXXX:playlist:</code>, this method will return <code>nil</code>.</p></div>
 	</div>
 	
@@ -1194,6 +1212,126 @@ starting <code>spotify:user:XXXX:playlist:</code>, this method will return <code
 					<div class="section section-methods">
 						<a title="Instance Methods" name="instance_methods"></a>
 						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/addItem:atIndex:callback:" title="addItem:atIndex:callback:"></a>
+	<h3 class="subsubtitle method-title">addItem:atIndex:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Add an item to the <a href="#//api/name/playlist">playlist</a> at the given location.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addItem:(SPTrack *)<em>item</em> atIndex:(NSUInteger)<em>index</em> callback:(SPErrorableOperationCallback)<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>item</em></dt>
+			<dd><p>The item to add.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>index</em></dt>
+			<dd><p>The target index for the item. Must be within the range 0..<code></code>playlist<code>.length</code>.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The <code>SPErrorableOperationCallback</code> block to be called with an <code>NSError</code> if the operation failed or <code>nil</code> if the operation succeeded.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="warning"><p><strong>Warning:</strong> This operation can fail, for example if you give invalid indexes. Please make sure
+you check the result of this method.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPPlaylist.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/addItems:atIndex:callback:" title="addItems:atIndex:callback:"></a>
+	<h3 class="subsubtitle method-title">addItems:atIndex:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Add <a href="#//api/name/items">items</a> to the <a href="#//api/name/playlist">playlist</a> at the given location.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)addItems:(NSArray *)<em>items</em> atIndex:(NSUInteger)<em>index</em> callback:(SPErrorableOperationCallback)<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>items</em></dt>
+			<dd><p>An array of <a href="../Classes/SPTrack.html"><code>SPTrack</code></a> objects to add.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>index</em></dt>
+			<dd><p>The target index for the <a href="#//api/name/items">items</a>. Must be within the range 0..<code></code>playlist<code>.length</code>.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The <code>SPErrorableOperationCallback</code> block to be called with an <code>NSError</code> if the operation failed or <code>nil</code> if the operation succeeded.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="warning"><p><strong>Warning:</strong> This operation can fail, for example if you give invalid indexes. Please make sure
+you check the result of this method.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPPlaylist.h</code><br />
+	</div>				
+	
+	
+</div>
 						
 						<div class="section-method">
 	<a name="//api/name/initWithPlaylistStruct:inSession:" title="initWithPlaylistStruct:inSession:"></a>
@@ -1237,7 +1375,8 @@ starting <code>spotify:user:XXXX:playlist:</code>, this method will return <code
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> For better performance and built-in caching, it is recommended
+		<div class="warning"><p><strong>Warning:</strong> This method <em>must</em> be called on the libSpotify queue. See the
+&ldquo;Threading&rdquo; section of the library&rsquo;s readme for more information.</p></div><div class="warning"><p><strong>Warning:</strong> For better performance and built-in caching, it is recommended
 you create SPPlaylist objects using <a href="#//api/name/playlistWithPlaylistStruct:inSession:">[SPPlaylist playlistWithPlaylistStruct:inSession:]</a>,
 <a href="#//api/name/playlistWithPlaylistURL:inSession:callback:">[SPPlaylist playlistWithPlaylistURL:inSession:callback:]</a> or the instance methods on <a href="../Classes/SPSession.html">SPSession</a>.</p></div>
 	</div>
@@ -1299,7 +1438,62 @@ you create SPPlaylist objects using <a href="#//api/name/playlistWithPlaylistStr
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>All indexes are given relative to the state of the item order before the move is executed. Therefore, you
-<em>don&rsquo;t</em> need to adjust the destination index to take into account <a href="#//api/name/items">items</a> that will be moved from above it.</p><div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This operation can fail, for example if you give invalid indexes. Please make sure
+<em>don&rsquo;t</em> need to adjust the destination index to take into account <a href="#//api/name/items">items</a> that will be moved from above it.</p><div class="warning"><p><strong>Warning:</strong> This operation can fail, for example if you give invalid indexes. Please make sure
+you check the result of this method.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPPlaylist.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/removeItemAtIndex:callback:" title="removeItemAtIndex:callback:"></a>
+	<h3 class="subsubtitle method-title">removeItemAtIndex:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Remove an item from the <a href="#//api/name/playlist">playlist</a> at the given location.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)removeItemAtIndex:(NSUInteger)<em>index</em> callback:(SPErrorableOperationCallback)<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>index</em></dt>
+			<dd><p>The target index for the item. Must be a valid index.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The <code>SPErrorableOperationCallback</code> block to be called with an <code>NSError</code> if the operation failed or <code>nil</code> if the operation succeeded.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="warning"><p><strong>Warning:</strong> This operation can fail, for example if you give invalid indexes. Please make sure
 you check the result of this method.</p></div>
 	</div>
 	
@@ -1364,7 +1558,7 @@ you check the result of this method.</p></div>
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-10)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-22)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

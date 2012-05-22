@@ -68,7 +68,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  This convenience method is simply returns a new, autoreleased SPAlbumBrowse
  object. No caching is performed.
  
- @warning *Important:* If you pass in an invalid album URL (i.e., any URL not
+ @warning If you pass in an invalid album URL (i.e., any URL not
  starting `spotify:album:`, this method will return `nil`.
  
  @param albumURL The album URL to make an SPAlbumBrowse for.

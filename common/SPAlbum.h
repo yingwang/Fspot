@@ -53,6 +53,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  This convenience method creates an SPAlbum object if one doesn't exist, or 
  returns a cached SPAlbum if one already exists for the given struct.
  
+@warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
  @param anAlbum The sp_album struct to create an SPAlbum for.
  @param aSession The SPSession the album should exist in.
  @return Returns the created SPAlbum object. 
@@ -64,7 +67,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  This convenience method creates an SPAlbum object if one doesn't exist, or 
  returns a cached SPAlbum if one already exists for the given URL.
  
- @warning *Important:* If you pass in an invalid album URL (i.e., any URL not
+ @warning If you pass in an invalid album URL (i.e., any URL not
  starting `spotify:album:`, this method will return `nil`.
  
  @param aURL The album URL to create an SPAlbum for.
@@ -75,7 +78,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Initializes a new SPAlbum from the given opaque sp_album struct. 
  
- @warning *Important:* For better performance and built-in caching, it is recommended
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning For better performance and built-in caching, it is recommended
  you create SPAlbum objects using +[SPAlbum albumWithAlbumStruct:inSession:], 
  +[SPAlbum albumWithAlbumURL:inSession:callback:] or the instance methods on SPSession.
  
@@ -91,7 +97,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
- @warning *Important:* This should only be used if you plan to directly use the 
+ @warning This method *must* be called on the libSpotify queue. See the
+ "Threading" section of the library's readme for more information.
+ 
+ @warning This should only be used if you plan to directly use the 
  C LibSpotify API. The behaviour of CocoaLibSpotify is undefined if you use the C
  API directly on items that have CocoaLibSpotify objects associated with them. 
  */
