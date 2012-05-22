@@ -200,7 +200,10 @@
 	NSString *sel = [NSString stringWithFormat:@"%@:", camelAction];
 	
 	if ([self respondsToSelector:NSSelectorFromString(sel)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 		[self performSelector:NSSelectorFromString(sel) withObject:request];
+#pragma clang diagnostic pop
 		return NO;
 	}
 	
