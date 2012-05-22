@@ -127,11 +127,6 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 		totalPassCount += sessionPassCount;
 		totalFailCount += sessionFailCount;
 		
-		if (totalFailCount > 0) {
-			[self completeTestsWithPassCount:totalPassCount failCount:totalFailCount];
-			return;
-		}
-		
 		self.playlistTests = [SPPlaylistTests new];
 		[self.playlistTests runTests:^(NSUInteger playlistPassCount, NSUInteger playlistFailCount) {
 			

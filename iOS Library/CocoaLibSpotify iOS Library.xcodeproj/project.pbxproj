@@ -538,9 +538,9 @@
 			productReference = 50AF49DC1439CBFE00E4A5EF /* libCocoaLibSpotify.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		50D4F52A156BCDE800E237DD /* CocoaLibSpotify iOS Test Container */ = {
+		50D4F52A156BCDE800E237DD /* CocoaLSTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 50D4F549156BCDE800E237DD /* Build configuration list for PBXNativeTarget "CocoaLibSpotify iOS Test Container" */;
+			buildConfigurationList = 50D4F549156BCDE800E237DD /* Build configuration list for PBXNativeTarget "CocoaLSTests" */;
 			buildPhases = (
 				50D4F527156BCDE800E237DD /* Sources */,
 				50D4F528156BCDE800E237DD /* Frameworks */,
@@ -550,7 +550,7 @@
 			);
 			dependencies = (
 			);
-			name = "CocoaLibSpotify iOS Test Container";
+			name = CocoaLSTests;
 			productName = "CocoaLibSpotify iOS Test Container";
 			productReference = 50D4F52B156BCDE800E237DD /* CocoaLibSpotify iOS Test Container.app */;
 			productType = "com.apple.product-type.application";
@@ -576,7 +576,7 @@
 			projectRoot = "";
 			targets = (
 				50AF49DB1439CBFE00E4A5EF /* CocoaLibSpotify */,
-				50D4F52A156BCDE800E237DD /* CocoaLibSpotify iOS Test Container */,
+				50D4F52A156BCDE800E237DD /* CocoaLSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -856,7 +856,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		50D4F549156BCDE800E237DD /* Build configuration list for PBXNativeTarget "CocoaLibSpotify iOS Test Container" */ = {
+		50D4F549156BCDE800E237DD /* Build configuration list for PBXNativeTarget "CocoaLSTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				50D4F547156BCDE800E237DD /* Debug */,
