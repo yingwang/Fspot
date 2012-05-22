@@ -41,6 +41,7 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 
 @implementation SPSessionTests {
 	BOOL _didGetLoginBlob;
+	BOOL _shouldValidateBlobs;
 	NSString *_loginBlobUsername;
 	NSString *_loginBlob;
 }
@@ -163,6 +164,8 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 
 -(void)test6CredentialBlobs {
 	
+	_shouldValidateBlobs = YES;
+	
 	if (_didGetLoginBlob)
 		[self validateReceivedBlobs];
 	else
@@ -192,7 +195,8 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 	_loginBlobUsername = userName;
 	_loginBlob = credential;
 	_didGetLoginBlob = YES;
-	[self validateReceivedBlobs];
+	if (_shouldValidateBlobs)
+		[self validateReceivedBlobs];
 }
 
 @end
