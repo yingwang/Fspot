@@ -35,10 +35,15 @@
 #import "SPUser.h"
 
 static NSTimeInterval const kSessionLoadingTimeout = 15.0;
+static NSTimeInterval const kSessionBlobTimeout = 15.0;
 static NSString * const kTestUserNameUserDefaultsKey = @"TestUserName";
 static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 
-@implementation SPSessionTests
+@implementation SPSessionTests {
+	BOOL _didGetLoginBlob;
+	NSString *_loginBlobUsername;
+	NSString *_loginBlob;
+}
 
 #pragma mark - Initialising SPSession
 
@@ -78,6 +83,8 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 	
 	SPTestAssert(error == nil, @"Error should be nil: %@.", error);
 	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
+	
+	[SPSession sharedSession].delegate = self;
 	
 	SPPassTest();
 }
@@ -152,6 +159,40 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 		SPTestAssert([SPSession sharedSession].locale != nil, @"Session has no locale.");
 		SPPassTest();
 	}];
+}
+
+-(void)test6CredentialBlobs {
+	
+	if (_didGetLoginBlob)
+		[self validateReceivedBlobs];
+	else
+		[self performSelector:@selector(timeoutReceivingBlobs) withObject:nil afterDelay:kSessionBlobTimeout];
+}
+
+-(void)validateReceivedBlobs {
+	[SPSession sharedSession].delegate = nil;
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutReceivingBlobs) object:nil];
+	
+	SEL selector = @selector(test6CredentialBlobs);
+	NSString *userName = [[NSUserDefaults standardUserDefaults] valueForKey:kTestUserNameUserDefaultsKey];
+	
+	SPOtherTestAssert(selector, [_loginBlobUsername caseInsensitiveCompare:userName] == NSOrderedSame, @"Got incorrect user for blob: %@", _loginBlobUsername);
+	SPOtherTestAssert(selector, _loginBlob.length > 0, @"Got empty login blob");
+	[self passTest:selector];
+}
+
+-(void)timeoutReceivingBlobs {
+	if (_didGetLoginBlob) return;
+	[SPSession sharedSession].delegate = nil;
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutReceivingBlobs) object:nil];
+	[self failTest:@selector(test6CredentialBlobs) format:@"Timeout waiting for credential blobs"];
+}
+
+-(void)session:(SPSession *)session didGenerateLoginCredentials:(NSString *)credential forUserName:(NSString *)userName {
+	_loginBlobUsername = userName;
+	_loginBlob = credential;
+	_didGetLoginBlob = YES;
+	[self validateReceivedBlobs];
 }
 
 @end

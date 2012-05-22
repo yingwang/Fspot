@@ -32,6 +32,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SPTests.h"
+#import "SPSession.h"
 
-@interface SPSessionTests : SPTests
+@interface SPSessionTests : SPTests <SPSessionDelegate>
 @end

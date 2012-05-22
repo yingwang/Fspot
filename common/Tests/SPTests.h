@@ -42,6 +42,12 @@ if (!(condition)) {	\
 return; \
 }
 
+#define SPOtherTestAssert(selector, condition, desc, ...) \
+if (!(condition)) {	\
+[self failTest:selector format:(desc), ##__VA_ARGS__]; \
+return; \
+}
+
 -(void)passTest:(SEL)testSelector;
 -(void)failTest:(SEL)testSelector format:(NSString *)format, ...;
 
