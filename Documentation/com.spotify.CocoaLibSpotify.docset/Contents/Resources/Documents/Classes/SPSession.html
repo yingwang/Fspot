@@ -68,6 +68,8 @@
 	
 	<option value="//api/name/playing">&nbsp;&nbsp;&nbsp;&nbsp;playing</option>
 	
+	<option value="//api/name/privateSession">&nbsp;&nbsp;&nbsp;&nbsp;privateSession</option>
+	
 	<option value="//api/name/session">&nbsp;&nbsp;&nbsp;&nbsp;session</option>
 	
 	<option value="//api/name/starredPlaylist">&nbsp;&nbsp;&nbsp;&nbsp;starredPlaylist</option>
@@ -106,7 +108,13 @@
 	
 	<option value="//api/name/attemptLoginWithUserName:password:rememberCredentials:">&nbsp;&nbsp;&nbsp;&nbsp;- attemptLoginWithUserName:password:rememberCredentials:</option>
 	
+	<option value="//api/name/fetchLoginUserName:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchLoginUserName:</option>
+	
 	<option value="//api/name/fetchOfflineKeyTimeRemaining:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchOfflineKeyTimeRemaining:</option>
+	
+	<option value="//api/name/fetchScrobblingAllowedForService:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchScrobblingAllowedForService:callback:</option>
+	
+	<option value="//api/name/fetchScrobblingStateForService:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchScrobblingStateForService:callback:</option>
 	
 	<option value="//api/name/fetchStoredCredentialsUserName:">&nbsp;&nbsp;&nbsp;&nbsp;- fetchStoredCredentialsUserName:</option>
 	
@@ -142,6 +150,10 @@
 	
 	<option value="//api/name/setPreferredBitrate:">&nbsp;&nbsp;&nbsp;&nbsp;- setPreferredBitrate:</option>
 	
+	<option value="//api/name/setScrobblingState:forService:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- setScrobblingState:forService:callback:</option>
+	
+	<option value="//api/name/setScrobblingUserName:password:forService:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- setScrobblingUserName:password:forService:callback:</option>
+	
 	<option value="//api/name/trackForTrackStruct:">&nbsp;&nbsp;&nbsp;&nbsp;- trackForTrackStruct:</option>
 	
 	<option value="//api/name/trackForURL:callback:">&nbsp;&nbsp;&nbsp;&nbsp;- trackForURL:callback:</option>
@@ -173,6 +185,8 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Logging In and Setup">Logging In and Setup</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Properties">Properties</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Social and Scrobbling">Social and Scrobbling</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Offline Syncing">Offline Syncing</a></span></li>
 	
@@ -220,6 +234,8 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/playing">playing</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/privateSession">privateSession</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/session">session</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/starredPlaylist">starredPlaylist</a></span></li>
@@ -260,7 +276,13 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/attemptLoginWithUserName:password:rememberCredentials:">attemptLoginWithUserName:password:rememberCredentials:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchLoginUserName:">fetchLoginUserName:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchOfflineKeyTimeRemaining:">fetchOfflineKeyTimeRemaining:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchScrobblingAllowedForService:callback:">fetchScrobblingAllowedForService:callback:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchScrobblingStateForService:callback:">fetchScrobblingStateForService:callback:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/fetchStoredCredentialsUserName:">fetchStoredCredentialsUserName:</a></span></li>
 	
@@ -295,6 +317,10 @@
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setMaximumCacheSizeMB:">setMaximumCacheSizeMB:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setPreferredBitrate:">setPreferredBitrate:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setScrobblingState:forService:callback:">setScrobblingState:forService:callback:</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/setScrobblingUserName:password:forService:callback:">setScrobblingUserName:password:forService:callback:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/trackForTrackStruct:">trackForTrackStruct:</a></span></li>
 	
@@ -354,7 +380,7 @@ SPSession object before using any other part of the API.</p>
 <p>To log in and use CocoaLibSpotify, you need two things:</p>
 
 <ul>
-<li>An application key, available at the <a href="http://developer.spotify.com/">Spotify Developers Site</a>.</li>
+<li>An application key, available at the <a href="http://developer.spotify.com/">Spotify Developer Site</a>.</li>
 <li>A <a href="#//api/name/user">user</a> account with the Premium subscription level.</li>
 </ul>
 
@@ -426,6 +452,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	<span class="tooltip">
 		<code><a href="#//api/name/attemptLoginWithUserName:existingCredential:rememberCredentials:">&ndash;&nbsp;attemptLoginWithUserName:existingCredential:rememberCredentials:</a></code>
 		<span class="tooltip"><p>Attempt to login to the Spotify service using an existing login credentials blob.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/fetchLoginUserName:">&ndash;&nbsp;fetchLoginUserName:</a></code>
+		<span class="tooltip"><p>The username used to log in to this <a href="#//api/name/session">session</a>.</p></span>
 	</span>
 	
 	
@@ -520,6 +553,50 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 		<span class="tooltip"><p>Returns the loading policy of the <a href="#//api/name/session">session</a>.</p></span>
 	</span>
 	<span class="task-item-suffix">property</span>
+	
+</li>
+						</ul>
+						
+						
+						<a title="Social and Scrobbling" name="task_Social and Scrobbling"></a>
+						<h3 class="subsubtitle task-title">Social and Scrobbling</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/privateSession">&nbsp;&nbsp;privateSession</a></code>
+		<span class="tooltip"><p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently a &ldquo;Private&rdquo; <a href="#//api/name/session">session</a> &ndash; that is, scrobbling to
+social services is temporarily disabled.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/setScrobblingState:forService:callback:">&ndash;&nbsp;setScrobblingState:forService:callback:</a></code>
+		<span class="tooltip"><p>Sets the scrobbling status for the given social service.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/setScrobblingUserName:password:forService:callback:">&ndash;&nbsp;setScrobblingUserName:password:forService:callback:</a></code>
+		<span class="tooltip"><p>Sets the scrobbling credientials for the given social service.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/fetchScrobblingStateForService:callback:">&ndash;&nbsp;fetchScrobblingStateForService:callback:</a></code>
+		<span class="tooltip"><p>Gets the scrobbling status for the given social service.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/fetchScrobblingAllowedForService:callback:">&ndash;&nbsp;fetchScrobblingAllowedForService:callback:</a></code>
+		<span class="tooltip"><p>Gets whether scrobbling is allowed for the given service.</p></span>
+	</span>
+	
 	
 </li>
 						</ul>
@@ -1334,6 +1411,46 @@ playback ending or being paused because the account is being used for playback e
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/privateSession" title="privateSession"></a>
+	<h3 class="subsubtitle method-title">privateSession</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns <code>YES</code> if the <a href="#//api/name/session">session</a> is currently a &ldquo;Private&rdquo; <a href="#//api/name/session">session</a> &ndash; that is, scrobbling to
+social services is temporarily disabled.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (nonatomic, readwrite, getter=isPrivateSession) BOOL privateSession</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<div class="warning"><p><strong>Warning:</strong> <em>Important:</em> This may change back to <code>NO</code> after a long period of inactivity.</p></div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/session" title="session"></a>
 	<h3 class="subsubtitle method-title">session</h3>
 	
@@ -2010,6 +2127,51 @@ most other API methods.</p></div>
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/fetchLoginUserName:" title="fetchLoginUserName:"></a>
+	<h3 class="subsubtitle method-title">fetchLoginUserName:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>The username used to log in to this <a href="#//api/name/session">session</a>.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)fetchLoginUserName:(void ( ^ ) ( NSString *loginUserName ))<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The block to be called with the username that was used to login to the current <a href="#//api/name/session">session</a>, or
+<code>nil</code> if the <a href="#//api/name/session">session</a> is not logged in.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/fetchOfflineKeyTimeRemaining:" title="fetchOfflineKeyTimeRemaining:"></a>
 	<h3 class="subsubtitle method-title">fetchOfflineKeyTimeRemaining:</h3>
 	
@@ -2029,6 +2191,110 @@ most other API methods.</p></div>
 		<dl class="argument-def parameter-def">
 			<dt><em>block</em></dt>
 			<dd><p>The block to be called with the remaining time.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/fetchScrobblingAllowedForService:callback:" title="fetchScrobblingAllowedForService:callback:"></a>
+	<h3 class="subsubtitle method-title">fetchScrobblingAllowedForService:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Gets whether scrobbling is allowed for the given service.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)fetchScrobblingAllowedForService:(sp_social_provider)<em>service</em> callback:(void ( ^ ) ( BOOL scrobblingAllowed , NSError *error ))<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>service</em></dt>
+			<dd><p>The social service to get status for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The block to be called with the scrobbling state for the given service, or an <code>NSError</code> if a problem occurred.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>If this method returns <code>NO</code> for a given service, it cannot be scrobbled to. UI for setting up scrobbling
+for the service should either be disabled or hidden in this case.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/fetchScrobblingStateForService:callback:" title="fetchScrobblingStateForService:callback:"></a>
+	<h3 class="subsubtitle method-title">fetchScrobblingStateForService:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Gets the scrobbling status for the given social service.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)fetchScrobblingStateForService:(sp_social_provider)<em>service</em> callback:(void ( ^ ) ( sp_scrobbling_state state , NSError *error ))<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>service</em></dt>
+			<dd><p>The social service to get status for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The block to be called with the scrobbling state of the given service, or an <code>NSError</code> if a problem occurred.</p></dd>
 		</dl>
 		
 	</div>
@@ -2952,6 +3218,125 @@ to the next track during normal playback.</p>
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/setScrobblingState:forService:callback:" title="setScrobblingState:forService:callback:"></a>
+	<h3 class="subsubtitle method-title">setScrobblingState:forService:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Sets the scrobbling status for the given social service.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)setScrobblingState:(sp_scrobbling_state)<em>state</em> forService:(sp_social_provider)<em>service</em> callback:(SPErrorableOperationCallback)<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>state</em></dt>
+			<dd><p>The desired scrobbling state. Note: Setting global status isn&rsquo;t yet supported.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>service</em></dt>
+			<dd><p>The social service to set scrobbling state for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The <code>SPErrorableOperationCallback</code> block to be called with an <code>NSError</code> if the operation failed or <code>nil</code> if the operation succeeded.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/setScrobblingUserName:password:forService:callback:" title="setScrobblingUserName:password:forService:callback:"></a>
+	<h3 class="subsubtitle method-title">setScrobblingUserName:password:forService:callback:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Sets the scrobbling credientials for the given social service.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)setScrobblingUserName:(NSString *)<em>userName</em> password:(NSString *)<em>password</em> forService:(sp_social_provider)<em>service</em> callback:(SPErrorableOperationCallback)<em>block</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>userName</em></dt>
+			<dd><p>The username for the service (i.e., Last.fm).</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>password</em></dt>
+			<dd><p>The password for the service.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>service</em></dt>
+			<dd><p>The social service to set credentials for.</p></dd>
+		</dl>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>block</em></dt>
+			<dd><p>The <code>SPErrorableOperationCallback</code> block to be called with an <code>NSError</code> if the operation failed or <code>nil</code> if the operation succeeded.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Call <a href="#//api/name/setScrobblingState:forService:callback:"><code>setScrobblingState:forService:callback:</code></a> to force a new connection after changing details. If the credentials
+are invalid, the <code>session:didEncounterScrobblingError:</code> method on your <a href="../Protocols/SPSessionDelegate.html"><code>SPSessionDelegate</code></a> will be called with more information.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/trackForTrackStruct:" title="trackForTrackStruct:"></a>
 	<h3 class="subsubtitle method-title">trackForTrackStruct:</h3>
 	
@@ -3269,7 +3654,7 @@ convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> Th
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-22)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-23)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

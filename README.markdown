@@ -77,7 +77,7 @@ The built CocoaLibSpotify.framework contains libspotify.framework as a child fra
 
 Otherwise, you'd point to the downloaded libspotify.framework manually, something like this:
 
-`../../libspotify-11.1.56-Darwin-universal`
+`../../libspotify-12.1.45-Darwin-universal`
 
 ## Building - iOS ##
 

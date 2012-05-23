@@ -30,5 +30,6 @@
 @interface SPSession (SPSessionInternal)
 
 -(void)addLoadingObject:(id)object;
+-(void)setPrivateSessionFromLibSpotifyUpdate:(BOOL)isPrivate;
 
 @end

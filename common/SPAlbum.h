@@ -122,6 +122,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Returns the album's cover image. Returns `nil` if the metadata isn't loaded yet, or if the album doesn't have a cover image. */
 @property (nonatomic, readonly, strong) SPImage *cover;
 
+/** Returns a thumbnail version of the album's cover image. Returns `nil` if the metadata isn't loaded yet, or if the album doesn't have a cover image. */
+@property (nonatomic, readonly, strong) SPImage *smallCover;
+
+/** Returns a large version of the album's cover image. Returns `nil` if the metadata isn't loaded yet, or if the album doesn't have a cover image. */
+@property (nonatomic, readonly, strong) SPImage *largeCover;
+
+/** Returns a largest available version of the album's cover image. Returns `nil` if the metadata isn't loaded yet, or if the album doesn't have a cover image. */
+@property (nonatomic, readonly, strong) SPImage *largestAvailableCover;
+
+/** Returns a smallest available version of the album's cover image. Returns `nil` if the metadata isn't loaded yet, or if the album doesn't have a cover image. */
+@property (nonatomic, readonly, strong) SPImage *smallestAvailableCover;
+
 /** Returns `YES` if the album is available in the logged-in user's region. */
 @property (nonatomic, readonly, getter=isAvailable) BOOL available;
 

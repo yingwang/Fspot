@@ -87,7 +87,10 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 	
 	[SPSession sharedSession].delegate = self;
 	
-	SPPassTest();
+	[[SPSession sharedSession] fetchLoginUserName:^(NSString *loginUserName) {
+		SPTestAssert(loginUserName == nil, @"loginUserName should be nil: %@.", loginUserName);
+		SPPassTest();
+	}];
 }
 
 #pragma mark - Logging In
@@ -119,7 +122,11 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 
 -(void)loginDidSucceed:(NSNotification *)notification {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[self passTest:@selector(test3SessionLogin)];
+	
+	[[SPSession sharedSession] fetchLoginUserName:^(NSString *loginUserName) {
+		SPOtherTestAssert(@selector(test3SessionLogin), loginUserName != nil, @"loginUserName was nil after login");
+		[self passTest:@selector(test3SessionLogin)];
+	}];
 }
 
 -(void)loginDidFail:(NSNotification *)notification {

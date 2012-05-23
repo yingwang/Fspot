@@ -49,6 +49,7 @@
 #import "SPPlaylistFolderInternal.h"
 #import "SPPlaylistItem.h"
 #import "SPUnknownPlaylist.h"
+#import "SPSessionInternal.h"
 
 @interface NSObject (SPLoadedObject)
 -(BOOL)checkLoaded;
@@ -440,7 +441,11 @@ static void offline_status_updated(sp_session *session) {
 static void offline_error(sp_session *session, sp_error error) {
 	
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
-	sess.offlineSyncError = [NSError spotifyErrorWithCode:error];
+	NSError *err = [NSError spotifyErrorWithCode:error];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		sess.offlineSyncError = err;
+	});
 }
 
 static void credentials_blob_updated(sp_session *session, const char *blob) {
@@ -448,14 +453,64 @@ static void credentials_blob_updated(sp_session *session, const char *blob) {
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	
 	@autoreleasepool {
-		SEL selector = @selector(session:didGenerateLoginCredentials:forUserName:);
 		
-		if ([[sess delegate] respondsToSelector:selector]) {
-			[(id <SPSessionDelegate>)[sess delegate] session:sess
-								 didGenerateLoginCredentials:[NSString stringWithUTF8String:blob]
-												 forUserName:sess.user.canonicalName];
+		NSString *credentialsBlob = [NSString stringWithUTF8String:blob];
+		const char *user_name = sp_session_user_name(session);
+		NSString *loginUserName = user_name == NULL ? nil : [NSString stringWithUTF8String:user_name];
+		if (loginUserName.length == 0) loginUserName = nil;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
 			
-		}
+			SEL selector = @selector(session:didGenerateLoginCredentials:forUserName:);
+			
+			if ([[sess delegate] respondsToSelector:selector]) {
+				[(id <SPSessionDelegate>)[sess delegate] session:sess
+									 didGenerateLoginCredentials:credentialsBlob
+													 forUserName:loginUserName];
+			}
+		});
+	}
+}
+
+static void connectionstate_updated(sp_session *session) {
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	sp_connectionstate state = sp_session_connectionstate(session);
+
+	@autoreleasepool {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			sess.connectionState = state;
+		});
+	}
+}
+
+static void scrobble_error(sp_session *session, sp_error error) {
+	
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	
+	@autoreleasepool {
+		
+		NSError *err = [NSError spotifyErrorWithCode:error];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			SEL selector = @selector(session:didEncounterScrobblingError:);
+			
+			if ([[sess delegate] respondsToSelector:selector]) {
+				[(id <SPSessionDelegate>)[sess delegate] session:sess
+									 didEncounterScrobblingError:err];
+			}
+		});
+	}
+}
+
+static void private_session_mode_changed(sp_session *session, bool is_private) {
+	
+	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
+	
+	@autoreleasepool {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[sess setPrivateSessionFromLibSpotifyUpdate:is_private];
+		});
 	}
 }
 
@@ -523,11 +578,15 @@ static sp_session_callbacks _callbacks = {
 	&offline_status_updated,
 	&offline_error,
 	&credentials_blob_updated,
+	&connectionstate_updated,
 #if TARGET_OS_IPHONE
 	&show_signup_page,
 	&show_signup_error_page,
-	&connect_to_facebook
+	&connect_to_facebook,
+	NULL,
 #endif
+	&scrobble_error,
+	&private_session_mode_changed
 };
 
 #pragma mark -
@@ -536,8 +595,8 @@ static NSString * const kSPSessionKVOContext = @"kSPSessionKVOContext";
 
 @implementation SPSession {
 	BOOL _playing;
-	sp_connectionstate _connectionState;
 	BOOL _cachedIsUsingNormalization;
+	BOOL _privateSession;
 }
 
 static dispatch_queue_t libspotify_global_queue;
@@ -737,6 +796,20 @@ static SPSession *sharedSession;
 	}];
 }
 
+-(void)fetchLoginUserName:(void (^)(NSString *loginUserName))block {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		if (self.session == NULL)
+			return;
+		
+		const char *user_name = sp_session_user_name(self.session);
+		NSString *loginUserName = user_name == NULL ? nil : [NSString stringWithUTF8String:user_name];
+		if (loginUserName.length == 0) loginUserName = nil;
+		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(loginUserName); });
+	});
+}
+
 -(void)attemptLoginWithStoredCredentials:(SPErrorableOperationCallback)block {
 
 	dispatch_async([SPSession libSpotifyQueue], ^{
@@ -921,22 +994,7 @@ static SPSession *sharedSession;
 	});
 }
 
--(sp_connectionstate)connectionState {
-	// This is AWFUL. Will fix when libspotify has proper callbacks
-	// for the connection state changing.
-	
-	SPDispatchSyncIfNeeded(^() { 
-		if (self.session != nil) {
-			sp_connectionstate newState = sp_session_connectionstate(self.session);
-			if (newState != _connectionState)
-				self.connectionState = newState;
-		}
-	});
-	
-	return _connectionState;
-}
-
-@synthesize connectionState = _connectionState;
+@synthesize connectionState;
 @synthesize playlistCache;
 @synthesize trackCache;
 @synthesize userCache;
@@ -962,6 +1020,84 @@ static SPSession *sharedSession;
 	self.locale != nil &&
 	self.userPlaylists != nil;
 }
+
+#pragma mark - Social and Scrobbling
+
+-(BOOL)isPrivateSession {
+	return _privateSession;
+}
+
+-(void)setPrivateSession:(BOOL)privateSession {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		sp_session_set_private_session(self.session, privateSession);
+	});
+	
+	_privateSession = privateSession;
+}
+
+-(void)setPrivateSessionFromLibSpotifyUpdate:(BOOL)isPrivate {
+	[self willChangeValueForKey:@"privateSession"];
+	_privateSession = isPrivate;
+	[self didChangeValueForKey:@"privateSession"];
+}
+
+-(void)setScrobblingState:(sp_scrobbling_state)state forService:(sp_social_provider)service callback:(SPErrorableOperationCallback)block {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		sp_error errorCode = sp_session_set_scrobbling(self.session, service, state);
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(error); });
+	});
+}
+
+-(void)setScrobblingUserName:(NSString *)userName password:(NSString *)password forService:(sp_social_provider)service callback:(SPErrorableOperationCallback)block {
+	
+	if (userName.length == 0 || password.length == 0) {
+		if (block) block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]);
+		return;
+	}
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		sp_session_set_social_credentials(self.session, service, userName.UTF8String, password.UTF8String);
+		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(nil); });
+	});
+}
+
+-(void)fetchScrobblingStateForService:(sp_social_provider)service callback:(void (^)(sp_scrobbling_state state, NSError *error))block {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		sp_scrobbling_state out_state;
+		sp_error errorCode = sp_session_is_scrobbling(self.session, service, &out_state);
+		
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(out_state, error); });
+	});
+}
+
+-(void)fetchScrobblingAllowedForService:(sp_social_provider)service callback:(void (^)(BOOL scrobblingAllowed, NSError *error))block {
+	
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		
+		bool out_state = NO;
+		sp_error errorCode = sp_session_is_scrobbling_possible(self.session, service, &out_state);
+		
+		NSError *error = nil;
+		if (errorCode != SP_ERROR_OK)
+			error = [NSError spotifyErrorWithCode:errorCode];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(out_state, error); });
+	});
+}
+
+#pragma mark - Block Getters
 
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
     // WARNING: This MUST be called on the LibSpotify worker queue.

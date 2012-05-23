@@ -30,21 +30,6 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/** This class provides core functionality for interacting with Spotify. You must have a valid, logged-in
- SPSession object before using any other part of the API.
- 
- To log in and use CocoaLibSpotify, you need two things:
- 
- - An application key, available at the [Spotify Developers Site](http://developer.spotify.com/).
- - A user account with the Premium subscription level.
- 
-Playback
- 
- Please note that CocoaLibSpotify does _not_ push audio data to the system's audio
- output. To hear tracks, you need to push the raw audio data provided to your application
- as you see fit. See the SimplePlayback sample project for an example of how to do this.
- */
-
 #import <Foundation/Foundation.h>
 #import "CocoaLibSpotifyPlatformImports.h"
 
@@ -65,6 +50,20 @@ Playback
 @protocol SPPostTracksToInboxOperationDelegate;
 @protocol SPSessionPlaybackProvider;
 
+/** This class provides core functionality for interacting with Spotify. You must have a valid, logged-in
+ SPSession object before using any other part of the API.
+ 
+ To log in and use CocoaLibSpotify, you need two things:
+ 
+ - An application key, available at the [Spotify Developer Site](http://developer.spotify.com/).
+ - A user account with the Premium subscription level.
+ 
+ Playback
+ 
+ Please note that CocoaLibSpotify does _not_ push audio data to the system's audio
+ output. To hear tracks, you need to push the raw audio data provided to your application
+ as you see fit. See the SimplePlayback sample project for an example of how to do this.
+ */
 @interface SPSession : NSObject <SPSessionPlaybackProvider, SPAsyncLoading>
 
 +(dispatch_queue_t)libSpotifyQueue;
@@ -161,6 +160,13 @@ Playback
 -(void)attemptLoginWithUserName:(NSString *)userName
 			 existingCredential:(NSString *)credential
 			rememberCredentials:(BOOL)rememberMe;
+
+/** The username used to log in to this session.
+ 
+ @param block The block to be called with the username that was used to login to the current session, or 
+ `nil` if the session is not logged in.
+ */
+-(void)fetchLoginUserName:(void (^)(NSString *loginUserName))block;
 
 /** Attempt to login to the Spotify service using previously stored credentials.
  
@@ -262,6 +268,54 @@ Playback
 
 /** Returns the loading policy of the session. */
 @property (nonatomic, readonly) SPAsyncLoadingPolicy loadingPolicy;
+
+///----------------------------
+/// @name Social and Scrobbling
+///----------------------------
+
+/** Returns `YES` if the session is currently a "Private" session - that is, scrobbling to 
+ social services is temporarily disabled.
+
+ @warning *Important:* This may change back to `NO` after a long period of inactivity.
+*/ 
+@property (nonatomic, readwrite, getter=isPrivateSession) BOOL privateSession;
+
+/** Sets the scrobbling status for the given social service. 
+ 
+ @param state The desired scrobbling state. Note: Setting global status isn't yet supported.
+ @param service The social service to set scrobbling state for.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
+ */
+-(void)setScrobblingState:(sp_scrobbling_state)state forService:(sp_social_provider)service callback:(SPErrorableOperationCallback)block;
+
+/** Sets the scrobbling credientials for the given social service.
+ 
+ Call `setScrobblingState:forService:callback:` to force a new connection after changing details. If the credentials 
+ are invalid, the `session:didEncounterScrobblingError:` method on your `SPSessionDelegate` will be called with more information.
+ 
+ @param userName The username for the service (i.e., Last.fm).
+ @param password The password for the service.
+ @param service The social service to set credentials for.
+ @param block The `SPErrorableOperationCallback` block to be called with an `NSError` if the operation failed or `nil` if the operation succeeded.
+ */
+-(void)setScrobblingUserName:(NSString *)userName password:(NSString *)password forService:(sp_social_provider)service callback:(SPErrorableOperationCallback)block;
+
+/** Gets the scrobbling status for the given social service.
+ 
+ @param service The social service to get status for.
+ @param block The block to be called with the scrobbling state of the given service, or an `NSError` if a problem occurred.
+ */
+-(void)fetchScrobblingStateForService:(sp_social_provider)service callback:(void (^)(sp_scrobbling_state state, NSError *error))block;
+
+/** Gets whether scrobbling is allowed for the given service.
+ 
+ If this method returns `NO` for a given service, it cannot be scrobbled to. UI for setting up scrobbling
+ for the service should either be disabled or hidden in this case.
+ 
+ @param service The social service to get status for.
+ @param block The block to be called with the scrobbling state for the given service, or an `NSError` if a problem occurred.
+ */
+-(void)fetchScrobblingAllowedForService:(sp_social_provider)service callback:(void (^)(BOOL scrobblingAllowed, NSError *error))block;
 
 ///----------------------------
 /// @name Offline Syncing
@@ -610,6 +664,13 @@ Playback
  @param error An NSError object describing the failure.
  */
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error;
+
+/** Called when there is an error enountered when scrobbling plays to, for example, Last.fm.
+ 
+ @param aSession The session that encountered a problem. 
+ @param error An NSError object describing the failure.
+ */
+-(void)session:(SPSession *)aSession didEncounterScrobblingError:(NSError *)error;
 
 /** Called when a log-worthy message is generated by the Spotify service.
  

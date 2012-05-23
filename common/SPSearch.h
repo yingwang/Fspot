@@ -30,8 +30,6 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/** This class performs a search on the Spotify catalogue available to the given session, returning tracks, albums and artists. */
-
 #import <Foundation/Foundation.h>
 #import "CocoaLibSpotifyPlatformImports.h"
 
@@ -42,6 +40,7 @@ static SInt32 const kSPSearchDefaultSearchPageSize = 75;
 /** The "do not search" page size. Used if you don't want to search for a particular kind of result. */
 static SInt32 const kSPSearchDoNotSearchPageSize = 0;
 
+/** This class performs a search on the Spotify catalogue available to the given session, returning tracks, albums and artists. */
 @interface SPSearch : NSObject <SPAsyncLoading>
 
 ///----------------------------

@@ -42,6 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @property (nonatomic, readwrite) sp_album *album;
 @property (nonatomic, readwrite, strong) SPSession *session;
 @property (nonatomic, readwrite, strong) SPImage *cover; 
+@property (nonatomic, readwrite, strong) SPImage *smallCover; 
+@property (nonatomic, readwrite, strong) SPImage *largeCover; 
 @property (nonatomic, readwrite, strong) SPArtist *artist;
 @property (nonatomic, readwrite, copy) NSURL *spotifyURL;
 @property (nonatomic, readwrite, getter=isLoaded) BOOL loaded;
@@ -141,6 +143,8 @@ static NSMutableDictionary *albumCache;
 	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
 	
 	SPImage *newCover = nil;
+	SPImage *newLargeCover = nil;
+	SPImage *newSmallCover = nil;
 	SPArtist *newArtist = nil;
 	NSString *newName = nil;
 	NSUInteger newYear = sp_album_year(self.album);
@@ -148,10 +152,20 @@ static NSMutableDictionary *albumCache;
 	BOOL newAvailable = sp_album_is_available(self.album);
 	BOOL newLoaded = sp_album_is_loaded(self.album);
 	
-	const byte *imageId = sp_album_cover(self.album);
+	const byte *imageId = sp_album_cover(self.album, SP_IMAGE_SIZE_NORMAL);
 	
 	if (imageId != NULL)
 		newCover = [SPImage imageWithImageId:imageId inSession:self.session];
+
+	const byte *smallImageId = sp_album_cover(self.album, SP_IMAGE_SIZE_SMALL);
+	
+	if (smallImageId != NULL)
+		newSmallCover = [SPImage imageWithImageId:smallImageId inSession:self.session];
+
+	const byte *largeImageId = sp_album_cover(self.album, SP_IMAGE_SIZE_LARGE);
+	
+	if (largeImageId != NULL)
+		newLargeCover = [SPImage imageWithImageId:largeImageId inSession:self.session];
 	
 	sp_artist *spArtist = sp_album_artist(self.album);
 	if (spArtist != NULL)
@@ -167,6 +181,8 @@ static NSMutableDictionary *albumCache;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		self.cover = newCover;
+		self.smallCover = newSmallCover;
+		self.largeCover = newLargeCover;
 		self.artist = newArtist;
 		self.name = newName;
 		self.year = newYear;
@@ -201,6 +217,8 @@ static NSMutableDictionary *albumCache;
 @synthesize album = _album;
 @synthesize session;
 @synthesize cover;
+@synthesize smallCover;
+@synthesize largeCover;
 @synthesize artist;
 @synthesize spotifyURL;
 @synthesize available;
@@ -208,6 +226,28 @@ static NSMutableDictionary *albumCache;
 @synthesize year;
 @synthesize type;
 @synthesize name;
+
++(NSSet *)keyPathsForValuesAffectingSmallestAvailableCover {
+	return [NSSet setWithObjects:@"smallCover", @"cover", @"largeCover", nil];
+}
+
+-(SPImage *)smallestAvailableCover {
+	if (self.smallCover) return self.smallCover;
+	if (self.cover) return self.cover;
+	if (self.largeCover) return self.largeCover;
+	return nil;
+}
+
++(NSSet *)keyPathsForValuesAffectingLargestAvailableCover {
+	return [NSSet setWithObjects:@"smallCover", @"cover", @"largeCover", nil];
+}
+
+-(SPImage *)largestAvailableCover {
+	if (self.largeCover) return self.largeCover;
+	if (self.cover) return self.cover;
+	if (self.smallCover) return self.smallCover;
+	return nil;
+}
 
 -(void)dealloc {
 	sp_album *outgoing_album = _album;

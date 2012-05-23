@@ -59,7 +59,11 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	
 		[session fetchStoredCredentialsUserName:^(NSString *storedUserName) {
 			SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"StoredCredentialsUserName callback on wrong queue.");
-			SPPassTest();
+			
+			[session fetchLoginUserName:^(NSString *loginUserName) {
+				SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"FetchLoginUserName callback on wrong queue.");
+				SPPassTest();
+			}];
 		}];
 	}];
 }
