@@ -66,6 +66,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @interface SPSession : NSObject <SPSessionPlaybackProvider, SPAsyncLoading>
 
+/** Returns the dispatch queue that methods interacting with the libSpotify C API must be called on.
+ 
+ Any methods in CocoaLibSpotify that publicly expose parts of the libSpotify C API *or* direct calls 
+ to libSpotify's C functions must be called on the queue returned by this method. This queue is dedicated
+ to libSpotify and is separate from the application's main queue (`dispatch_get_main_queue()`).
+ 
+ Methods in CocoaLibSpotify that require this queue are documented as such, and will throw an
+ assertion if called from any other queue. libSpotify C functions will not throw an assertion - instead
+ you're likely to trigger an apparently random crash in the future since the library is not thread-safe.
+ 
+ Examples for using this queue properly can be found in the project's README file.
+ */
 +(dispatch_queue_t)libSpotifyQueue;
 
 /** Returns a shared SPSession object. 

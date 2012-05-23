@@ -91,6 +91,8 @@
 	
 	<option value="//api/name/libSpotifyBuildId">&nbsp;&nbsp;&nbsp;&nbsp;+ libSpotifyBuildId</option>
 	
+	<option value="//api/name/libSpotifyQueue">&nbsp;&nbsp;&nbsp;&nbsp;+ libSpotifyQueue</option>
+	
 	<option value="//api/name/sharedSession">&nbsp;&nbsp;&nbsp;&nbsp;+ sharedSession</option>
 	
 	
@@ -258,6 +260,8 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/libSpotifyBuildId">libSpotifyBuildId</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/libSpotifyQueue">libSpotifyQueue</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/sharedSession">sharedSession</a></span></li>
 	
 </ul></li>
@@ -406,6 +410,13 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 
 						<ul class="task-list">
 							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/libSpotifyQueue">+&nbsp;libSpotifyQueue</a></code>
+		<span class="tooltip"><p>Returns the dispatch queue that methods interacting with the libSpotify C API must be called on.</p></span>
+	</span>
+	
+	
+</li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/sharedSession">+&nbsp;sharedSession</a></code>
 		<span class="tooltip"><p>Returns a shared SPSession object.</p></span>
@@ -794,7 +805,7 @@ social services is temporarily disabled.</p></span>
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/unknownPlaylistForPlaylistStruct:">&ndash;&nbsp;unknownPlaylistForPlaylistStruct:</a></code>
-		<span class="tooltip"><p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
+		<span class="tooltip"><p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
 	</span>
 	
 	
@@ -1792,6 +1803,53 @@ make sure you only have <em>one</em> instance of SPSession active in your proces
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>This could be useful to display somewhere deep down in the <a href="#//api/name/user">user</a> interface in
 case you (or Spotify) would like to know the exact version running.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/libSpotifyQueue" title="libSpotifyQueue"></a>
+	<h3 class="subsubtitle method-title">libSpotifyQueue</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns the dispatch queue that methods interacting with the libSpotify C API must be called on.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>+ (dispatch_queue_t)libSpotifyQueue</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Any methods in CocoaLibSpotify that publicly expose parts of the libSpotify C API <em>or</em> direct calls
+to libSpotify&rsquo;s C functions must be called on the queue returned by this method. This queue is dedicated
+to libSpotify and is separate from the application&rsquo;s main queue (<code>dispatch_get_main_queue()</code>).</p>
+
+<p>Methods in CocoaLibSpotify that require this queue are documented as such, and will throw an
+assertion if called from any other queue. libSpotify C functions will not throw an assertion &ndash; instead
+you&rsquo;re likely to trigger an apparently random crash in the future since the library is not thread-safe.</p>
+
+<p>Examples for using this queue properly can be found in the project&rsquo;s README file.</p>
 	</div>
 	
 	
@@ -3448,7 +3506,7 @@ convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> Th
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
+		<p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
 	</div>		
 	
 	
@@ -3469,7 +3527,7 @@ convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> Th
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created or cached <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> object.</p>
+		<p>Returns the created or cached SPUnknownPlaylist object.</p>
 	</div>
 	
 	
