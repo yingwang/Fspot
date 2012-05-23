@@ -1,8 +1,8 @@
 //
-//  SPPostTracksToInboxTests.m
-//  CocoaLibSpotify Mac Framework
+//  SPConcurrencyTests.h
+//  CocoaLibSpotify iOS Library
 //
-//  Created by Daniel Kennett on 10/05/2012.
+//  Created by Daniel Kennett on 23/05/2012.
 /*
  Copyright (c) 2011, Spotify AB
  All rights reserved.
@@ -30,33 +30,8 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "SPPostTracksToInboxTests.h"
-#import "SPSession.h"
-#import "SPTrack.h"
-#import "SPPostTracksToInboxOperation.h"
+#import <Foundation/Foundation.h>
+#import "SPTests.h"
 
-static NSString * const kTargetUserName = @"alana-test";
-static NSString * const kOperationMessage = @"Hello from the CocoaLibSpotify test suite!";
-static NSString * const kTrackToSendURI = @"spotify:track:3O0kOIdSdb3xQnjoi1AjRD";
-
-@implementation SPPostTracksToInboxTests
-
--(void)testPostTracksToInbox {
-	
-	[SPTrack trackForTrackURL:[NSURL URLWithString:kTrackToSendURI] inSession:[SPSession sharedSession] callback:^(SPTrack *track) {
-		
-		SPTestAssert(track != nil, @"SPTrack returned nil for %@", kTrackToSendURI);
-		
-		[SPPostTracksToInboxOperation sendTracks:[NSArray arrayWithObject:track]
-										  toUser:kTargetUserName
-										  message:kOperationMessage
-									   inSession:[SPSession sharedSession]
-										callback:^(NSError *error) {
-											SPTestAssert(error == nil, @"Post to inbox operation encountered error: %@", error);
-											SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"Post tracks callback on wrong queue.");
-											SPPassTest();
-										}];
-	}];
-}
-
+@interface SPConcurrencyTests : SPTests
 @end

@@ -90,6 +90,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 								 type:SP_ARTISTBROWSE_NO_TRACKS
 							 callback:^(SPArtistBrowse *artistBrowse) {
 								 
+								 SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"browseArtistAtURL callback on wrong queue.");
+								 
 								 [SPAsyncLoading waitUntilLoaded:artistBrowse timeout:kMetadataLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
 									 SPTestAssert(notLoadedItems.count == 0, @"ArtistBrowse loading timed out for %@", artistBrowse);
 									 SPTestAssert(artistBrowse.loadError == nil, @"ArtistBrowse encountered load error: %@", artistBrowse.loadError);
@@ -103,17 +105,19 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 -(void)testAlbumBrowseMetadataLoading {
 	
 	[SPAlbumBrowse browseAlbumAtURL:[NSURL URLWithString:kAlbumBrowseLoadingTestURI]
-							inSession:[SPSession sharedSession]
-								 callback:^(SPAlbumBrowse *albumBrowse) {
-								 
-								 [SPAsyncLoading waitUntilLoaded:albumBrowse timeout:kMetadataLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
-									 SPTestAssert(notLoadedItems.count == 0, @"AlbumBrowse loading timed out for %@", albumBrowse);
-									 SPTestAssert(albumBrowse.loadError == nil, @"AlbumBrowse encountered load error: %@", albumBrowse.loadError);
-									 SPTestAssert(albumBrowse.tracks.count != 0, @"AlbumBrowse has no tracks");
-									 SPTestAssert(albumBrowse.artist != 0, @"AlbumBrowse has no artist");
-									 SPPassTest();
-								 }];
-							 }];
+						  inSession:[SPSession sharedSession]
+						   callback:^(SPAlbumBrowse *albumBrowse) {
+							   
+							   SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"browseAlbumAtURL callback on wrong queue.");
+							   
+							   [SPAsyncLoading waitUntilLoaded:albumBrowse timeout:kMetadataLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
+								   SPTestAssert(notLoadedItems.count == 0, @"AlbumBrowse loading timed out for %@", albumBrowse);
+								   SPTestAssert(albumBrowse.loadError == nil, @"AlbumBrowse encountered load error: %@", albumBrowse.loadError);
+								   SPTestAssert(albumBrowse.tracks.count != 0, @"AlbumBrowse has no tracks");
+								   SPTestAssert(albumBrowse.artist != 0, @"AlbumBrowse has no artist");
+								   SPPassTest();
+							   }];
+						   }];
 }
 
 -(void)testTrackMetadataLoading {

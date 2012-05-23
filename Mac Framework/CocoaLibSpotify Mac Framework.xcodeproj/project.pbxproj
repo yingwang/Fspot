@@ -41,6 +41,7 @@
 		504E4957155AB29100E1C0F7 /* SPSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E4956155AB29100E1C0F7 /* SPSessionTests.m */; };
 		50632D5E145E9AF100A51AC8 /* SPPlaylistItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50632D5C145E9AF100A51AC8 /* SPPlaylistItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50632D5F145E9AF100A51AC8 /* SPPlaylistItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 50632D5D145E9AF100A51AC8 /* SPPlaylistItem.m */; };
+		5063553D156CD93400E1C8D1 /* SPConcurrencyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5063553C156CD93400E1C8D1 /* SPConcurrencyTests.m */; };
 		506359451369833500B90B67 /* SPToplist.h in Headers */ = {isa = PBXBuildFile; fileRef = 506359431369833500B90B67 /* SPToplist.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		506359461369833500B90B67 /* SPToplist.m in Sources */ = {isa = PBXBuildFile; fileRef = 506359441369833500B90B67 /* SPToplist.m */; };
 		50749E091406E3FD00063404 /* SPErrorExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 50749E081406E3FD00063404 /* SPErrorExtensions.m */; };
@@ -161,6 +162,8 @@
 		504E4956155AB29100E1C0F7 /* SPSessionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSessionTests.m; path = ../../common/Tests/SPSessionTests.m; sourceTree = "<group>"; };
 		50632D5C145E9AF100A51AC8 /* SPPlaylistItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItem.h; path = ../common/SPPlaylistItem.h; sourceTree = "<group>"; };
 		50632D5D145E9AF100A51AC8 /* SPPlaylistItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPPlaylistItem.m; path = ../common/SPPlaylistItem.m; sourceTree = "<group>"; };
+		5063553B156CD93400E1C8D1 /* SPConcurrencyTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPConcurrencyTests.h; path = ../../common/Tests/SPConcurrencyTests.h; sourceTree = "<group>"; };
+		5063553C156CD93400E1C8D1 /* SPConcurrencyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPConcurrencyTests.m; path = ../../common/Tests/SPConcurrencyTests.m; sourceTree = "<group>"; };
 		506359431369833500B90B67 /* SPToplist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPToplist.h; path = ../common/SPToplist.h; sourceTree = "<group>"; };
 		506359441369833500B90B67 /* SPToplist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPToplist.m; path = ../common/SPToplist.m; sourceTree = "<group>"; };
 		50749E081406E3FD00063404 /* SPErrorExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPErrorExtensions.m; path = ../common/SPErrorExtensions.m; sourceTree = "<group>"; };
@@ -387,6 +390,8 @@
 			children = (
 				50E8ED49155BB55900F14186 /* SPTests.h */,
 				50E8ED4A155BB55900F14186 /* SPTests.m */,
+				5063553B156CD93400E1C8D1 /* SPConcurrencyTests.h */,
+				5063553C156CD93400E1C8D1 /* SPConcurrencyTests.m */,
 				504E4955155AB29100E1C0F7 /* SPSessionTests.h */,
 				504E4956155AB29100E1C0F7 /* SPSessionTests.m */,
 				50E8ED54155BE46500F14186 /* SPMetadataTests.h */,
@@ -655,6 +660,7 @@
 				50E8ED63155C0F3E00F14186 /* SPAudioDeliveryTests.m in Sources */,
 				50DB8436155D138500608BFB /* SPSessionTeardownTests.m in Sources */,
 				50DB843B155D296E00608BFB /* SPPlaylistTests.m in Sources */,
+				5063553D156CD93400E1C8D1 /* SPConcurrencyTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

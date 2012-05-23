@@ -63,6 +63,7 @@
 		50B1F2071518B1DA00CB7186 /* SPSignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B1F2051518B1DA00CB7186 /* SPSignupViewController.m */; };
 		50B1F28B1518E69A00CB7186 /* SPLoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B1F2891518E69A00CB7186 /* SPLoginViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50B1F28C1518E69A00CB7186 /* SPLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B1F28A1518E69A00CB7186 /* SPLoginViewController.m */; };
+		50B9D4A7156CCE3800EE1665 /* SPConcurrencyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B9D4A6156CCE3800EE1665 /* SPConcurrencyTests.m */; };
 		50D4F52E156BCDE800E237DD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D4F52D156BCDE800E237DD /* UIKit.framework */; };
 		50D4F52F156BCDE800E237DD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50AF49DF1439CBFE00E4A5EF /* Foundation.framework */; };
 		50D4F531156BCDE800E237DD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D4F530156BCDE800E237DD /* CoreGraphics.framework */; };
@@ -182,6 +183,8 @@
 		50B1F2051518B1DA00CB7186 /* SPSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSignupViewController.m; path = "View Controllers/SPSignupViewController.m"; sourceTree = "<group>"; };
 		50B1F2891518E69A00CB7186 /* SPLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPLoginViewController.h; path = "View Controllers/SPLoginViewController.h"; sourceTree = "<group>"; };
 		50B1F28A1518E69A00CB7186 /* SPLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPLoginViewController.m; path = "View Controllers/SPLoginViewController.m"; sourceTree = "<group>"; };
+		50B9D4A5156CCE3800EE1665 /* SPConcurrencyTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPConcurrencyTests.h; sourceTree = "<group>"; };
+		50B9D4A6156CCE3800EE1665 /* SPConcurrencyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPConcurrencyTests.m; sourceTree = "<group>"; };
 		50D4F52B156BCDE800E237DD /* CocoaLSTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CocoaLSTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50D4F52D156BCDE800E237DD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		50D4F530156BCDE800E237DD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -435,6 +438,8 @@
 		50D4F54B156BCE4D00E237DD /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				50D4F55B156BCE4D00E237DD /* SPTests.h */,
+				50D4F55C156BCE4D00E237DD /* SPTests.m */,
 				50D4F54D156BCE4D00E237DD /* SPAudioDeliveryTests.h */,
 				50D4F54E156BCE4D00E237DD /* SPAudioDeliveryTests.m */,
 				50D4F54F156BCE4D00E237DD /* SPMetadataTests.h */,
@@ -449,8 +454,8 @@
 				50D4F558156BCE4D00E237DD /* SPSessionTeardownTests.m */,
 				50D4F559156BCE4D00E237DD /* SPSessionTests.h */,
 				50D4F55A156BCE4D00E237DD /* SPSessionTests.m */,
-				50D4F55B156BCE4D00E237DD /* SPTests.h */,
-				50D4F55C156BCE4D00E237DD /* SPTests.m */,
+				50B9D4A5156CCE3800EE1665 /* SPConcurrencyTests.h */,
+				50B9D4A6156CCE3800EE1665 /* SPConcurrencyTests.m */,
 			);
 			name = Tests;
 			path = ../../common/Tests;
@@ -687,6 +692,7 @@
 				50D4F57E156BCED500E237DD /* SPCircularBuffer.m in Sources */,
 				50D4F57F156BCED500E237DD /* SPCoreAudioController.m in Sources */,
 				50D4F580156BCED500E237DD /* SPPlaybackManager.m in Sources */,
+				50B9D4A7156CCE3800EE1665 /* SPConcurrencyTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

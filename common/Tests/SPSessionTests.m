@@ -135,6 +135,7 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 	
 	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSessionLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
 		
+		SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"SPAsyncLoading callback on wrong queue.");
 		SPTestAssert(notLoadedItems.count == 0, @"Session loading timed out for %@", [SPSession sharedSession]);
 		
 		[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession].user timeout:kSessionLoadingTimeout then:^(NSArray *loadedUsers, NSArray *notLoadedUsers) {

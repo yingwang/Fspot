@@ -119,6 +119,8 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 			
 			[container createPlaylistWithName:kTestPlaylistName callback:^(SPPlaylist *createdPlaylist) {
 				SPTestAssert(createdPlaylist != nil, @"Created nil playlist");
+				SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"createPlaylistWithName callback on wrong queue.");
+				
 				self.playlist = createdPlaylist;
 				
 				[SPAsyncLoading waitUntilLoaded:createdPlaylist timeout:kPlaylistLoadingTimeout then:^(NSArray *loadedPlaylist, NSArray *notLoadedPlaylist) {
@@ -150,6 +152,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 				[self.playlist addItems:[NSArray arrayWithObjects:track1, track2, nil] atIndex:0 callback:^(NSError *error) {
 					
 					SPTestAssert(error == nil, @"Got error when adding to playlist: %@", error);
+					SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"addItems callback on wrong queue.");
 					
 					// Tracks get converted to items.
 					NSArray *originalPlaylistTracks = [self.playlist.items valueForKey:@"item"];
@@ -159,6 +162,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 					
 					[self.playlist moveItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] toIndex:2 callback:^(NSError *moveError) {
 						SPTestAssert(moveError == nil, @"Move operation returned error: %@", moveError);
+						SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"moveItemsAtIndexes callback on wrong queue.");
 						
 						NSArray *movedPlaylistTracks = [self.playlist.items valueForKey:@"item"];
 						SPTestAssert(movedPlaylistTracks.count == 2, @"Playlist doesn't have 2 tracks after move, instead has: %u", movedPlaylistTracks.count);
@@ -168,6 +172,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 						[self.playlist removeItemAtIndex:0 callback:^(NSError *deletionError) {
 							
 							SPTestAssert(deletionError == nil, @"Removal operation returned error: %@", deletionError);
+							SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"removeItemAtIndex		callback on wrong queue.");
 							
 							NSArray *afterDeletionPlaylistTracks = [self.playlist.items valueForKey:@"item"];
 							SPTestAssert(afterDeletionPlaylistTracks.count == 1, @"Playlist doesn't have 1 tracks after track remove, instead has: %u", afterDeletionPlaylistTracks.count);
@@ -200,6 +205,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 			[container removeItem:self.playlist callback:^(NSError *error) {
 				
 				SPTestAssert(error == nil, @"Removal operation returned error: %@", error);
+				SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"removeItem callback on wrong queue.");
 				SPTestAssert(![container.flattenedPlaylists containsObject:self.playlist], @"Playlist container still contains playlist: %@", self.playlist);
 				self.playlist = nil;
 				SPPassTest();
