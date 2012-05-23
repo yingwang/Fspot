@@ -39,6 +39,14 @@
 #import "SPTrack.h"
 #import "SPUser.h"
 
+static NSString * const kArtistLoadingTestURI = @"spotify:artist:26dSoYclwsYLMAKD3tpOr4"; // Britney Spears
+static NSString * const kAlbumLoadingTestURI = @"spotify:album:50KUdiSuV2MmBmreFPl3PE"; // Barenaked Ladies Live
+static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cMIXrVD"; // Spotify Test Track
+static NSString * const kPlaylistLoadingTestURI = @"spotify:user:spotify:playlist:3kWPOhEmuMs8Mfa1xP0Wh4";
+static NSString * const kUserLoadingTestURI = @"spotify:user:spotify";
+static NSString * const kSearchLoadingTestURI = @"spotify:search:counting+crows";
+static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0344f5e557df2b10fa5b0968";
+
 @implementation SPConcurrencyTests
 
 -(void)testSessionPropertyCallbacks {
@@ -56,7 +64,7 @@
 	}];
 }
 
--(void)testSessionConvenienceGetterCallbacks {
+-(void)testSessionInvalidConvenienceGetterCallbacks {
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -104,7 +112,55 @@
 	}];
 }
 
--(void)testClassConvenienceConstructorCallbacks {
+-(void)testSessionConvenienceGetterCallbacks {
+	
+	// Ensure all blocks come back on the main queue
+	SPSession *session = [SPSession sharedSession];
+	
+	[session albumForURL:[NSURL URLWithString:kAlbumLoadingTestURI] callback:^(SPAlbum *album) {
+		SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"albumForURL callback on wrong queue.");
+		SPTestAssert(album != nil, @"Album callback with valid URL gave nil");
+		
+		[session artistForURL:[NSURL URLWithString:kArtistLoadingTestURI] callback:^(SPArtist *artist) {
+			SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"artistForURL callback on wrong queue.");
+			SPTestAssert(artist != nil, @"Artist callback with valid URL gave nil");
+			
+			[session imageForURL:[NSURL URLWithString:kImageLoadingTestURI] callback:^(SPImage *image) {
+				SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"imageForURL callback on wrong queue.");
+				SPTestAssert(image != nil, @"Image callback with valid URL gave nil");
+				
+				[session playlistForURL:[NSURL URLWithString:kPlaylistLoadingTestURI] callback:^(SPPlaylist *playlist) {
+					SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"playlistForURL callback on wrong queue.");
+					SPTestAssert(playlist != nil, @"Playlist callback with valid URL gave nil");
+					
+					[session searchForURL:[NSURL URLWithString:kSearchLoadingTestURI] callback:^(SPSearch *search) {
+						SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"searchForURL callback on wrong queue.");
+						SPTestAssert(search != nil, @"Search callback with valid URL gave nil");
+						
+						[session trackForURL:[NSURL URLWithString:kTrackLoadingTestURI] callback:^(SPTrack *track) {
+							SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"trackForURL callback on wrong queue.");
+							SPTestAssert(track != nil, @"Track callback with valid URL gave nil");
+							
+							[session userForURL:[NSURL URLWithString:kUserLoadingTestURI] callback:^(SPUser *user) {
+								SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"userForURL callback on wrong queue.");
+								SPTestAssert(user != nil, @"User callback with valid URL gave nil");
+								
+								[session objectRepresentationForSpotifyURL:[NSURL URLWithString:kTrackLoadingTestURI] callback:^(sp_linktype linkType, id objectRepresentation) {
+									SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"objectRepresentationForSpotifyURL callback on wrong queue.");
+									SPTestAssert(objectRepresentation != nil, @"Object representation callback with valid URL gave nil");
+									SPTestAssert(linkType != SP_LINKTYPE_INVALID, @"Object representation callback with valid URL gave linktype of %lu", linkType);
+									SPPassTest();
+								}];							
+							}];
+						}];
+					}];
+				}];
+			}];
+		}];
+	}];
+}
+
+-(void)testClassInvalidConvenienceConstructorCallbacks {
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -133,6 +189,43 @@
 							SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"userWithURL callback on wrong queue.");
 							SPTestAssert(user == nil, @"User callback with nil URL gave %@", user);
 							SPPassTest();
+						}];
+					}];
+				}];
+			}];
+		}];
+	}];
+}
+
+-(void)testClassConvenienceConstructorCallbacks {
+	
+	// Ensure all blocks come back on the main queue
+	SPSession *session = [SPSession sharedSession];
+	
+	[SPAlbum albumWithAlbumURL:[NSURL URLWithString:kAlbumLoadingTestURI] inSession:session callback:^(SPAlbum *album) {
+		SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"albumForURL callback on wrong queue.");
+		SPTestAssert(album != nil, @"Album callback with valid URL gave nil");
+		
+		[SPArtist artistWithArtistURL:[NSURL URLWithString:kArtistLoadingTestURI] inSession:session callback:^(SPArtist *artist) {
+			SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"artistForURL callback on wrong queue.");
+			SPTestAssert(artist != nil, @"Artist callback with valid URL gave nil");
+			
+			[SPImage imageWithImageURL:[NSURL URLWithString:kImageLoadingTestURI] inSession:session callback:^(SPImage *image) {
+				SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"imageForURL callback on wrong queue.");
+				SPTestAssert(image != nil, @"Image callback with valid URL gave nil");
+				
+				[SPPlaylist playlistWithPlaylistURL:[NSURL URLWithString:kPlaylistLoadingTestURI] inSession:session callback:^(SPPlaylist *playlist) {
+					SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"playlistForURL callback on wrong queue.");
+					SPTestAssert(playlist != nil, @"Playlist callback with valid URL gave nil");
+					
+					[SPTrack trackForTrackURL:[NSURL URLWithString:kTrackLoadingTestURI] inSession:session callback:^(SPTrack *track) {
+						SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"trackForURL callback on wrong queue.");
+						SPTestAssert(track != nil, @"Track callback with valid URL gave nil");
+						
+						[SPUser userWithURL:[NSURL URLWithString:kUserLoadingTestURI] inSession:session callback:^(SPUser *user) {
+							SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"userForURL callback on wrong queue.");
+							SPTestAssert(user != nil, @"User callback with valid URL gave nil");
+							SPPassTest();						
 						}];
 					}];
 				}];
