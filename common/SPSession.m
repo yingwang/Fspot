@@ -422,17 +422,17 @@ static void offline_status_updated(sp_session *session) {
 		[mutableStats setValue:[NSNumber numberWithInt:status.willnotcopy_tracks] forKey:SPOfflineStatisticsWillNotCopyTrackCountKey];
 		[mutableStats setValue:[NSNumber numberWithBool:status.syncing] forKey:SPOfflineStatisticsIsSyncingKey];
 		
+		for (id playlistOrFolder in [sess.playlistCache allValues]) {
+			if ([playlistOrFolder respondsToSelector:@selector(offlineSyncStatusMayHaveChanged)])
+				[playlistOrFolder offlineSyncStatusMayHaveChanged];
+		}
+		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
 			sess.offlineTracksRemaining = offlineTracksRemaining;
 			sess.offlinePlaylistsRemaining = offlinePlaylistsRemaining;
 			sess.offlineSyncing = syncing;
 			sess.offlineStatistics = [NSDictionary dictionaryWithDictionary:mutableStats];
-			
-			for (id playlistOrFolder in [sess.playlistCache allValues]) {
-				if ([playlistOrFolder respondsToSelector:@selector(offlineSyncStatusMayHaveChanged)])
-					[playlistOrFolder offlineSyncStatusMayHaveChanged];
-			}
 		});
 	}
 }
@@ -961,7 +961,6 @@ static SPSession *sharedSession;
 -(void)logout:(void (^)())completionBlock {
 	[self.trackCache removeAllObjects];
 	[self.userCache removeAllObjects];
-	[self.playlistCache removeAllObjects];
 	self.inboxPlaylist = nil;
 	self.starredPlaylist = nil;
 	self.userPlaylists = nil;
@@ -980,6 +979,7 @@ static SPSession *sharedSession;
 	
 	dispatch_async([SPSession libSpotifyQueue], ^() {
 		
+		[self.playlistCache removeAllObjects];
 		sp_connectionstate state = sp_session_connectionstate(outgoing_session);
 		
 		if (state == SP_CONNECTION_STATE_LOGGED_OUT || state == SP_CONNECTION_STATE_UNDEFINED) {
