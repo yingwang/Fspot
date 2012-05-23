@@ -34,7 +34,7 @@
 
 @interface SPPlaylistItem ()
 
-@property (nonatomic, readwrite, strong) id <SPPlaylistableItem> item;
+@property (nonatomic, readwrite, strong) id <SPPlaylistableItem, SPAsyncLoading> item;
 @property (nonatomic, readwrite, copy) NSDate *dateAdded;
 @property (nonatomic, readwrite, strong) SPUser *creator;
 @property (nonatomic, readwrite, copy) NSString *message;
@@ -47,11 +47,16 @@
 
 -(id)initWithPlaceholderTrack:(sp_track *)track atIndex:(int)index inPlaylist:(SPPlaylist *)aPlaylist {
 	
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	
 	if ((self = [super init])) {
 		self.playlist = aPlaylist;
 		self.itemIndex = index;
 		if (sp_track_is_placeholder(track)) {
-			self.item = [self.playlist.session objectRepresentationForSpotifyURL:[NSURL urlWithSpotifyLink:sp_link_create_from_track(track, 0)] linkType:NULL];
+			[self.playlist.session objectRepresentationForSpotifyURL:[NSURL urlWithSpotifyLink:sp_link_create_from_track(track, 0)]
+			 callback:^(sp_linktype linkType, id objectRepresentation) {
+				 self.item = objectRepresentation;
+			 }];
 		} else {
 			self.item = [SPTrack trackForTrackStruct:track inSession:self.playlist.session];
 		}
@@ -132,7 +137,7 @@
 @synthesize unread = _unread;
 
 -(void)setUnread:(BOOL)unread {
-	sp_playlist_track_set_seen(self.playlist.playlist, self.itemIndex, !unread);
+	dispatch_async([SPSession libSpotifyQueue], ^() { sp_playlist_track_set_seen(self.playlist.playlist, self.itemIndex, !unread); });
 	_unread = unread;
 }
 
