@@ -182,7 +182,7 @@
 		50B1F2051518B1DA00CB7186 /* SPSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSignupViewController.m; path = "View Controllers/SPSignupViewController.m"; sourceTree = "<group>"; };
 		50B1F2891518E69A00CB7186 /* SPLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPLoginViewController.h; path = "View Controllers/SPLoginViewController.h"; sourceTree = "<group>"; };
 		50B1F28A1518E69A00CB7186 /* SPLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPLoginViewController.m; path = "View Controllers/SPLoginViewController.m"; sourceTree = "<group>"; };
-		50D4F52B156BCDE800E237DD /* CocoaLibSpotify iOS Test Container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocoaLibSpotify iOS Test Container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		50D4F52B156BCDE800E237DD /* CocoaLSTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CocoaLSTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50D4F52D156BCDE800E237DD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		50D4F530156BCDE800E237DD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		50D4F534156BCDE800E237DD /* CocoaLibSpotify iOS Test Container-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CocoaLibSpotify iOS Test Container-Info.plist"; sourceTree = "<group>"; };
@@ -289,7 +289,7 @@
 			isa = PBXGroup;
 			children = (
 				50AF49DC1439CBFE00E4A5EF /* libCocoaLibSpotify.a */,
-				50D4F52B156BCDE800E237DD /* CocoaLibSpotify iOS Test Container.app */,
+				50D4F52B156BCDE800E237DD /* CocoaLSTests.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -552,7 +552,7 @@
 			);
 			name = CocoaLSTests;
 			productName = "CocoaLibSpotify iOS Test Container";
-			productReference = 50D4F52B156BCDE800E237DD /* CocoaLibSpotify iOS Test Container.app */;
+			productReference = 50D4F52B156BCDE800E237DD /* CocoaLSTests.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -863,6 +863,7 @@
 				50D4F548156BCDE800E237DD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
