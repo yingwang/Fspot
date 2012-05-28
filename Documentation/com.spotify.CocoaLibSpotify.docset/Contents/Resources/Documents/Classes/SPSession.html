@@ -89,11 +89,15 @@
 	
 	<option value="//api/name/initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:">&nbsp;&nbsp;&nbsp;&nbsp;+ initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:</option>
 	
+	<option value="//api/name/launchSpotifyClientIfInstalled">&nbsp;&nbsp;&nbsp;&nbsp;+ launchSpotifyClientIfInstalled</option>
+	
 	<option value="//api/name/libSpotifyBuildId">&nbsp;&nbsp;&nbsp;&nbsp;+ libSpotifyBuildId</option>
 	
 	<option value="//api/name/libSpotifyQueue">&nbsp;&nbsp;&nbsp;&nbsp;+ libSpotifyQueue</option>
 	
 	<option value="//api/name/sharedSession">&nbsp;&nbsp;&nbsp;&nbsp;+ sharedSession</option>
+	
+	<option value="//api/name/spotifyClientInstalled">&nbsp;&nbsp;&nbsp;&nbsp;+ spotifyClientInstalled</option>
 	
 	
 	
@@ -258,11 +262,15 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:">initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/launchSpotifyClientIfInstalled">launchSpotifyClientIfInstalled</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/libSpotifyBuildId">libSpotifyBuildId</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/libSpotifyQueue">libSpotifyQueue</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/sharedSession">sharedSession</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/spotifyClientInstalled">spotifyClientInstalled</a></span></li>
 	
 </ul></li>
 
@@ -413,6 +421,20 @@ as you see fit. See the SimplePlayback sample project for an example of how to d
 	<span class="tooltip">
 		<code><a href="#//api/name/libSpotifyQueue">+&nbsp;libSpotifyQueue</a></code>
 		<span class="tooltip"><p>Returns the dispatch queue that methods interacting with the libSpotify C API must be called on.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/spotifyClientInstalled">+&nbsp;spotifyClientInstalled</a></code>
+		<span class="tooltip"><p>Returns <code>YES</code> if the Spotify client is installed on the current device/machine.</p></span>
+	</span>
+	
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/launchSpotifyClientIfInstalled">+&nbsp;launchSpotifyClientIfInstalled</a></code>
+		<span class="tooltip"><p>Attempts to launch the Spotify client. Returns <code>YES</code> if successful.</p></span>
 	</span>
 	
 	
@@ -805,7 +827,7 @@ social services is temporarily disabled.</p></span>
 </li><li>
 	<span class="tooltip">
 		<code><a href="#//api/name/unknownPlaylistForPlaylistStruct:">&ndash;&nbsp;unknownPlaylistForPlaylistStruct:</a></code>
-		<span class="tooltip"><p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
+		<span class="tooltip"><p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p></span>
 	</span>
 	
 	
@@ -1775,6 +1797,40 @@ make sure you only have <em>one</em> instance of SPSession active in your proces
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/launchSpotifyClientIfInstalled" title="launchSpotifyClientIfInstalled"></a>
+	<h3 class="subsubtitle method-title">launchSpotifyClientIfInstalled</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Attempts to launch the Spotify client. Returns <code>YES</code> if successful.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>+ (BOOL)launchSpotifyClientIfInstalled</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/libSpotifyBuildId" title="libSpotifyBuildId"></a>
 	<h3 class="subsubtitle method-title">libSpotifyBuildId</h3>
 	
@@ -1894,6 +1950,40 @@ store your SPSession object using this convenience method or yourself using <a h
 make sure you only have <em>one</em> instance of SPSession active in your process at a time.</p></div><div class="warning"><p><strong>Warning:</strong> This will return <code>nil</code> until <a href="#//api/name/initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:">[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:]</a> is
 successfully called.</p></div>
 	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">SPSession.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/spotifyClientInstalled" title="spotifyClientInstalled"></a>
+	<h3 class="subsubtitle method-title">spotifyClientInstalled</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Returns <code>YES</code> if the Spotify client is installed on the current device/machine.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>+ (BOOL)spotifyClientInstalled</code></div>
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -3506,7 +3596,7 @@ convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> Th
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Create and cache an SPUnknownPlaylist (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
+		<p>Create and cache an <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> (subclass of <a href="../Classes/SPPlaylist.html">SPPlaylist</a>) for the given sp_playlist struct from the C LibSpotify API.</p>
 	</div>		
 	
 	
@@ -3527,7 +3617,7 @@ convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> Th
 	
 	<div class="method-subsection return">
 		<h4 class="method-subtitle parameter-title">Return Value</h4>
-		<p>Returns the created or cached SPUnknownPlaylist object.</p>
+		<p>Returns the created or cached <a href="../Classes/SPUnknownPlaylist.html">SPUnknownPlaylist</a> object.</p>
 	</div>
 	
 	
@@ -3712,7 +3802,7 @@ convenience methods use.</p><div class="warning"><p><strong>Warning:</strong> Th
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-23)</span><br />
+						<p><span class="copyright">&copy; 2012 Spotify AB. All rights reserved. (Last updated: 2012-05-28)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.0.5 (build 789)</a>.</span></p>
 						

@@ -80,6 +80,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 +(dispatch_queue_t)libSpotifyQueue;
 
+/** Returns `YES` if the Spotify client is installed on the current device/machine. */
++(BOOL)spotifyClientInstalled;
+
+/** Attempts to launch the Spotify client. Returns `YES` if successful. */
++(BOOL)launchSpotifyClientIfInstalled;
+
 /** Returns a shared SPSession object. 
  
  This is a convenience method for creating and storing a single SPSession instance.

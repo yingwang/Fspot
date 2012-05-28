@@ -612,6 +612,26 @@ static dispatch_queue_t libspotify_global_queue;
 	return libspotify_global_queue;
 }
 
++(BOOL)spotifyClientInstalled {
+#if TARGET_OS_IPHONE
+	return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"spotify:"]];
+#else
+	return [[NSWorkspace sharedWorkspace] absolutePathForAppBundleWithIdentifier:@"com.spotify.client"] != nil;
+#endif
+}
+
++(BOOL)launchSpotifyClientIfInstalled {
+	if (![self spotifyClientInstalled]) return NO;
+#if TARGET_OS_IPHONE
+	return [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"spotify:"]];
+#else
+	return [[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:@"com.spotify.client"
+																options:NSWorkspaceLaunchDefault
+										 additionalEventParamDescriptor:nil
+													   launchIdentifier:NULL];
+#endif
+}
+
 static SPSession *sharedSession;
 
 +(SPSession *)sharedSession {
