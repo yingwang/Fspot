@@ -44,6 +44,7 @@
 -(void)showLoginView {
 	SPLoginViewController *controller = [SPLoginViewController loginControllerForSession:[SPSession sharedSession]];
 	controller.allowsCancel = NO;
+	controller.loginDelegate = self.viewController;
 	[self.viewController presentModalViewController:controller animated:NO];
 }
 
