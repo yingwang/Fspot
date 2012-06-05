@@ -35,6 +35,7 @@
 #import "SPFacebookPermissionsViewController.h"
 #import "SPLicenseViewController.h"
 #import "SPLoginViewControllerInternal.h"
+#import "SPClientUpsellViewController.h"
 
 @interface SPLoginViewController ()
 
@@ -266,12 +267,34 @@ static NSMutableDictionary *loginControllerCache;
 @implementation SPLoginViewController (SPLoginViewControllerInternal)
 
 -(void)dismissLoginView:(BOOL)success {
+	
+	UIViewController *targetViewController = nil;
+	
 	if ([self respondsToSelector:@selector(presentingViewController)]) {
-		[self.presentingViewController dismissModalViewControllerAnimated:YES];
+		targetViewController = self.presentingViewController;
 	} else {
-		[self.parentViewController dismissModalViewControllerAnimated:YES];
+		targetViewController = self.parentViewController;
 	}
 	
+	if (![SPSession spotifyClientInstalled] && self.didReceiveSignupFlow) {
+		// Show client upsell.
+		
+		SPClientUpsellViewController *vc = [[SPClientUpsellViewController alloc] initWithSession:self.session];
+		UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+		nav.navigationBar.barStyle = UIBarStyleBlack;
+		nav.modalPresentationStyle = UIModalPresentationFormSheet;
+		
+		vc.completionBlock = ^() {
+			[targetViewController dismissModalViewControllerAnimated:YES];
+			[self.loginDelegate loginViewController:self didCompleteSuccessfully:success];
+		};
+		
+		[targetViewController dismissModalViewControllerAnimated:NO];
+		[targetViewController presentModalViewController:nav animated:NO];
+		return;
+	}
+	
+	[targetViewController dismissModalViewControllerAnimated:YES];
 	[self.loginDelegate loginViewController:self didCompleteSuccessfully:success];
 }
 

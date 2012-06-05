@@ -1,5 +1,5 @@
 //
-//  SPLicenseViewControllerViewController.m
+//  SPClientUpsellViewController.m
 //  CocoaLibSpotify iOS Library
 //
 //  Created by Daniel Kennett on 26/03/2012.
@@ -30,44 +30,41 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "SPLicenseViewController.h"
+#import "SPClientUpsellViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "SPURLExtensions.h"
+#import "SPSession.h"
 
-static NSString * const kSPLicensesNoVersionURL = @"http://www.spotify.com/mobile/end-user-agreement/?notoken";
-static NSString * const kSPLicensesFormatter = @"http://www.spotify.com/mobile/end-user-agreement/?notoken&version=%@";
+#if DEBUG
+static NSString * const kClientUpsellPageURL = @"http://libspotify.spotify.s3.amazonaws.com/client-upsell/client-upsell.html";
+#else
+static NSString * const kClientUpsellPageURL = @"http://ls.scdn.co/client-upsell/client-upsell.html";
+#endif
 
-@interface SPLicenseViewController ()
+@interface SPClientUpsellViewController ()
 
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
-@property (nonatomic, readwrite, copy) NSString *version;
+@property (nonatomic, strong) SPSession *session;
 
 @end
 
-@implementation SPLicenseViewController
+@implementation SPClientUpsellViewController
 
--(id)initWithVersion:(NSString *)licenseVersion {
-	
+-(id)initWithSession:(SPSession *)aSession {
 	self = [super init];
-	
 	if (self) {
-		self.version = licenseVersion;
+		self.session = aSession;
+		self.modalPresentationStyle = UIModalPresentationFormSheet;
 	}
 	return self;
 }
 
-
 @synthesize spinner;
-@synthesize version;
+@synthesize completionBlock;
+@synthesize session;
 
 -(void)done {
-	
-	UIViewController *parent = self.navigationController;
-	
-	if ([parent respondsToSelector:@selector(presentingViewController)]) {
-		[parent.presentingViewController dismissModalViewControllerAnimated:YES];
-	} else {
-		[parent.parentViewController dismissModalViewControllerAnimated:YES];
-	}
+	if (self.completionBlock) self.completionBlock();
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -81,10 +78,11 @@ static NSString * const kSPLicensesFormatter = @"http://www.spotify.com/mobile/e
 
 -(void)loadView {
 	
-	self.title = @"T&Cs and Privacy Policy";
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-																							target:self
-																							action:@selector(done)];
+	self.title = @"Get Spotify!";
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Close"
+																			  style:UIBarButtonItemStyleDone
+																			 target:self
+																			 action:@selector(done)];
 	
 	self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 	self.spinner.hidesWhenStopped = YES;
@@ -93,14 +91,13 @@ static NSString * const kSPLicensesFormatter = @"http://www.spotify.com/mobile/e
 	UIWebView *web = [[UIWebView alloc] initWithFrame:bounds];
 	web.delegate = self;
 	
-	NSURL *licenseUrl = nil;
+	NSString *params = [NSString stringWithFormat:@"?userAgent=%@&platform=%@&locale=%@",
+						[NSURL urlEncodedStringForString:self.session.userAgent],
+						[NSURL urlEncodedStringForString:[[UIDevice currentDevice] model]],
+						[NSURL urlEncodedStringForString:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]]];
 	
-	if (self.version.length == 0)
-		licenseUrl = [NSURL URLWithString:kSPLicensesNoVersionURL];
-	else 
-		licenseUrl = [NSURL URLWithString:[NSString stringWithFormat:kSPLicensesFormatter, self.version]];
-	
-	[web loadRequest:[NSURLRequest requestWithURL:licenseUrl]];
+	NSURL *url = [NSURL URLWithString:[kClientUpsellPageURL stringByAppendingString:params]];
+	[web loadRequest:[NSURLRequest requestWithURL:url]];
 	
 	for(id maybeScroll in web.subviews) {
 		if ([maybeScroll respondsToSelector:@selector(setBounces:)])
@@ -130,16 +127,9 @@ static NSString * const kSPLicensesFormatter = @"http://www.spotify.com/mobile/e
         // Just ignore, this is just an async call being cancelled
         return;
     }
-
-	// Show error page if license didn't load
-	NSURL *bundlePath = [[NSBundle mainBundle] URLForResource:@"SPLoginResources" withExtension:@"bundle"];
-	NSBundle *resourcesBundle = [NSBundle bundleWithURL:bundlePath];
 	
-	NSURL *fileUrl = [resourcesBundle URLForResource:@"toc_error" withExtension:@"xhtml" subdirectory:nil];
-	NSURL *folderUrl = [fileUrl URLByDeletingLastPathComponent];
-	
-	NSData *fileData = [NSData dataWithContentsOfURL:fileUrl];
-	[webView loadData:fileData MIMEType:@"text/html" textEncodingName:@"utf-8" baseURL:folderUrl];
+	// Doh. This page isn't important enough to destroy the login flow, so just finish.
+	[self done];
 }
 
 -(void)webViewDidStartLoad:(UIWebView *)webView {
@@ -152,6 +142,12 @@ static NSString * const kSPLicensesFormatter = @"http://www.spotify.com/mobile/e
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
 	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+		
+		if ([request.URL.absoluteString hasPrefix:@"spotify:"]) {
+			[self done];
+			return NO;
+		}
+		
 		[[UIApplication sharedApplication] openURL:[request URL]];
 		return NO;
 	}
