@@ -276,7 +276,7 @@ static NSMutableDictionary *loginControllerCache;
 		targetViewController = self.parentViewController;
 	}
 	
-	if (![SPSession spotifyClientInstalled] && self.didReceiveSignupFlow) {
+	if (![SPSession spotifyClientInstalled] /*&& self.didReceiveSignupFlow*/) {
 		// Show client upsell.
 		
 		SPClientUpsellViewController *vc = [[SPClientUpsellViewController alloc] initWithSession:self.session];

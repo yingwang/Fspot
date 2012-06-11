@@ -701,7 +701,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	int itemCount = sp_playlist_num_tracks(self.playlist);
 	NSMutableArray *newitems = [NSMutableArray arrayWithCapacity:itemCount];
 	
-	for (NSUInteger currentItem = 0; currentItem < itemCount; currentItem++) {
+	for (int currentItem = 0; currentItem < itemCount; currentItem++) {
 		sp_track *thisTrack = sp_playlist_track(self.playlist, currentItem);
 		if (thisTrack != NULL) {
 			[newitems addObject:[[SPPlaylistItem alloc] initWithPlaceholderTrack:thisTrack
@@ -733,7 +733,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		// libSpotify iterates through the array and inserts each track at the given index, 
 		// which ends up reversing the expected order. Defeat this by constructing a backwards
 		// array.
-		for (int currentTrack = newItems.count - 1; currentTrack >= 0; currentTrack--) {
+		for (int currentTrack = (int)newItems.count - 1; currentTrack >= 0; currentTrack--) {
 			
 			sp_track *track;
 			id item = [newItems objectAtIndex:currentTrack];
@@ -750,7 +750,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		if (block)
 			[self.addCallbackStack addObject:block];
 		
-		sp_error errorCode = sp_playlist_add_tracks(self.playlist, trackPointer, newItems.count, (int)index, self.session.session);
+		sp_error errorCode = sp_playlist_add_tracks(self.playlist, trackPointer, (int)newItems.count, (int)index, self.session.session);
 		free(tracks);
 		tracks = NULL;
 		

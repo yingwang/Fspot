@@ -32,7 +32,7 @@
 
 #import "Simple_PlayerAppDelegate.h"
 
-#error Please get an appkey.c file from developer.spotify.com and remove this error before building.
+//#error Please get an appkey.c file from developer.spotify.com and remove this error before building.
 #include "appkey.c"
 
 @implementation Simple_PlayerAppDelegate

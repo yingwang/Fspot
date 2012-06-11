@@ -137,6 +137,8 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 
 -(void)test5PlaylistTrackManagement {
 	
+	__block SPPlaylistTests *sself = self;
+	
 	SPTestAssert(self.playlist != nil, @"Test playlist is nil - cannot run test");
 	
 	[SPAsyncLoading waitUntilLoaded:self.playlist timeout:kPlaylistLoadingTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
@@ -149,7 +151,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 				SPTestAssert(track1 != nil, @"SPTrack returned nil for %@", kTrack1TestURI);
 				SPTestAssert(track2 != nil, @"SPTrack returned nil for %@", kTrack2TestURI);
 				
-				[self.playlist addItems:[NSArray arrayWithObjects:track1, track2, nil] atIndex:0 callback:^(NSError *error) {
+				[sself.playlist addItems:[NSArray arrayWithObjects:track1, track2, nil] atIndex:0 callback:^(NSError *error) {
 					
 					SPTestAssert(error == nil, @"Got error when adding to playlist: %@", error);
 					SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"addItems callback on wrong queue.");
@@ -160,7 +162,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 					SPTestAssert([originalPlaylistTracks objectAtIndex:0] == track1, @"Playlist track 0 should be %@, is actually %@", track1, [originalPlaylistTracks objectAtIndex:0]);
 					SPTestAssert([originalPlaylistTracks objectAtIndex:1] == track2, @"Playlist track 1 should be %@, is actually %@", track2, [originalPlaylistTracks objectAtIndex:1]);
 					
-					[self.playlist moveItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] toIndex:2 callback:^(NSError *moveError) {
+					[sself.playlist moveItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] toIndex:2 callback:^(NSError *moveError) {
 						SPTestAssert(moveError == nil, @"Move operation returned error: %@", moveError);
 						SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"moveItemsAtIndexes callback on wrong queue.");
 						
@@ -169,7 +171,7 @@ static NSString * const kTrack2TestURI = @"spotify:track:2zpRYcfuvripcfzgWEj1c7"
 						SPTestAssert([movedPlaylistTracks objectAtIndex:0] == track2, @"Playlist track 0 should be %@ after move, is actually %@", track2, [movedPlaylistTracks objectAtIndex:0]);
 						SPTestAssert([movedPlaylistTracks objectAtIndex:1] == track1, @"Playlist track 1 should be %@ after move, is actually %@", track1, [movedPlaylistTracks objectAtIndex:1]);
 						
-						[self.playlist removeItemAtIndex:0 callback:^(NSError *deletionError) {
+						[sself.playlist removeItemAtIndex:0 callback:^(NSError *deletionError) {
 							
 							SPTestAssert(deletionError == nil, @"Removal operation returned error: %@", deletionError);
 							SPTestAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"removeItemAtIndex		callback on wrong queue.");
