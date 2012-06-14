@@ -65,7 +65,6 @@
 @synthesize backgroundImageView;
 @synthesize loginFormView;
 @synthesize allowsCancel;
-@synthesize remembersCredentials;
 @synthesize cancelButton;
 @synthesize loginButton;
 
@@ -87,11 +86,6 @@
 		
 		[self addObserver:self
 			   forKeyPath:@"allowsCancel"
-				  options:0
-				  context:nil];
-		
-		[self addObserver:self
-			   forKeyPath:@"allowsAutomaticLoginToggle"
 				  options:0
 				  context:nil];
 	}
@@ -137,7 +131,7 @@
 	
 	[self.session attemptLoginWithUserName:self.usernameField.text
 								  password:self.passwordField.text
-					   rememberCredentials:self.remembersCredentials];
+					   rememberCredentials:NO];
 	
 	[self switchViewToLoggingInState:YES];
 	
@@ -369,7 +363,6 @@
 
 - (void)dealloc {
 	
-	[self removeObserver:self forKeyPath:@"allowsAutomaticLoginToggle"];
 	[self removeObserver:self forKeyPath:@"allowsCancel"];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self

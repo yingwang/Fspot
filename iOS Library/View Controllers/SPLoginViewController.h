@@ -40,6 +40,11 @@
  Provides a completion callback from SPLoginViewController. SPLoginViewController
  can cause multiple login and logout events during the login and signup process. This
  delegate informs you when the process is complete.
+ 
+ If you want to save the user's details for automatic login, use the appropriate `SPSession`
+ delegate method to receive login credentials for storage (don't store the user's raw password),
+ then login directly next time instead of using this view controller. If login fails, display the appropriate
+ error and you can then show this view controller for logging in manually again if needed.
  */
 @protocol SPLoginViewControllerDelegate <NSObject>
 
