@@ -717,7 +717,9 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-Weverything";
 				SDKROOT = macosx;
+				WARNING_CFLAGS = "-Weverything";
 			};
 			name = Debug;
 		};
@@ -733,7 +735,9 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "-Weverything";
 				SDKROOT = macosx;
+				WARNING_CFLAGS = "-Weverything";
 			};
 			name = Release;
 		};
