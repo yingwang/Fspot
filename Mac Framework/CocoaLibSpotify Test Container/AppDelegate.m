@@ -101,6 +101,53 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 {
 	[self pushColorToStatusServer:[NSColor yellowColor]];
 	
+	// --- Remove old cache and settings directories for a fresh test each time
+	
+	// Find the application support directory for settings
+	
+	NSString *applicationSupportDirectory = nil;
+	NSArray *potentialDirectories = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+																		NSUserDomainMask,
+																		YES);
+	
+	if ([potentialDirectories count] > 0) {
+		applicationSupportDirectory = [[potentialDirectories objectAtIndex:0] stringByAppendingPathComponent:@"com.spotify.CocoaLSUnitTests"];
+	} else {
+		applicationSupportDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:@"com.spotify.CocoaLSUnitTests"];
+	}
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:applicationSupportDirectory]) {
+		NSError *error = nil;
+		if (![[NSFileManager defaultManager] removeItemAtPath:applicationSupportDirectory error:&error]) {
+			NSLog(@"Could not delete application support directory: %@", error);
+			[self completeTestsWithPassCount:0 failCount:1];
+		}
+	};
+	
+	// Find the caches directory for cache
+	
+	NSString *cacheDirectory = nil;
+	
+	NSArray *potentialCacheDirectories = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+																			 NSUserDomainMask,
+																			 YES);
+	
+	if ([potentialCacheDirectories count] > 0) {
+		cacheDirectory = [[potentialCacheDirectories objectAtIndex:0] stringByAppendingPathComponent:@"com.spotify.CocoaLSUnitTests"];
+	} else {
+		cacheDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:@"com.spotify.CocoaLSUnitTests"];
+	}
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:cacheDirectory]) {
+		NSError *error = nil;
+		if (![[NSFileManager defaultManager] removeItemAtPath:cacheDirectory error:&error]) {
+			NSLog(@"Could not delete cache directory: %@", error);
+			[self completeTestsWithPassCount:0 failCount:1];
+		}
+	}
+	
+	// ---
+	
 	// Insert code here to initialize your application
 	self.sessionTests = [SPSessionTests new];
 	
