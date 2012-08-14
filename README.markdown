@@ -115,6 +115,8 @@ Once everything is set up, simply import the following header to get started wit
 
 The headers of CocoaLibSpotify are well documented, and we've provided an Xcode DocSet to provide documentation right in Xcode. With these and the sample projects, you should have everything you need to dive right in!
 
+Additionally, there's an FAQ [right here in the repo](https://github.com/spotify/cocoalibspotify/blob/master/FAQ.markdown) that covers common usage questions. 
+
 ## Unit Tests ##
 
 CocoaLibSpotify now ships with a number of unit tests, which run inside a standalone application built by the project. If you find a bug in CocoaLibSpotify, please fork the project, add or modify a unit test so it fails (demonstrating the bug), then issue a pull request. We can then fix the underlying bug and keep your test so it stays that way.
