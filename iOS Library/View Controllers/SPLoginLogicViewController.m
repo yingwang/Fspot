@@ -125,14 +125,13 @@
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
 		[alert show];
-		
+
 		return;
 	}
-	
+
 	[self.session attemptLoginWithUserName:self.usernameField.text
-								  password:self.passwordField.text
-					   rememberCredentials:NO];
-	
+                                password:self.passwordField.text];
+
 	[self switchViewToLoggingInState:YES];
 	
 }
@@ -287,9 +286,6 @@
 	self.navigationItem.rightBarButtonItem = self.loginButton;
 	[self positionLoggingInView];
 	[self switchViewToLoggingInState:NO];
-	[self.session fetchStoredCredentialsUserName:^(NSString *username) {
-		self.usernameField.text = username;
-	}];
 	
 	[self.usernameField becomeFirstResponder];
 }

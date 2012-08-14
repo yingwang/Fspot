@@ -144,6 +144,22 @@
 	// Called after a logout has been completed.
 }
 
+-(void)session:(SPSession *)aSession didGenerateLoginCredentials:(NSString *)credential forUserName:(NSString *)userName {
+
+	// Called when login credentials are created. If you want to save user logins, uncomment the code below.
+
+	/*
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	NSMutableDictionary *storedCredentials = [[defaults valueForKey:@"SpotifyUsers"] mutableCopy];
+
+	if (storedCredentials == nil)
+		storedCredentials = [NSMutableDictionary dictionary];
+
+	[storedCredentials setValue:credential forKey:userName];
+	[defaults setValue:storedCredentials forKey:@"SpotifyUsers"];
+	 */
+}
+
 -(void)session:(SPSession *)aSession didEncounterNetworkError:(NSError *)error; {
 	if (SP_LIBSPOTIFY_DEBUG_LOGGING != 0)
 		NSLog(@"CocoaLS NETWORK ERROR: %@", error);

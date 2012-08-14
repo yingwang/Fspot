@@ -144,8 +144,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 		[[passwordField stringValue] length] > 0) {
 		
 		[[SPSession sharedSession] attemptLoginWithUserName:[userNameField stringValue]
-												   password:[passwordField stringValue]
-										rememberCredentials:NO];
+												   password:[passwordField stringValue]];
 	} else {
 		NSBeep();
 	}
@@ -518,8 +517,7 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 					 defaultButton:@"Again!"
 				   alternateButton:@"Quit"
 					   otherButton:@""
-		 informativeTextWithFormat:[NSString stringWithFormat:@"You scored %@ points!", 
-									[formatter stringFromNumber:[NSNumber numberWithInteger:self.score]]]]
+		 informativeTextWithFormat:@"You scored %@ points!", [formatter stringFromNumber:[NSNumber numberWithInteger:self.score]]]
 	 runModal];
 	
 	if (result == NSAlertDefaultReturn) {

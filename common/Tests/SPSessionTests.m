@@ -106,16 +106,15 @@ static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(loginDidSucceed:)
 												 name:SPSessionLoginDidSucceedNotification
-											   object:nil];
-	
+                                             object:nil];
+
 	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(loginDidFail:)
-												 name:SPSessionLoginDidFailNotification
-											   object:nil];
+                                           selector:@selector(loginDidFail:)
+                                               name:SPSessionLoginDidFailNotification
+                                             object:nil];
 	
 	[[SPSession sharedSession] attemptLoginWithUserName:userName
-											   password:password
-									rememberCredentials:NO];	
+                                             password:password];
 }
 
 -(void)loginDidSucceed:(NSNotification *)notification {

@@ -157,11 +157,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param userName The username of the user who wishes to log in.
  @param password The password for the user who wishes to log in.
- @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
  */
--(void)attemptLoginWithUserName:(NSString *)userName 
-					   password:(NSString *)password
-			rememberCredentials:(BOOL)rememberMe;
+-(void)attemptLoginWithUserName:(NSString *)userName
+                       password:(NSString *)password;
 
 /** Attempt to login to the Spotify service using an existing login credentials blob. 
  
@@ -172,12 +170,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  @param userName The username of the user who wishes to log in.
  @param credential A login credential string previously provided by the `-session:didGenerateLoginCredentials:forUserName:` delegate method.
- @param rememberMe `YES` if the user's credentials should be saved in libspotify's encrypted store, replacing any previous credentials, otherwise `NO`.
- 
  */
 -(void)attemptLoginWithUserName:(NSString *)userName
-			 existingCredential:(NSString *)credential
-			rememberCredentials:(BOOL)rememberMe;
+             existingCredential:(NSString *)credential;
 
 /** The username used to log in to this session.
  
@@ -185,28 +180,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  `nil` if the session is not logged in.
  */
 -(void)fetchLoginUserName:(void (^)(NSString *loginUserName))block;
-
-/** Attempt to login to the Spotify service using previously stored credentials.
- 
- Login success or fail methods will be called on the session's delegate. 
- 
- @param block A block to be called when operation has successfully began. The error parameter will be non-`nil` is an error occurred.
- */
--(void)attemptLoginWithStoredCredentials:(SPErrorableOperationCallback)block;
-
-/** The username saved in the stored credentials.
- 
- @param block The block to be called with the username that will be logged in with -[SPSession attemptLoginWithStoredCredentials:], or 
- `nil` if there are no stored credentials.
- */
--(void)fetchStoredCredentialsUserName:(void (^)(NSString *storedUserName))block;
-
-/** Remove stored credentials from the encrypted store.
- 
- This method will cleanly log out from the Spotify service and clear any in-memory caches. 
- Called automatically when the instance is deallocated. 
- */
--(void)forgetStoredCredentials;
 
 /** Manually flush libSpotify's caches.
  

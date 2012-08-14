@@ -793,26 +793,24 @@ static SPSession *sharedSession;
 }
 
 -(void)attemptLoginWithUserName:(NSString *)userName 
-					   password:(NSString *)password
-			rememberCredentials:(BOOL)rememberMe {
+					   password:(NSString *)password {
 	
 	if (userName.length == 0 || password.length == 0)
 		return;
 	
 	[self logout:^{
-		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], rememberMe, NULL); });
+		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], false, NULL); });
 	}];
 }
 
 -(void)attemptLoginWithUserName:(NSString *)userName
-			 existingCredential:(NSString *)credential
-			rememberCredentials:(BOOL)rememberMe {
+			 existingCredential:(NSString *)credential {
 	
 	if ([userName length] == 0 || [credential length] == 0)
 		return;
 	
 	[self logout:^{
-		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], NULL, rememberMe, [credential UTF8String]); });
+		dispatch_async([SPSession libSpotifyQueue], ^{ sp_session_login(self.session, [userName UTF8String], NULL, false, [credential UTF8String]); });
 	}];
 }
 
@@ -828,47 +826,6 @@ static SPSession *sharedSession;
 		if (loginUserName.length == 0) loginUserName = nil;
 		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(loginUserName); });
 	});
-}
-
--(void)attemptLoginWithStoredCredentials:(SPErrorableOperationCallback)block {
-
-	dispatch_async([SPSession libSpotifyQueue], ^{
-		
-		if (self.session == NULL)
-			return;
-		
-		sp_error errorCode = sp_session_relogin(self.session);
-		NSError *error = nil;
-		if (errorCode != SP_ERROR_OK)
-			error = [NSError spotifyErrorWithCode:errorCode];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(error); });
-	});
-}
-
--(void)fetchStoredCredentialsUserName:(void (^)(NSString *storedUserName))block {
-	
-	dispatch_async([SPSession libSpotifyQueue], ^{
-		
-		NSString *name = nil;
-		
-		if (self.session != NULL) {
-			char userNameBuffer[300];
-			int userNameLength = sp_session_remembered_user(self.session, (char *)&userNameBuffer, sizeof(userNameBuffer));
-			
-			if (userNameLength > -1) {
-				NSString *userName = [NSString stringWithUTF8String:(char *)&userNameBuffer];
-				if (userName.length > 0)
-					name = userName;
-			}
-		}
-		
-		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(name); });
-	});
-}
-
--(void)forgetStoredCredentials {
-	dispatch_async([SPSession libSpotifyQueue], ^() { if (self.session) sp_session_forget_me(self.session); });
 }
 
 -(void)flushCaches:(void (^)())completionBlock {
