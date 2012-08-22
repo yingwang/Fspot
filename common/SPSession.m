@@ -877,36 +877,42 @@ static SPSession *sharedSession;
         } else if ([keyPath isEqualToString:@"connectionState"]) {
             
             if (self.connectionState == SP_CONNECTION_STATE_LOGGED_IN || self.connectionState == SP_CONNECTION_STATE_OFFLINE) {
-                
-				if (self.inboxPlaylist == nil) {
-					dispatch_async([SPSession libSpotifyQueue], ^() {
-						sp_playlist *pl = sp_session_inbox_create(self.session);
-						if (pl == NULL) return;
-						SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
-						dispatch_async(dispatch_get_main_queue(), ^() { self.inboxPlaylist = playlist; });
-						sp_playlist_release(pl);
+
+				dispatch_async([SPSession libSpotifyQueue], ^() {
+					sp_playlist *pl = sp_session_inbox_create(self.session);
+					if (pl == NULL) return;
+					SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
+					dispatch_async(dispatch_get_main_queue(), ^() {
+						// We don't want to overwrite our old instances
+						if (self.inboxPlaylist == nil)
+							self.inboxPlaylist = playlist;
 					});
-				}
-				
-                if (self.starredPlaylist == nil) {
-					dispatch_async([SPSession libSpotifyQueue], ^() {
-						sp_playlist *pl = sp_session_starred_create(self.session);
-						if (pl == NULL) return;
-						SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
-						dispatch_async(dispatch_get_main_queue(), ^() { self.starredPlaylist = playlist; });
-						sp_playlist_release(pl);
+					sp_playlist_release(pl);
+				});
+
+				dispatch_async([SPSession libSpotifyQueue], ^() {
+					sp_playlist *pl = sp_session_starred_create(self.session);
+					if (pl == NULL) return;
+					SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
+					dispatch_async(dispatch_get_main_queue(), ^() {
+						// We don't want to overwrite our old instances
+						if (self.starredPlaylist == nil)
+							self.starredPlaylist = playlist;
 					});
-                }
-                
-                if (self.userPlaylists == nil) {
-					dispatch_async([SPSession libSpotifyQueue], ^() {
-						sp_playlistcontainer *plc = sp_session_playlistcontainer(self.session);
-						if (plc == NULL) return;
-						SPPlaylistContainer *container = [[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self];
-						dispatch_async(dispatch_get_main_queue(), ^() { self.userPlaylists = container; });
+					sp_playlist_release(pl);
+				});
+
+				dispatch_async([SPSession libSpotifyQueue], ^() {
+					sp_playlistcontainer *plc = sp_session_playlistcontainer(self.session);
+					if (plc == NULL) return;
+					SPPlaylistContainer *container = [[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self];
+					dispatch_async(dispatch_get_main_queue(), ^() {
+						// We don't want to overwrite our old instances
+						if (self.userPlaylists == nil)
+							self.userPlaylists = container;
 					});
-                }
-                
+				});
+
 				dispatch_async([SPSession libSpotifyQueue], ^() {
 					sp_user *userStruct = sp_session_user(self.session);
 					SPUser *newUser = [SPUser userWithUserStruct:userStruct inSession:self];
