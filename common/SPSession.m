@@ -242,10 +242,14 @@ static void metadata_updated(sp_session *session) {
 		[sess checkLoadingObjects];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			
+
+			// Delegate before notification because Voxar said so
 			if ([sess.delegate respondsToSelector:@selector(sessionDidChangeMetadata:)]) {
 				[sess.delegate sessionDidChangeMetadata:sess];
 			}
+
+			[[NSNotificationCenter defaultCenter] postNotificationName:SPSessionDidUpdateMetadataNotification
+																object:sess];
 		});
     }
 }

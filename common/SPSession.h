@@ -825,3 +825,6 @@ static NSString * const SPSessionLoginDidSucceedNotification = @"SPSessionLoginD
 
 /** @constant Sent when the user logged out from the Spotify service. */
 static NSString * const SPSessionDidLogoutNotification = @"SPSessionDidLogoutNotification";
+
+/** @constant Sent when metadata is updated somewhere in the object model. */
+static NSString * const SPSessionDidUpdateMetadataNotification = @"SPSPSessionDidUpdateMetadataNotification";
