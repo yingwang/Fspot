@@ -123,7 +123,7 @@ All development work is done on the `dev` branch. When it's considered stable, i
 
 ## Unit Tests ##
 
-CocoaLibSpotify now ships with a number of unit tests, which run inside a standalone application built by the project. If you find a bug in CocoaLibSpotify, please fork the project, add or modify a unit test so it fails (demonstrating the bug), then issue a pull request. We can then fix the underlying bug and keep your test so it stays that way.
+CocoaLibSpotify now ships with a number of unit tests, which run inside a standalone application built by the project. If you find a bug in CocoaLibSpotify, please fork the project, add or modify a unit test *on the dev branch* so it fails (demonstrating the bug), then issue a pull request. We can then fix the underlying bug and keep your test so it stays that way.
 
 To run the tests, open the "CocoaLibSpotify Mac Framework" or "CocoaLibSpotify iOS Library" project as needed, then switch to the "CocoaLSTests" scheme in Xcode. Then:
 
@@ -135,4 +135,4 @@ You'll find examples on how to make a good test in the tests themselves.
 
 ## Contact ##
 
-If you have any problems or find any bugs, see our GitHub page for known issues and discussion. Otherwise, we may be available in irc://irc.freenode.net/spotify. 
+If you have any problems or find any bugs, see our GitHub page for known issues and discussion. For usage questions, please open a question on Stack Overflow with the `spotify` tag. Otherwise, we may be available in irc://irc.freenode.net/spotify. 
