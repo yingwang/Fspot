@@ -1,3 +1,25 @@
+CocoaLibSpotify 2.2.0 for libspotify 12, released August 27th 2012
+==================================================================
+
+* Fix problem in playlist callbacks that could cause a crash (GitHub issue #88).
+
+* `availability` property on `SPTrack` is now updated correctly (GitHub issue #83).
+
+* SPToplist now correctly behaves when being used with `SPAsyncLoading`.
+
+* Add `[SPSession -subscribeToPlaylist:callback:]` (GitHub issue #67).
+
+* Add `[SPSession -objectRepresentationForSpotifyURL:linkType:]`.
+
+* Fix race condition that could cause incorrect state for a short period of time after login (GitHub issue #62, perhaps others).
+
+
+CocoaLibSpotify 2.1.0 for libspotify 12, released August 20th 2012
+==================================================================
+
+* First release under semantic versioning. Contains a few buxfixes and changes since 2.0.
+
+
 CocoaLibSpotify 2.0 for libspotify 12, released May 23rd 2012
 =============================================================
 
