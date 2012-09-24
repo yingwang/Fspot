@@ -82,6 +82,7 @@
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		sp_signup_userdata_success success;
 		success.success = true;
+		NSLog(@"Performing SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED with success: %@", @(success.success));
 		sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED, &success);
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -94,6 +95,7 @@
 	dispatch_async([SPSession libSpotifyQueue], ^{
 		sp_signup_userdata_success success;
 		success.success = false;
+		NSLog(@"Performing SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED with success: %@", @(success.success));
 		sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED, &success);
 		
 		dispatch_async(dispatch_get_main_queue(), ^{

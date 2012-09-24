@@ -524,7 +524,9 @@ static void private_session_mode_changed(sp_session *session, bool is_private) {
 #import "SPLoginViewControllerInternal.h"
 
 static void show_signup_page(sp_session *session, sp_signup_page page, bool pageIsLoading, int featureMask, const char *recentUserName) {
-	
+
+	NSLog(@"Got show signup page %@, loading? %@", @(page), @(pageIsLoading));
+
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	@autoreleasepool {
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -537,7 +539,9 @@ static void show_signup_page(sp_session *session, sp_signup_page page, bool page
 }
 
 static void show_signup_error_page(sp_session *session, sp_signup_page page, sp_error error) {
-	
+
+	NSLog(@"Got show signup error page %@, error %@", @(page), [NSError spotifyErrorWithCode:error]);
+
 	SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
 	@autoreleasepool {
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -554,7 +558,9 @@ static void connect_to_facebook(sp_session *session, const char **permissions, i
 		NSMutableArray *permissionStrs = [NSMutableArray arrayWithCapacity:permission_count];
 		for (int i = 0; i < permission_count; i++)
 			[permissionStrs addObject:[NSString stringWithUTF8String:permissions[i]]];
-		
+
+		NSLog(@"Got connect_to_facebook with %@", permissionStrs);
+
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[[SPLoginViewController loginControllerForSession:sess] handleConnectToFacebookWithPermissions:permissionStrs];
 		});
