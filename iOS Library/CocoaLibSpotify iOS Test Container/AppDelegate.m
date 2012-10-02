@@ -182,63 +182,40 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 	self.metadataTests = [SPMetadataTests new];
 	self.teardownTests = [SPSessionTeardownTests new];
 
-	self.viewController.tests = @[self.sessionTests, self.concurrencyTests, self.playlistTests, self.audioTests, self.searchTests,
+	NSArray *tests = @[self.sessionTests, self.concurrencyTests, self.playlistTests, self.audioTests, self.searchTests,
 		self.inboxTests, self.metadataTests, self.teardownTests];
-	
+
+	self.viewController.tests = tests;
+
 	__block NSUInteger totalPassCount = 0;
 	__block NSUInteger totalFailCount = 0;
-	
-	[self.sessionTests runTests:^(NSUInteger sessionPassCount, NSUInteger sessionFailCount) {
-		
-		totalPassCount += sessionPassCount;
-		totalFailCount += sessionFailCount;
-		
-		[self.concurrencyTests runTests:^(NSUInteger concurrencyPassCount, NSUInteger concurrencyFailCount) {
-			
-			totalPassCount += concurrencyPassCount;
-			totalFailCount += concurrencyFailCount;
-			
-			[self.playlistTests runTests:^(NSUInteger playlistPassCount, NSUInteger playlistFailCount) {
-				
-				totalPassCount += playlistPassCount;
-				totalFailCount += playlistFailCount;
-				
-				[self.audioTests runTests:^(NSUInteger audioPassCount, NSUInteger audioFailCount) {
-					
-					totalPassCount += audioPassCount;
-					totalFailCount += audioFailCount;
-					
-					[self.searchTests runTests:^(NSUInteger searchPassCount, NSUInteger searchFailCount) {
-						
-						totalPassCount += searchPassCount;
-						totalFailCount += searchFailCount;
-						
-						[self.inboxTests runTests:^(NSUInteger inboxPassCount, NSUInteger inboxFailCount) {
-							
-							totalPassCount += inboxPassCount;
-							totalFailCount += inboxFailCount;
-							
-							[self.metadataTests runTests:^(NSUInteger metadataPassCount, NSUInteger metadataFailCount) {
-								
-								totalPassCount += metadataPassCount;
-								totalFailCount += metadataFailCount;
-								
-								[self.teardownTests runTests:^(NSUInteger teardownPassCount, NSUInteger teardownFailCount) {
-									
-									totalPassCount += teardownPassCount;
-									totalFailCount += teardownFailCount;
-									
-									[self completeTestsWithPassCount:totalPassCount failCount:totalFailCount];
-									
-								}];
-							}];
-						}];
-					}];
-				}];
-			}];
+	__block NSUInteger currentTestIndex = 0;
+
+	__block void (^runNextTest)(void) = ^ {
+
+		if (currentTestIndex >= tests.count) {
+			[self completeTestsWithPassCount:totalPassCount failCount:totalFailCount];
+			return;
+		}
+
+		SPTests *testsToRun = tests[currentTestIndex];
+		[testsToRun runTests:^(NSUInteger passCount, NSUInteger failCount) {
+			totalPassCount += passCount;
+			totalFailCount += failCount;
+
+			//Special-case the first test suite since libspotify currently crashes a lot
+			//if you call certain APIs without being logged in.
+			if (currentTestIndex == 0 && totalFailCount > 0) {
+				[self completeTestsWithPassCount:totalPassCount failCount:totalFailCount];
+				return;
+			}
+
+			currentTestIndex++;
+			runNextTest();
 		}];
-	}];
-	
+	};
+
+	runNextTest();
 	return YES;
 }
 
