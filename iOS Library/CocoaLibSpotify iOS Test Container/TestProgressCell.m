@@ -35,7 +35,6 @@
 
 		if (self.UIplaceholder.state == kTestStateWaiting) {
 			self.accessoryView = nil;
-			self.accessoryType = UITableViewCellAccessoryNone;
 
 		} else if (self.UIplaceholder.state == kTestStateRunning) {
 			UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -43,8 +42,10 @@
 			self.accessoryView = indicator;
 
 		} else if (self.UIplaceholder.state == kTestStatePassed) {
-			self.accessoryView = nil;
-			self.accessoryType = UITableViewCellAccessoryCheckmark;
+			self.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Pass"]];
+			
+		} else if (self.UIplaceholder.state == kTestStateFailed) {
+			self.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Fail"]];
 		}
 
     } else {

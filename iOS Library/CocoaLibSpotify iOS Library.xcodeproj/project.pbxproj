@@ -27,6 +27,9 @@
 		50A9F3EE161AE9600009ECA2 /* TestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A9F3EC161AE9600009ECA2 /* TestsViewController.m */; };
 		50A9F3F1161AFC9A0009ECA2 /* TestProgressCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A9F3EF161AFC9A0009ECA2 /* TestProgressCell.h */; };
 		50A9F3F2161AFC9A0009ECA2 /* TestProgressCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A9F3F0161AFC9A0009ECA2 /* TestProgressCell.m */; };
+		50A9F3F5161B146A0009ECA2 /* Fail.png in Resources */ = {isa = PBXBuildFile; fileRef = 50A9F3F3161B146A0009ECA2 /* Fail.png */; };
+		50A9F3F6161B146A0009ECA2 /* Pass.png in Resources */ = {isa = PBXBuildFile; fileRef = 50A9F3F4161B146A0009ECA2 /* Pass.png */; };
+		50A9F3F8161B17BF0009ECA2 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 50A9F3F7161B17BF0009ECA2 /* Default-568h@2x.png */; };
 		50AF49E01439CBFE00E4A5EF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50AF49DF1439CBFE00E4A5EF /* Foundation.framework */; };
 		50AF4A501439CF4700E4A5EF /* CocoaLibSpotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50AF4A511439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AF4A4F1439CF4700E4A5EF /* CocoaLibSpotifyPlatformImports.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -149,6 +152,9 @@
 		50A9F3EC161AE9600009ECA2 /* TestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestsViewController.m; sourceTree = "<group>"; };
 		50A9F3EF161AFC9A0009ECA2 /* TestProgressCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestProgressCell.h; sourceTree = "<group>"; };
 		50A9F3F0161AFC9A0009ECA2 /* TestProgressCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestProgressCell.m; sourceTree = "<group>"; };
+		50A9F3F3161B146A0009ECA2 /* Fail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fail.png; sourceTree = "<group>"; };
+		50A9F3F4161B146A0009ECA2 /* Pass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Pass.png; sourceTree = "<group>"; };
+		50A9F3F7161B17BF0009ECA2 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		50AF49DC1439CBFE00E4A5EF /* libCocoaLibSpotify.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLibSpotify.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		50AF49DF1439CBFE00E4A5EF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		50AF4A4E1439CF4700E4A5EF /* CocoaLibSpotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CocoaLibSpotify.h; path = ../common/CocoaLibSpotify.h; sourceTree = "<group>"; };
@@ -434,6 +440,9 @@
 		50D4F533156BCDE800E237DD /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				50A9F3F7161B17BF0009ECA2 /* Default-568h@2x.png */,
+				50A9F3F3161B146A0009ECA2 /* Fail.png */,
+				50A9F3F4161B146A0009ECA2 /* Pass.png */,
 				50D4F58A156BD37700E237DD /* SPLoginResources.bundle */,
 				50D4F534156BCDE800E237DD /* CocoaLibSpotify iOS Test Container-Info.plist */,
 				50D4F535156BCDE800E237DD /* InfoPlist.strings */,
@@ -604,6 +613,9 @@
 			files = (
 				50D4F537156BCDE800E237DD /* InfoPlist.strings in Resources */,
 				50D4F58B156BD37700E237DD /* SPLoginResources.bundle in Resources */,
+				50A9F3F5161B146A0009ECA2 /* Fail.png in Resources */,
+				50A9F3F6161B146A0009ECA2 /* Pass.png in Resources */,
+				50A9F3F8161B17BF0009ECA2 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

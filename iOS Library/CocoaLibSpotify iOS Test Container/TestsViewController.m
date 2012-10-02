@@ -22,7 +22,7 @@
     if (self) {
         // Custom initialization
 		[self addObserver:self forKeyPath:@"tests" options:0 context:nil];
-		self.title = @"CocoaLibSpotify Unit Tests";
+		self.title = @"Running tests…";
     }
     return self;
 }

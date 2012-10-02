@@ -71,7 +71,7 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 -(void)completeTestsWithPassCount:(NSUInteger)passCount failCount:(NSUInteger)failCount {
 	printf("**** Completed %lu tests with %lu passes and %lu failures ****\n", (unsigned long)(passCount + failCount), (unsigned long)passCount, (unsigned long)failCount);
 	[self pushColorToStatusServer:failCount > 0 ? [UIColor redColor] : [UIColor greenColor]];
-	exit(failCount > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+	self.viewController.title = failCount > 0 ? @"Test(s) failed" : @"All tests passed";
 }
 
 -(void)pushColorToStatusServer:(UIColor *)color {
@@ -85,7 +85,7 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 	
 	[color getRed:&red green:&green blue:&blue alpha:NULL];
 	
-	NSString *requestUrlString = [NSString stringWithFormat:@"http://%@/push-color?red=%lu&green=%lu&blue=%lu",
+	NSString *requestUrlString = [NSString stringWithFormat:@"http://%@/push-color?red=%u&green=%u&blue=%u",
 								  statusServerAddress,
 								  (NSUInteger)red * 255,
 								  (NSUInteger)green * 255,
