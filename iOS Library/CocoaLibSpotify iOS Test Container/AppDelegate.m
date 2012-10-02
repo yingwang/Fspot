@@ -31,7 +31,7 @@
  */
 
 #import "AppDelegate.h"
-#import "ViewController.h"
+#import "TestsViewController.h"
 
 #import "SPSessionTests.h"
 #import "SPMetadataTests.h"
@@ -109,18 +109,25 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-	    self.viewController = [[ViewController alloc] initWithNibName:@"ViewController_iPhone" bundle:nil];
-	} else {
-	    self.viewController = [[ViewController alloc] initWithNibName:@"ViewController_iPad" bundle:nil];
-	}
-	self.window.rootViewController = self.viewController;
+	self.viewController = [[TestsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+	UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:self.viewController];
+	self.window.rootViewController = navigation;
     [self.window makeKeyAndVisible];
     
 	[self pushColorToStatusServer:[UIColor yellowColor]];
 	
 	// Insert code here to initialize your application
 	self.sessionTests = [SPSessionTests new];
+	self.concurrencyTests = [SPConcurrencyTests new];
+	self.playlistTests = [SPPlaylistTests new];
+	self.audioTests = [SPAudioDeliveryTests new];
+	self.searchTests = [SPSearchTests new];
+	self.inboxTests = [SPPostTracksToInboxTests new];
+	self.metadataTests = [SPMetadataTests new];
+	self.teardownTests = [SPSessionTeardownTests new];
+
+	self.viewController.tests = @[self.sessionTests, self.concurrencyTests, self.playlistTests, self.audioTests, self.searchTests,
+		self.inboxTests, self.metadataTests, self.teardownTests];
 	
 	__block NSUInteger totalPassCount = 0;
 	__block NSUInteger totalFailCount = 0;
@@ -130,43 +137,36 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 		totalPassCount += sessionPassCount;
 		totalFailCount += sessionFailCount;
 		
-		self.concurrencyTests = [SPConcurrencyTests new];
 		[self.concurrencyTests runTests:^(NSUInteger concurrencyPassCount, NSUInteger concurrencyFailCount) {
 			
 			totalPassCount += concurrencyPassCount;
 			totalFailCount += concurrencyFailCount;
 			
-			self.playlistTests = [SPPlaylistTests new];
 			[self.playlistTests runTests:^(NSUInteger playlistPassCount, NSUInteger playlistFailCount) {
 				
 				totalPassCount += playlistPassCount;
 				totalFailCount += playlistFailCount;
 				
-				self.audioTests = [SPAudioDeliveryTests new];
 				[self.audioTests runTests:^(NSUInteger audioPassCount, NSUInteger audioFailCount) {
 					
 					totalPassCount += audioPassCount;
 					totalFailCount += audioFailCount;
 					
-					self.searchTests = [SPSearchTests new];
 					[self.searchTests runTests:^(NSUInteger searchPassCount, NSUInteger searchFailCount) {
 						
 						totalPassCount += searchPassCount;
 						totalFailCount += searchFailCount;
 						
-						self.inboxTests = [SPPostTracksToInboxTests new];
 						[self.inboxTests runTests:^(NSUInteger inboxPassCount, NSUInteger inboxFailCount) {
 							
 							totalPassCount += inboxPassCount;
 							totalFailCount += inboxFailCount;
 							
-							self.metadataTests = [SPMetadataTests new];
 							[self.metadataTests runTests:^(NSUInteger metadataPassCount, NSUInteger metadataFailCount) {
 								
 								totalPassCount += metadataPassCount;
 								totalFailCount += metadataFailCount;
 								
-								self.teardownTests = [SPSessionTeardownTests new];
 								[self.teardownTests runTests:^(NSUInteger teardownPassCount, NSUInteger teardownFailCount) {
 									
 									totalPassCount += teardownPassCount;
