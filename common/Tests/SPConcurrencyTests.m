@@ -64,7 +64,7 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testSessionInvalidConvenienceGetterCallbacks {
+-(void)testInvalidGetterCallbacks {
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -112,7 +112,7 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testSessionConvenienceGetterCallbacks {
+-(void)testValidGetterCallbacks {
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -160,7 +160,7 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testClassInvalidConvenienceConstructorCallbacks {
+-(void)testInvalidConstructorCallbacks {
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -197,7 +197,7 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testClassConvenienceConstructorCallbacks {
+-(void)testValidConstructorCallbacks {
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
