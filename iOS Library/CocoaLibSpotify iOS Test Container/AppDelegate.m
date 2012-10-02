@@ -41,6 +41,7 @@
 #import "SPSessionTeardownTests.h"
 #import "SPPlaylistTests.h"
 #import "SPConcurrencyTests.h"
+#import "TestConstants.h"
 
 static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 
@@ -115,6 +116,19 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
     [self.window makeKeyAndVisible];
     
 	[self pushColorToStatusServer:[UIColor yellowColor]];
+
+	//Warn if username and password aren't available
+	NSString *userName = [[NSUserDefaults standardUserDefaults] stringForKey:kTestUserNameUserDefaultsKey];
+	NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:kTestPasswordUserDefaultsKey];
+
+	if (userName.length == 0 || password.length == 0) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Login Details Missing"
+														message:@"The username, password or both are missing. Please consult the testing part of the readme file."
+													   delegate:nil
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+		[alert show];
+	}
 
 	// Make sure we have a clean cache before starting.
 	NSString *aUserAgent = @"com.spotify.CocoaLSUnitTests";
