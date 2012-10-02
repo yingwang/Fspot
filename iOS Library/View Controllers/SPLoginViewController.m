@@ -209,12 +209,10 @@ static NSMutableDictionary *loginControllerCache;
 }
 
 -(void)signupDidPushBack {
-	NSLog(@"Performing SP_SIGNUP_ACTION_GO_BACK");
 	dispatch_async([SPSession libSpotifyQueue], ^() { sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_GO_BACK, NULL); });
 }
 
 -(void)signupDidPushCancel {
-	NSLog(@"Performing SP_SIGNUP_ACTION_CANCEL_SIGNUP");
 	dispatch_async([SPSession libSpotifyQueue], ^() { sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CANCEL_SIGNUP, NULL); });
 	[self handleShowSignupPage:SP_SIGNUP_PAGE_NONE loading:NO featureMask:0 recentUserName:nil];
 }

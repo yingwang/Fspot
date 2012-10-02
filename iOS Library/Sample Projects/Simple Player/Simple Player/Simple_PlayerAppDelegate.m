@@ -32,7 +32,7 @@
 
 #import "Simple_PlayerAppDelegate.h"
 
-//#error Please get an appkey.c file from developer.spotify.com and remove this error before building.
+#error Please get an appkey.c file from developer.spotify.com and remove this error before building.
 #include "appkey.c"
 
 @implementation Simple_PlayerAppDelegate
@@ -202,7 +202,6 @@
 
 -(void)sessionDidLoginSuccessfully:(SPSession *)aSession; {
 	// Invoked by SPSession after a successful login.
-	NSLog(@"Got login.");
 }
 
 -(void)session:(SPSession *)aSession didFailToLoginWithError:(NSError *)error; {
@@ -210,8 +209,6 @@
 }
 
 -(void)sessionDidLogOut:(SPSession *)aSession {
-
-	NSLog(@"Got logout.");
 	
 	SPLoginViewController *controller = [SPLoginViewController loginControllerForSession:[SPSession sharedSession]];
 	
