@@ -1,3 +1,25 @@
+CocoaLibSpotify 2.3.0 for libspotify 12, released October 11th 2012
+===================================================================
+
+* Fix potential crash in `[SPSession -logout:]`.
+
+* Set `[SPPlaylistItem -unread]` correctly (GitHub issue #98).
+
+* Fix potential race in `[SPImage -startLoading]` that could allow the image to be loaded multiple times.
+
+* Add property to control dismissal of `SPLoginViewController`.
+
+* Fix login breakage when merging accounts on iOS.
+
+* Increase robustness of `[SPTrack -dealloc]`.
+
+* Greatly improve iOS unit tests, including a UI to see test progress.
+
+* Fix KVO chaining in `SPToplist` that would cause `SPAsyncLoading` to time out even though the top list had loaded.
+
+* The `subscribers` property of `SPPlaylist` is now set correctly.
+
+
 CocoaLibSpotify 2.2.0 for libspotify 12, released August 27th 2012
 ==================================================================
 
