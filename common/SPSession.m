@@ -82,10 +82,12 @@
 @property (nonatomic, copy, readwrite) NSString *userAgent;
 @property (nonatomic, readwrite) SPAsyncLoadingPolicy loadingPolicy;
 
+@property (readwrite, strong) NSTimer *prodTimeoutTimer;
+
 @property (nonatomic, readwrite, copy) void (^logoutCompletionBlock) ();
 
 -(void)checkLoadingObjects;
--(void)prodSession;
+-(void)prodSessionForcefully;
 
 @end
 
@@ -199,14 +201,10 @@ static void logged_out(sp_session *session) {
  * to have proper synchronization!
  */
 static void notify_main_thread(sp_session *session) {
-    
     SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
-    
-	@synchronized (sess) {
-		dispatch_async([SPSession libSpotifyQueue], ^{
-			[sess prodSession];
-		});
-	}
+	dispatch_async([SPSession libSpotifyQueue], ^{
+		[sess prodSessionForcefully];
+	});
 }
 
 /**
@@ -781,6 +779,7 @@ static SPSession *sharedSession;
 				creationError = [NSError spotifyErrorWithCode:createErrorCode];
 			} else {
 				_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
+				[self prodSessionForcefully];
 			}
 
 		});
@@ -1483,20 +1482,38 @@ static SPSession *sharedSession;
 
 #pragma mark libSpotify Run Loop
 
--(void)prodSession {
-    
-    // Cancel previous delayed calls to this 
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:_cmd
-                                               object:nil];
-    
-    int timeout = 0;
-    sp_session_process_events(self.session, &timeout);
-    
-    [self performSelector:_cmd
-               withObject:nil
-               afterDelay:((double)timeout / 1000.0)];
-    
+-(void)prodSessionForcefully {
+
+	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+
+	@autoreleasepool {
+		int timeout = 0;
+		sp_session_process_events(self.session, &timeout);
+		NSTimeInterval nextNaturalProd = ((double)timeout) / 1000.0;
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self resetProdTimerWithTimeout:nextNaturalProd];
+		});
+		
+	}
+}
+
+-(void)resetProdTimerWithTimeout:(NSTimeInterval)timeout {
+
+	NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"Not on main queue!");
+
+	[self.prodTimeoutTimer invalidate];
+	self.prodTimeoutTimer = nil;
+	self.prodTimeoutTimer = [NSTimer scheduledTimerWithTimeInterval:timeout
+															 target:self
+														   selector:@selector(prodSessionAfterTimeout:)
+														   userInfo:nil
+															repeats:NO];
+}
+
+-(void)prodSessionAfterTimeout:(NSTimer *)aTimer {
+    dispatch_async([SPSession libSpotifyQueue], ^{
+		[self prodSessionForcefully];
+	});
 }
 
 #pragma mark -
@@ -1505,7 +1522,10 @@ static SPSession *sharedSession;
 	
 	[self removeObserver:self forKeyPath:@"connectionState"];
 	[self removeObserver:self forKeyPath:@"starredPlaylist.items"];
-	
+
+	[self.prodTimeoutTimer invalidate];
+	self.prodTimeoutTimer = nil;
+
 	sp_session *outgoing_session = _session;
 	
 	dispatch_async([SPSession libSpotifyQueue], ^{
