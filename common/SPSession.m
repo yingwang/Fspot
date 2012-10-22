@@ -640,19 +640,20 @@ static SPSession *sharedSession;
 	return sharedSession;
 }
 
-+(BOOL)initializeSharedSessionWithApplicationKey:(NSData *)appKey
-									   userAgent:(NSString *)aUserAgent
-								   loadingPolicy:(SPAsyncLoadingPolicy)policy
-										   error:(NSError **)error {
-	
-	sharedSession = [[SPSession alloc] initWithApplicationKey:appKey
-													userAgent:aUserAgent
-												loadingPolicy:policy
-														error:error];
-	if (sharedSession == nil)
-		return NO;
-	
-	return YES;
++(SPSession *)createSharedSessionWithKey:(NSData *)appKey
+							   userAgent:(NSString *)aUserAgent
+						   loadingPolicy:(SPAsyncLoadingPolicy)policy
+								callback:(void (^)(SPSession *sharedSession, NSError *error))block {
+
+	sharedSession = [[SPSession alloc] initWithKey:appKey
+										 userAgent:aUserAgent
+									 loadingPolicy:policy
+										  callback:^(SPSession *session, NSError *error) {
+											  sharedSession = session;
+											  if (block)
+												  block(session, error);
+										  }];
+	return sharedSession;
 }
 
 +(NSString *)libSpotifyBuildId {
@@ -663,15 +664,17 @@ static SPSession *sharedSession;
 
 -(id)init {
 	// This will always fail.
-	return [self initWithApplicationKey:nil userAgent:nil loadingPolicy:SPAsyncLoadingManual error:nil];
+	return [self initWithKey:nil userAgent:nil loadingPolicy:SPAsyncLoadingManual callback:nil];
 }
 
--(id)initWithApplicationKey:(NSData *)appKey
-				  userAgent:(NSString *)aUserAgent
-			  loadingPolicy:(SPAsyncLoadingPolicy)policy
-					  error:(NSError **)error {
-	
+-(id)initWithKey:(NSData *)appKey
+	   userAgent:(NSString *)aUserAgent
+   loadingPolicy:(SPAsyncLoadingPolicy)policy
+		callback:(void (^)(SPSession *session, NSError *error))block {
+
 	if ((self = [super init])) {
+
+		__block NSError *error = nil;
         
         self.userAgent = aUserAgent;
 		self.loadingPolicy = policy;
@@ -694,13 +697,15 @@ static SPSession *sharedSession;
 				  context:(__bridge void *)kSPSessionKVOContext];
 		
 		if (appKey == nil || [aUserAgent length] == 0) {
-			
-			if (error && appKey == nil)
-				*error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_APPLICATION_KEY];
-			
-			if (error && [aUserAgent length] == 0)
-				*error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_USER_AGENT];
-			
+
+			if (appKey == nil)
+				error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_APPLICATION_KEY];
+		
+			if ([aUserAgent length] == 0)
+				error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_USER_AGENT];
+		
+			if (block) block(nil, error);
+		
 			return nil;
 		}
 		
@@ -721,7 +726,8 @@ static SPSession *sharedSession;
 			if (![[NSFileManager defaultManager] createDirectoryAtPath:applicationSupportDirectory
 										   withIntermediateDirectories:YES
 															attributes:nil
-																 error:error]) {
+																 error:&error]) {
+				if (block) block (nil, error);
 				return nil;
 			}
 		}
@@ -744,7 +750,8 @@ static SPSession *sharedSession;
 			if (![[NSFileManager defaultManager] createDirectoryAtPath:cacheDirectory
 										   withIntermediateDirectories:YES
 															attributes:nil
-																 error:error]) {
+																 error:&error]) {
+				if (block) block (nil, error);
 				return nil;
 			}
 		}
@@ -756,11 +763,8 @@ static SPSession *sharedSession;
 		libSpotifyAudioDescription.mFramesPerPacket = 1;
 		libSpotifyAudioDescription.mBitsPerChannel = 16;
 		libSpotifyAudioDescription.mReserved = 0;
-		
-		__block NSError *creationError = nil;
-		
-		SPDispatchSyncIfNeeded(^{
 			
+		dispatch_async([SPSession libSpotifyQueue], ^{
 			sp_session_config config;
 			memset(&config, 0, sizeof(config));
 			
@@ -776,20 +780,14 @@ static SPSession *sharedSession;
 			sp_error createErrorCode = sp_session_create(&config, &_session);
 			if (createErrorCode != SP_ERROR_OK) {
 				self.session = NULL;
-				creationError = [NSError spotifyErrorWithCode:createErrorCode];
-			} else {
-				_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
-				[self prodSessionForcefully];
+				error = [NSError spotifyErrorWithCode:createErrorCode];
+				if (block) block(nil, error);
+				return;
 			}
-
+			_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
+			[self prodSessionForcefully];
+			if (block) dispatch_async(dispatch_get_main_queue(), ^() { block(self, nil); });
 		});
-		
-		if (creationError != nil) {
-			if (*error != NULL)
-				*error = creationError;
-			
-			return nil;
-		}
 	}
 	
 	return self;
@@ -1514,6 +1512,152 @@ static SPSession *sharedSession;
     dispatch_async([SPSession libSpotifyQueue], ^{
 		[self prodSessionForcefully];
 	});
+}
+
+#pragma mark - Deprecated Methods (Remove Soon)
+
++(BOOL)initializeSharedSessionWithApplicationKey:(NSData *)appKey
+									   userAgent:(NSString *)aUserAgent
+								   loadingPolicy:(SPAsyncLoadingPolicy)policy
+										   error:(NSError **)error {
+	
+	sharedSession = [[SPSession alloc] initWithApplicationKey:appKey
+													userAgent:aUserAgent
+												loadingPolicy:policy
+														error:error];
+	if (sharedSession == nil)
+		return NO;
+	
+	return YES;
+}
+
+-(id)initWithApplicationKey:(NSData *)appKey
+				  userAgent:(NSString *)aUserAgent
+			  loadingPolicy:(SPAsyncLoadingPolicy)policy
+					  error:(NSError **)error {
+
+	if ((self = [super init])) {
+
+        self.userAgent = aUserAgent;
+		self.loadingPolicy = policy;
+
+        self.trackCache = [[NSMutableDictionary alloc] init];
+        self.userCache = [[NSMutableDictionary alloc] init];
+		self.playlistCache = [[NSMutableDictionary alloc] init];
+		self.loadingObjects = [[NSMutableSet alloc] init];
+
+		self.connectionState = SP_CONNECTION_STATE_UNDEFINED;
+
+		[self addObserver:self
+               forKeyPath:@"connectionState"
+                  options:0
+                  context:(__bridge void *)kSPSessionKVOContext];
+
+		[self addObserver:self
+			   forKeyPath:@"starredPlaylist.items"
+				  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+				  context:(__bridge void *)kSPSessionKVOContext];
+
+		if (appKey == nil || [aUserAgent length] == 0) {
+
+			if (error && appKey == nil)
+				*error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_APPLICATION_KEY];
+
+			if (error && [aUserAgent length] == 0)
+				*error = [NSError spotifyErrorWithCode:SP_ERROR_BAD_USER_AGENT];
+
+			return nil;
+		}
+
+		// Find the application support directory for settings
+
+		NSString *applicationSupportDirectory = nil;
+		NSArray *potentialDirectories = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+																			NSUserDomainMask,
+																			YES);
+
+		if ([potentialDirectories count] > 0) {
+			applicationSupportDirectory = [[potentialDirectories objectAtIndex:0] stringByAppendingPathComponent:aUserAgent];
+		} else {
+			applicationSupportDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:aUserAgent];
+		}
+
+		if (![[NSFileManager defaultManager] fileExistsAtPath:applicationSupportDirectory]) {
+			if (![[NSFileManager defaultManager] createDirectoryAtPath:applicationSupportDirectory
+										   withIntermediateDirectories:YES
+															attributes:nil
+																 error:error]) {
+				return nil;
+			}
+		}
+
+		// Find the caches directory for cache
+
+		NSString *cacheDirectory = nil;
+
+		NSArray *potentialCacheDirectories = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+																				 NSUserDomainMask,
+																				 YES);
+
+		if ([potentialCacheDirectories count] > 0) {
+			cacheDirectory = [[potentialCacheDirectories objectAtIndex:0] stringByAppendingPathComponent:aUserAgent];
+		} else {
+			cacheDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:aUserAgent];
+		}
+
+		if (![[NSFileManager defaultManager] fileExistsAtPath:cacheDirectory]) {
+			if (![[NSFileManager defaultManager] createDirectoryAtPath:cacheDirectory
+										   withIntermediateDirectories:YES
+															attributes:nil
+																 error:error]) {
+				return nil;
+			}
+		}
+
+		// Set the audio description - other fields will be filled in when we start getting audio.
+		memset(&libSpotifyAudioDescription, 0, sizeof(libSpotifyAudioDescription));
+		libSpotifyAudioDescription.mFormatID = kAudioFormatLinearPCM;
+		libSpotifyAudioDescription.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked | kAudioFormatFlagsNativeEndian;
+		libSpotifyAudioDescription.mFramesPerPacket = 1;
+		libSpotifyAudioDescription.mBitsPerChannel = 16;
+		libSpotifyAudioDescription.mReserved = 0;
+
+		__block NSError *creationError = nil;
+
+		SPDispatchSyncIfNeeded(^{
+
+			sp_session_config config;
+			memset(&config, 0, sizeof(config));
+
+			config.api_version = SPOTIFY_API_VERSION;
+			config.application_key = [appKey bytes];
+			config.application_key_size = [appKey length];
+			config.user_agent = [aUserAgent UTF8String];
+			config.settings_location = [applicationSupportDirectory UTF8String];
+			config.cache_location = [cacheDirectory UTF8String];
+			config.userdata = (__bridge void *)self;
+			config.callbacks = &_callbacks;
+
+			sp_error createErrorCode = sp_session_create(&config, &_session);
+			if (createErrorCode != SP_ERROR_OK) {
+				self.session = NULL;
+				creationError = [NSError spotifyErrorWithCode:createErrorCode];
+			} else {
+				_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
+				[self prodSessionForcefully];
+			}
+
+		});
+
+		if (creationError != nil) {
+			if (*error != NULL)
+				*error = creationError;
+
+			return nil;
+		}
+	}
+
+	return self;
 }
 
 #pragma mark -
