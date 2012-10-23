@@ -66,19 +66,31 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @interface SPSession : NSObject <SPSessionPlaybackProvider, SPAsyncLoading>
 
-/** Returns the dispatch queue that methods interacting with the libSpotify C API must be called on.
+/** Executes the given block on the libspotify thread.
  
  Any methods in CocoaLibSpotify that publicly expose parts of the libSpotify C API *or* direct calls 
- to libSpotify's C functions must be called on the queue returned by this method. This queue is dedicated
- to libSpotify and is separate from the application's main queue (`dispatch_get_main_queue()`).
+ to libSpotify's C functions must be called on the libspotify thead by passing a block to this method.
+ This thread is dedicated to libSpotify and is separate from the application's main thread.
  
- Methods in CocoaLibSpotify that require this queue are documented as such, and will throw an
- assertion if called from any other queue. libSpotify C functions will not throw an assertion - instead
+ Methods in CocoaLibSpotify that require execution on this thread are documented as such, and will throw an
+ assertion if called from any other thread. libSpotify C functions will not throw an assertion - instead
  you're likely to trigger an apparently random crash in the future since the library is not thread-safe.
  
- Examples for using this queue properly can be found in the project's README file.
+ Examples for using this thread properly can be found in the project's README file.
+ 
+ @param block The block to execute.
  */
-+(dispatch_queue_t)libSpotifyQueue;
++(void)dispatchToLibSpotifyThread:(dispatch_block_t)block;
+
+/** Returns the runloop that is running libspotify.
+ 
+ Calls to the libspotify C API and certain CocoaLibSpotify methods must be made on this
+ runloop. See +[SPSession dispatchToLibSpotifyThread:] to a convenient way to do this.
+ 
+ @see +[SPSession dispatchToLibSpotifyThread:]
+ @return The runloop running libspotify.
+ */
++(CFRunLoopRef)libSpotifyRunloop;
 
 /** Returns `YES` if the Spotify client is installed on the current device/machine. */
 +(BOOL)spotifyClientInstalled;
