@@ -604,6 +604,7 @@ static NSString * const kSPSessionKVOContext = @"kSPSessionKVOContext";
 static CFRunLoopRef libspotify_runloop;
 static NSConditionLock *runloopReadyLock;
 static NSThread *libspotifyThread;
+static CFRunLoopSourceRef libspotify_runloop_source;
 
 +(void)initialize {
 	static dispatch_once_t onceToken;
@@ -614,14 +615,6 @@ static NSThread *libspotifyThread;
 		[NSThread detachNewThreadSelector:@selector(runBackgroundRunloop:)
 								 toTarget:self
 							   withObject:nil];
-		/*
-		 TODO:
-		 
-		 - Create a thread
-		 - And a runloop
-		 - Make sure scheduling on the runloop is thread-safe
-		     (Use dispatch_async on a serial queue, or find out if CFRunLoopPerformBlock is thread-safe)
-		 */
 	});
 }
 
@@ -637,12 +630,14 @@ static NSThread *libspotifyThread;
 	// when the runloop is ready for it.
 	[runloopReadyLock lockWhenCondition:1];
 
-	CFRunLoopPerformBlock(libspotify_runloop, kCFRunLoopCommonModes, ^() {
+	CFRunLoopPerformBlock(libspotify_runloop, kCFRunLoopDefaultMode, ^() {
 		if (block) { @autoreleasepool { block(); } }
 	});
 
-	if (CFRunLoopIsWaiting(libspotify_runloop))
+	if (CFRunLoopIsWaiting(libspotify_runloop)) {
+		CFRunLoopSourceSignal(libspotify_runloop_source);
 		CFRunLoopWakeUp(libspotify_runloop);
+	}
 	
 	[runloopReadyLock unlock];
 }
@@ -651,12 +646,23 @@ static NSThread *libspotifyThread;
 	@autoreleasepool {
 		[NSThread currentThread].name = @"com.spotify.CocoaLibSpotify";
 		[runloopReadyLock lock];
-		NSPort *port = [NSPort port];
 		libspotify_runloop = CFRunLoopGetCurrent();
 		libspotifyThread = [NSThread currentThread];
-		[[NSRunLoop currentRunLoop] addPort:port forMode:NSRunLoopCommonModes];
+
+		// Use a custom, no-op run loop source to keep the loop alive and fast.
+		CFRunLoopSourceContext libspotify_source_context;
+		memset(&libspotify_source_context, 0, sizeof(CFRunLoopSourceContext));
+		libspotify_runloop_source = CFRunLoopSourceCreate(NULL, 0, &libspotify_source_context);
+		CFRunLoopAddSource(libspotify_runloop, libspotify_runloop_source, kCFRunLoopDefaultMode);
+
 		[runloopReadyLock unlockWithCondition:1];
 		CFRunLoopRun();
+
+		CFRelease(libspotify_runloop_source);
+		CFRelease(libspotify_runloop);
+		libspotify_runloop_source = NULL;
+		libspotify_runloop = NULL;
+		libspotifyThread = nil;
 	}
 }
 
