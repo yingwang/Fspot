@@ -1140,6 +1140,9 @@ static SPSession *sharedSession;
 	
 	SPAssertOnLibSpotifyThread();
 	
+	if (spTrack == NULL)
+		return nil;
+
 	NSValue *ptrValue = [NSValue valueWithPointer:spTrack];
 	SPTrack *cachedTrack = [self.trackCache objectForKey:ptrValue];
 	
