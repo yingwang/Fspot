@@ -46,6 +46,7 @@
 
 -(void)test1InvalidSessionInit {
 
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	[SPSession createSharedSessionWithKey:nil
 								userAgent:@"com.spotify.CocoaLSUnitTests"
 							loadingPolicy:SPAsyncLoadingManual
@@ -68,6 +69,7 @@
 
 #include "appkey.c"
 
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	[SPSession createSharedSessionWithKey:[NSData dataWithBytes:g_appkey length:g_appkey_size]
 								userAgent:@"com.spotify.CocoaLSUnitTests"
 							loadingPolicy:SPAsyncLoadingManual
@@ -87,7 +89,8 @@
 #pragma mark - Logging In
 
 -(void)test3SessionLogin {
-	
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
 	
 	NSString *userName = [[NSUserDefaults standardUserDefaults] valueForKey:kTestUserNameUserDefaultsKey];
@@ -127,7 +130,8 @@
 #pragma mark - Misc
 
 -(void)test4UserDetails {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout * 2);
 	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
 	
 	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSPAsyncLoadingDefaultTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
@@ -149,7 +153,8 @@
 }
 
 -(void)test5SessionLocale {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout);
 	SPTestAssert([SPSession sharedSession] != nil, @"Session should not be be nil.");
 	
 	[SPAsyncLoading waitUntilLoaded:[SPSession sharedSession] timeout:kSPAsyncLoadingDefaultTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
@@ -161,18 +166,16 @@
 }
 
 -(void)test6CredentialBlobs {
-	
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	_shouldValidateBlobs = YES;
 	
 	if (_didGetLoginBlob)
 		[self validateReceivedBlobs];
-	else
-		[self performSelector:@selector(timeoutReceivingBlobs) withObject:nil afterDelay:kSPAsyncLoadingDefaultTimeout];
 }
 
 -(void)validateReceivedBlobs {
 	[SPSession sharedSession].delegate = nil;
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutReceivingBlobs) object:nil];
 	
 	SEL selector = @selector(test6CredentialBlobs);
 	NSString *userName = [[NSUserDefaults standardUserDefaults] valueForKey:kTestUserNameUserDefaultsKey];
@@ -180,13 +183,6 @@
 	SPOtherTestAssert(selector, [_loginBlobUsername caseInsensitiveCompare:userName] == NSOrderedSame, @"Got incorrect user for blob: %@", _loginBlobUsername);
 	SPOtherTestAssert(selector, _loginBlob.length > 0, @"Got empty login blob");
 	[self passTest:selector];
-}
-
--(void)timeoutReceivingBlobs {
-	if (_didGetLoginBlob) return;
-	[SPSession sharedSession].delegate = nil;
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutReceivingBlobs) object:nil];
-	[self failTest:@selector(test6CredentialBlobs) format:@"Timeout waiting for credential blobs"];
 }
 
 -(void)session:(SPSession *)session didGenerateLoginCredentials:(NSString *)credential forUserName:(NSString *)userName {

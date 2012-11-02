@@ -71,6 +71,16 @@ return self;
 @synthesize completionBlock;
 
 -(void)passTest:(SEL)testSelector {
+
+	NSString *testName = [self prettyNameForTestSelectorName:NSStringFromSelector(testSelector)];
+	for (SPTestUIPlaceholder *placeHolder in self.uiPlaceholders) {
+		if ([placeHolder.name isEqualToString:testName]) {
+			if (placeHolder.state != kTestStateRunning)
+				// Now we have timeouts for all tests, this is expected.
+				return;
+		}
+	}
+
 	printf(" Passed.\n");
 	passCount++;
 
@@ -82,6 +92,15 @@ return self;
 }
 
 -(void)failTest:(SEL)testSelector format:(NSString *)format, ... {
+
+	NSString *testName = [self prettyNameForTestSelectorName:NSStringFromSelector(testSelector)];
+	for (SPTestUIPlaceholder *placeHolder in self.uiPlaceholders) {
+		if ([placeHolder.name isEqualToString:testName]) {
+			if (placeHolder.state != kTestStateRunning)
+				// Now we have timeouts for all tests, this is expected.
+				return;
+		}
+	}
 
 	va_list src, dest;
 	va_start(src, format);
@@ -99,9 +118,20 @@ return self;
 	[self runNextTest];
 }
 
--(NSString *)prettyNameForTestSelectorName:(NSString *)selString {
+-(void)failTest:(SEL)testSelector afterTimeout:(NSTimeInterval)timeout {
+	NSDictionary *info = @{ @"SelString" : NSStringFromSelector(testSelector),
+							@"TimeoutValue" : @(timeout) };
 
-	//NSString *selString = NSStringFromSelector(selector);
+	[self performSelector:@selector(testTimeoutPopped:) withObject:info afterDelay:timeout];
+}
+
+-(void)testTimeoutPopped:(NSDictionary *)testInfo {
+	NSNumber *timeout = testInfo[@"TimeoutValue"];
+	SEL testSelector = NSSelectorFromString(testInfo[@"SelString"]);
+	[self failTest:testSelector format:@"Test failed to complete after timeout: %@", timeout];
+}
+
+-(NSString *)prettyNameForTestSelectorName:(NSString *)selString {
 
 	if ([selString hasPrefix:@"test"])
 		selString = [selString stringByReplacingCharactersInRange:NSMakeRange(0, @"test".length) withString:@""];
