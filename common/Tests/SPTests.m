@@ -114,7 +114,7 @@ return self;
 	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
 
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
-		printf("##teamcity[testFailed name='%s' message='%s'\n", [testName UTF8String], [msg UTF8String]);
+		printf("##teamcity[testFailed name='%s' message='%s']\n", [testName UTF8String], [msg UTF8String]);
 	else
 		printf(" Failed. Reason: %s\n", msg.UTF8String);
 
