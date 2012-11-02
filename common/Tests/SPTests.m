@@ -113,11 +113,13 @@ return self;
 	va_end(src);
 	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
 
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey]) {
 		printf("##teamcity[testFailed name='%s' message='%s']\n", [testName UTF8String], [msg UTF8String]);
-	else
+		printf("##teamcity[testFinished name='%s']\n", [testName UTF8String]);
+	} else {
 		printf(" Failed. Reason: %s\n", msg.UTF8String);
-
+	}
+	
 	failCount++;
 
 	NSUInteger testThatPassedIndex = nextTestIndex - 1;
