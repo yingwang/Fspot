@@ -33,8 +33,7 @@
 		504E493C155AA85500E1C0F7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 504E493A155AA85500E1C0F7 /* InfoPlist.strings */; };
 		504E493E155AA85500E1C0F7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E493D155AA85500E1C0F7 /* main.m */; };
 		504E4942155AA85500E1C0F7 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 504E4940155AA85500E1C0F7 /* Credits.rtf */; };
-		504E4945155AA85500E1C0F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E4944155AA85500E1C0F7 /* AppDelegate.m */; };
-		504E4948155AA85500E1C0F7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 504E4946155AA85500E1C0F7 /* MainMenu.xib */; };
+		504E4945155AA85500E1C0F7 /* TestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E4944155AA85500E1C0F7 /* TestRunner.m */; };
 		504E494F155AA87A00E1C0F7 /* CocoaLibSpotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 503D630F13258041007772CA /* CocoaLibSpotify.framework */; };
 		504E4951155AA88900E1C0F7 /* CocoaLibSpotify.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 503D630F13258041007772CA /* CocoaLibSpotify.framework */; };
 		504E4952155AA8A300E1C0F7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50BED5A715220712000D0919 /* AudioUnit.framework */; };
@@ -158,9 +157,8 @@
 		504E493D155AA85500E1C0F7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		504E493F155AA85500E1C0F7 /* CocoaLibSpotify Test Container-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CocoaLibSpotify Test Container-Prefix.pch"; sourceTree = "<group>"; };
 		504E4941155AA85500E1C0F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		504E4943155AA85500E1C0F7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		504E4944155AA85500E1C0F7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		504E4947155AA85500E1C0F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		504E4943155AA85500E1C0F7 /* TestRunner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestRunner.h; sourceTree = "<group>"; };
+		504E4944155AA85500E1C0F7 /* TestRunner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestRunner.m; sourceTree = "<group>"; };
 		504E4955155AB29100E1C0F7 /* SPSessionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPSessionTests.h; path = ../../common/Tests/SPSessionTests.h; sourceTree = "<group>"; };
 		504E4956155AB29100E1C0F7 /* SPSessionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSessionTests.m; path = ../../common/Tests/SPSessionTests.m; sourceTree = "<group>"; };
 		50632D5C145E9AF100A51AC8 /* SPPlaylistItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItem.h; path = ../common/SPPlaylistItem.h; sourceTree = "<group>"; };
@@ -368,9 +366,8 @@
 			isa = PBXGroup;
 			children = (
 				50A9F400161B2D5F0009ECA2 /* TestConstants.h */,
-				504E4943155AA85500E1C0F7 /* AppDelegate.h */,
-				504E4944155AA85500E1C0F7 /* AppDelegate.m */,
-				504E4946155AA85500E1C0F7 /* MainMenu.xib */,
+				504E4943155AA85500E1C0F7 /* TestRunner.h */,
+				504E4944155AA85500E1C0F7 /* TestRunner.m */,
 				504E4954155AB26C00E1C0F7 /* Tests */,
 				504E4938155AA85500E1C0F7 /* Supporting Files */,
 			);
@@ -586,7 +583,6 @@
 			files = (
 				504E493C155AA85500E1C0F7 /* InfoPlist.strings in Resources */,
 				504E4942155AA85500E1C0F7 /* Credits.rtf in Resources */,
-				504E4948155AA85500E1C0F7 /* MainMenu.xib in Resources */,
 				50DEFADB156136630009E492 /* RunTests.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -658,7 +654,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				504E493E155AA85500E1C0F7 /* main.m in Sources */,
-				504E4945155AA85500E1C0F7 /* AppDelegate.m in Sources */,
+				504E4945155AA85500E1C0F7 /* TestRunner.m in Sources */,
 				504E4957155AB29100E1C0F7 /* SPSessionTests.m in Sources */,
 				50E8ED4B155BB55900F14186 /* SPTests.m in Sources */,
 				50E8ED56155BE46500F14186 /* SPMetadataTests.m in Sources */,
@@ -697,14 +693,6 @@
 				504E4941155AA85500E1C0F7 /* en */,
 			);
 			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
-		504E4946155AA85500E1C0F7 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				504E4947155AA85500E1C0F7 /* en */,
-			);
-			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

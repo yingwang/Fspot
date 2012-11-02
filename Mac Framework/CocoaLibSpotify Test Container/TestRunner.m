@@ -30,7 +30,7 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "AppDelegate.h"
+#import "TestRunner.h"
 #import "SPSessionTests.h"
 #import "SPMetadataTests.h"
 #import "SPSearchTests.h"
@@ -43,7 +43,7 @@
 
 static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 
-@interface AppDelegate ()
+@interface TestRunner ()
 @property (nonatomic, strong) SPTests *sessionTests;
 @property (nonatomic, strong) SPTests *metadataTests;
 @property (nonatomic, strong) SPTests *searchTests;
@@ -54,9 +54,8 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 @property (nonatomic, strong) SPTests *concurrencyTests;
 @end
 
-@implementation AppDelegate
+@implementation TestRunner
 
-@synthesize window = _window;
 @synthesize sessionTests;
 @synthesize metadataTests;
 @synthesize searchTests;
@@ -101,8 +100,7 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 
 #pragma mark - Running Tests
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
+-(void)runTests {
 	[self pushColorToStatusServer:[NSColor yellowColor]];
 	
 	// Make sure we have a clean cache before starting.
