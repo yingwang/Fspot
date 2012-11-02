@@ -39,6 +39,7 @@
 #import "SPSessionTeardownTests.h"
 #import "SPPlaylistTests.h"
 #import "SPConcurrencyTests.h"
+#import "TestConstants.h"
 
 static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 
@@ -66,7 +67,10 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 @synthesize concurrencyTests;
 
 -(void)completeTestsWithPassCount:(NSUInteger)passCount failCount:(NSUInteger)failCount {
-	printf("**** Completed %lu tests with %lu passes and %lu failures ****\n", passCount + failCount, passCount, failCount);
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+		printf("##teamcity[testSuiteFinished name='CocoaLibSpotify']\n");
+	else
+		printf("**** Completed %lu tests with %lu passes and %lu failures ****\n", passCount + failCount, passCount, failCount);
 	[self pushColorToStatusServer:failCount > 0 ? [NSColor redColor] : [NSColor greenColor]];
 	exit(failCount > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
@@ -183,6 +187,9 @@ static NSString * const kTestStatusServerUserDefaultsKey = @"StatusColorServer";
 			runNextTest();
 		}];
 	};
+
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+		printf("##teamcity[testSuiteStarted name='CocoaLibSpotify']\n");
 
 	runNextTest();
 }

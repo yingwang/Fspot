@@ -32,6 +32,7 @@
 
 #import "SPTests.h"
 #import <objc/runtime.h>
+#import "TestConstants.h"
 
 @implementation SPTestUIPlaceholder
 
@@ -81,7 +82,11 @@ return self;
 		}
 	}
 
-	printf(" Passed.\n");
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+		printf("##teamcity[testFinished name='%s']\n", [testName UTF8String]);
+	else
+		printf(" Passed.\n");
+	
 	passCount++;
 
 	NSUInteger testThatPassedIndex = nextTestIndex - 1;
@@ -108,7 +113,11 @@ return self;
 	va_end(src);
 	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
 
-	printf(" Failed. Reason: %s\n", msg.UTF8String);
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+		printf("##teamcity[testFailed name='%s' message='%s'\n", [testName UTF8String], [msg UTF8String]);
+	else
+		printf(" Failed. Reason: %s\n", msg.UTF8String);
+
 	failCount++;
 
 	NSUInteger testThatPassedIndex = nextTestIndex - 1;
@@ -178,8 +187,8 @@ return self;
 -(void)runTests:(void (^)(NSUInteger passCount, NSUInteger failCount))block {
 
 	self.completionBlock = block;
-
-	printf("---- Starting %lu tests in %s ----\n", (unsigned long)self.testSelectorNames.count, NSStringFromClass([self class]).UTF8String);
+	if (![[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+		printf("---- Starting %lu tests in %s ----\n", (unsigned long)self.testSelectorNames.count, NSStringFromClass([self class]).UTF8String);
 	[self runNextTest];
 }
 
@@ -204,7 +213,10 @@ return self;
 
 	if ([methodName hasPrefix:@"test"]) {
 		placeHolder.state = kTestStateRunning;
-		printf("Running test %s...", [self prettyNameForTestSelectorName:methodName].UTF8String);
+		if ([[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+			printf("##teamcity[testStarted name='%s' captureStandardOutput='true']\n", [self prettyNameForTestSelectorName:methodName].UTF8String);
+		else
+			printf("Running test %s...", [self prettyNameForTestSelectorName:methodName].UTF8String);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 		[self performSelector:methodSelector];
@@ -215,7 +227,8 @@ return self;
 }
 
 -(void)testsCompleted {
-	printf("---- Tests in %s complete with %lu passed, %lu failed ----\n", NSStringFromClass([self class]).UTF8String, (unsigned long)passCount, (unsigned long)failCount);
+	if (![[NSUserDefaults standardUserDefaults] boolForKey:kLogForTeamCityUserDefaultsKey])
+		printf("---- Tests in %s complete with %lu passed, %lu failed ----\n", NSStringFromClass([self class]).UTF8String, (unsigned long)passCount, (unsigned long)failCount);
 	if (self.completionBlock) self.completionBlock(passCount, failCount);
 }
 

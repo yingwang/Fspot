@@ -10,6 +10,7 @@
 
 static NSString * const kTestUserNameUserDefaultsKey = @"TestUserName";
 static NSString * const kTestPasswordUserDefaultsKey = @"TestPassword";
+static NSString * const kLogForTeamCityUserDefaultsKey = @"LogForTeamCity";
 
 static NSTimeInterval const kDefaultNonAsyncLoadingTestTimeout = 10.0;
 
