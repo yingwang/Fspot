@@ -34,6 +34,7 @@
 #import "SPSession.h"
 #import "SPUser.h"
 #import "TestConstants.h"
+#import "NSData+Base64.h"
 
 @implementation SPSessionTests {
 	BOOL _didGetLoginBlob;
@@ -67,10 +68,14 @@
 
 -(void)test2ValidSessionInit {
 
-#include "appkey.c"
-
 	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
-	[SPSession createSharedSessionWithKey:[NSData dataWithBytes:g_appkey length:g_appkey_size]
+
+	NSString *base64AppKeyString = [[NSUserDefaults standardUserDefaults] stringForKey:kAppKeyUserDefaultsKey];
+	SPTestAssert(base64AppKeyString.length != 0, @"Appkey cannot be empty.");
+	NSData *appKey = [NSData dataFromBase64String:base64AppKeyString];
+	SPTestAssert(appKey.length != 0, @"Appket is invalid.");
+
+	[SPSession createSharedSessionWithKey:appKey
 								userAgent:@"com.spotify.CocoaLSUnitTests"
 							loadingPolicy:SPAsyncLoadingManual
 								 callback:^(SPSession *sharedSession, NSError *error) {
