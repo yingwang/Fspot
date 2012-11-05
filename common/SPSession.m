@@ -562,33 +562,28 @@ static void connect_to_facebook(sp_session *session, const char **permissions, i
 #endif
 
 static sp_session_callbacks _callbacks = {
-	&logged_in,
-	&logged_out,
-	&metadata_updated,
-	&connection_error,
-	&message_to_user,
-	&notify_main_thread,
-	&music_delivery,
-	&play_token_lost,
-	&log_message,
-	&end_of_track,
-	&streaming_error,
-	NULL, //userinfo_updated
-	NULL, //start_playback
-	NULL, //stop_playback
-	NULL, //get_audio_buffer_stats
-	&offline_status_updated,
-	&offline_error,
-	&credentials_blob_updated,
-	&connectionstate_updated,
+	.logged_in = &logged_in,
+	.logged_out = &logged_out,
+	.metadata_updated = &metadata_updated,
+	.connection_error = &connection_error,
+	.message_to_user = &message_to_user,
+	.notify_main_thread = &notify_main_thread,
+	.music_delivery = &music_delivery,
+	.play_token_lost = &play_token_lost,
+	.log_message = &log_message,
+	.end_of_track = &end_of_track,
+	.streaming_error = &streaming_error,
+	.offline_status_updated = &offline_status_updated,
+	.offline_error = &offline_error,
+	.credentials_blob_updated = &credentials_blob_updated,
+	.connectionstate_updated = &connectionstate_updated,
 #if TARGET_OS_IPHONE
-	&show_signup_page,
-	&show_signup_error_page,
-	&connect_to_facebook,
-	NULL,
+	.show_signup_page = &show_signup_page,
+	.show_signup_error_page = &show_signup_error_page,
+	.connect_to_facebook = &connect_to_facebook,
 #endif
-	&scrobble_error,
-	&private_session_mode_changed
+	.scrobble_error = &scrobble_error,
+	.private_session_mode_changed = &private_session_mode_changed
 };
 
 #pragma mark -
