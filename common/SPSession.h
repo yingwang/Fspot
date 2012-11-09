@@ -82,6 +82,23 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 +(void)dispatchToLibSpotifyThread:(dispatch_block_t)block;
 
+/** Executes the given block on the libspotify thread.
+
+ Any methods in CocoaLibSpotify that publicly expose parts of the libSpotify C API *or* direct calls
+ to libSpotify's C functions must be called on the libspotify thead by passing a block to this method.
+ This thread is dedicated to libSpotify and is separate from the application's main thread.
+
+ Methods in CocoaLibSpotify that require execution on this thread are documented as such, and will throw an
+ assertion if called from any other thread. libSpotify C functions will not throw an assertion - instead
+ you're likely to trigger an apparently random crash in the future since the library is not thread-safe.
+
+ Examples for using this thread properly can be found in the project's README file.
+
+ @param block The block to execute.
+ @param wait If `YES`, this method will block until the block has completed executing. This is not recommended.
+ */
++(void)dispatchToLibSpotifyThread:(dispatch_block_t)block waitUntilDone:(BOOL)wait;
+
 /** Returns the runloop that is running libspotify.
  
  Calls to the libspotify C API and certain CocoaLibSpotify methods must be made on this

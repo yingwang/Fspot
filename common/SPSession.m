@@ -620,13 +620,22 @@ static CFRunLoopSourceRef libspotify_runloop_source;
 }
 
 +(void)dispatchToLibSpotifyThread:(dispatch_block_t)block {
+	[self dispatchToLibSpotifyThread:block waitUntilDone:NO];
+}
+
++(void)dispatchToLibSpotifyThread:(dispatch_block_t)block waitUntilDone:(BOOL)wait {
+
+	NSLock *waitingLock = nil;
+	if (wait) waitingLock = [NSLock new];
 
 	// Make sure we only queue one thing at a time, and only
 	// when the runloop is ready for it.
 	[runloopReadyLock lockWhenCondition:1];
 
 	CFRunLoopPerformBlock(libspotify_runloop, kCFRunLoopDefaultMode, ^() {
+		[waitingLock lock];
 		if (block) { @autoreleasepool { block(); } }
+		[waitingLock unlock];
 	});
 
 	if (CFRunLoopIsWaiting(libspotify_runloop)) {
@@ -635,6 +644,10 @@ static CFRunLoopSourceRef libspotify_runloop_source;
 	}
 	
 	[runloopReadyLock unlock];
+	if (wait) {
+		[waitingLock lock];
+		[waitingLock unlock];
+	}
 }
 
 +(void)runBackgroundRunloop:(dispatch_block_t)runLoopReadyBlock {
@@ -642,6 +655,7 @@ static CFRunLoopSourceRef libspotify_runloop_source;
 		[NSThread currentThread].name = @"com.spotify.CocoaLibSpotify";
 		[runloopReadyLock lock];
 		libspotify_runloop = CFRunLoopGetCurrent();
+		sleep(1);
 		libspotifyThread = [NSThread currentThread];
 
 		// Use a custom, no-op run loop source to keep the loop alive and fast.
@@ -1673,11 +1687,8 @@ static SPSession *sharedSession;
 		libSpotifyAudioDescription.mReserved = 0;
 
 		__block NSError *creationError = nil;
-		__block NSConditionLock *libSpotifyCreatedLock = [NSConditionLock new];
 
-		dispatch_libspotify_async(^() {
-
-			[libSpotifyCreatedLock lock];
+		SPDispatchSyncIfNeeded(^() {
 
 			sp_session_config config;
 			memset(&config, 0, sizeof(config));
@@ -1699,12 +1710,7 @@ static SPSession *sharedSession;
 				_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
 				[self prodSessionForcefully];
 			}
-
-			[libSpotifyCreatedLock unlockWithCondition:1];
 		});
-
-		[libSpotifyCreatedLock lockWhenCondition:1];
-		[libSpotifyCreatedLock unlock];
 
 		if (creationError != nil) {
 			if (*error != NULL)
