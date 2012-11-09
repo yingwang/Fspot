@@ -1673,25 +1673,38 @@ static SPSession *sharedSession;
 		libSpotifyAudioDescription.mReserved = 0;
 
 		__block NSError *creationError = nil;
+		__block NSConditionLock *libSpotifyCreatedLock = [NSConditionLock new];
 
-		NSAssert(libspotifyThread != nil, @"LibSpotify thread is nil!");
+		dispatch_libspotify_async(^() {
 
-		void (^libSpotifyInitDone)(NSError *) = ^(NSError *error) {
-			creationError = error;
-		};
+			[libSpotifyCreatedLock lock];
 
-		NSDictionary *params = @{
-			@"block" : libSpotifyInitDone,
-			@"appkey" : appKey,
-			@"userAgent" : aUserAgent,
-			@"appSupport" : applicationSupportDirectory,
-			@"cache" : cacheDirectory
-		};
+			sp_session_config config;
+			memset(&config, 0, sizeof(config));
 
-		[self performSelector:@selector(libSpotifyInit:)
-					 onThread:libspotifyThread
-				   withObject:params
-				waitUntilDone:YES];
+			config.api_version = SPOTIFY_API_VERSION;
+			config.application_key = [appKey bytes];
+			config.application_key_size = [appKey length];
+			config.user_agent = [aUserAgent UTF8String];
+			config.settings_location = [applicationSupportDirectory UTF8String];
+			config.cache_location = [cacheDirectory UTF8String];
+			config.userdata = (__bridge void *)self;
+			config.callbacks = &_callbacks;
+
+			sp_error createErrorCode = sp_session_create(&config, &_session);
+			if (createErrorCode != SP_ERROR_OK) {
+				self.session = NULL;
+				creationError = [NSError spotifyErrorWithCode:createErrorCode];
+			} else {
+				_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
+				[self prodSessionForcefully];
+			}
+
+			[libSpotifyCreatedLock unlockWithCondition:1];
+		});
+
+		[libSpotifyCreatedLock lockWhenCondition:1];
+		[libSpotifyCreatedLock unlock];
 
 		if (creationError != nil) {
 			if (*error != NULL)
@@ -1702,36 +1715,6 @@ static SPSession *sharedSession;
 	}
 
 	return self;
-}
-
--(void)libSpotifyInit:(NSDictionary *)dict {
-	sp_session_config config;
-	memset(&config, 0, sizeof(config));
-
-	void (^block)(NSError *error) = [dict valueForKey:@"block"];
-	NSData *appKey = [dict valueForKey:@"appkey"];
-	NSString *aUserAgent = [dict valueForKey:@"userAgent"];
-	NSString *applicationSupportDirectory = [dict valueForKey:@"appSupport"];
-	NSString *cacheDirectory = [dict valueForKey:@"cache"];
-
-	config.api_version = SPOTIFY_API_VERSION;
-	config.application_key = [appKey bytes];
-	config.application_key_size = [appKey length];
-	config.user_agent = [aUserAgent UTF8String];
-	config.settings_location = [applicationSupportDirectory UTF8String];
-	config.cache_location = [cacheDirectory UTF8String];
-	config.userdata = (__bridge void *)self;
-	config.callbacks = &_callbacks;
-
-	sp_error createErrorCode = sp_session_create(&config, &_session);
-	if (createErrorCode != SP_ERROR_OK) {
-		self.session = NULL;
-		if (block) block([NSError spotifyErrorWithCode:createErrorCode]);
-	} else {
-		_cachedIsUsingNormalization = sp_session_get_volume_normalization(_session);
-		[self prodSessionForcefully];
-		if (block) block(nil);
-	}
 }
 
 #pragma mark -
