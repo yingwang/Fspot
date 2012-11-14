@@ -9,9 +9,9 @@
 	<key>CFBundleName</key>
 	<string>CocoaLibSpotify Documentation</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>2.4.0</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>2.4.0</string>
 	
 	
 	
@@ -22,8 +22,6 @@
 	<key>DocSetMinimumXcodeVersion</key>
 	<string>3.0</string>
 	
-	<key>DashDocSetFamily</key>
-	<string>appledoc</string>
 	<key>DocSetPublisherIdentifier</key>
 	<string>com.spotify.documentation</string>
 	<key>DocSetPublisherName</key>
