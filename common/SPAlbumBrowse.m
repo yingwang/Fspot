@@ -70,7 +70,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 	
 	@autoreleasepool {
 		
-		// This called on the libSpotify queue
+		// This called on the libSpotify thread
 		
 		SPAlbumBrowse *albumBrowse = (__bridge_transfer SPAlbumBrowse *)userdata;
 		
@@ -148,7 +148,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 		self.session = aSession;
 		self.album = anAlbum;
 		
-		dispatch_libspotify_async(^{
+		SPDispatchAsync(^{
 			self.albumBrowse = sp_albumbrowse_create(aSession.session,
 													 anAlbum.album,
 													 &albumbrowse_complete,
@@ -183,7 +183,7 @@ void albumbrowse_complete (sp_albumbrowse *result, void *userdata) {
 - (void)dealloc {
 	sp_albumbrowse *outgoing_browse = _albumBrowse;
 	_albumBrowse = NULL;
-	dispatch_libspotify_async(^() { if (outgoing_browse) sp_albumbrowse_release(outgoing_browse); });
+	SPDispatchAsync(^() { if (outgoing_browse) sp_albumbrowse_release(outgoing_browse); });
 }
 
 @end

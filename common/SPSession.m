@@ -202,7 +202,7 @@ static void logged_out(sp_session *session) {
  */
 static void notify_main_thread(sp_session *session) {
     SPSession *sess = (__bridge SPSession *)sp_session_userdata(session);
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		[sess prodSessionForcefully];
 	});
 }
@@ -236,7 +236,7 @@ static void metadata_updated(sp_session *session) {
 	
 	@autoreleasepool {
 		
-		// Call this on the libSpotify queue
+		// Call this on the libSpotify thread
 		[sess checkLoadingObjects];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -825,7 +825,7 @@ static SPSession *sharedSession;
 		libSpotifyAudioDescription.mBitsPerChannel = 16;
 		libSpotifyAudioDescription.mReserved = 0;
 			
-		dispatch_libspotify_async(^{
+		SPDispatchAsync(^{
 			sp_session_config config;
 			memset(&config, 0, sizeof(config));
 			
@@ -861,7 +861,7 @@ static SPSession *sharedSession;
 		return;
 	
 	[self logout:^{
-		dispatch_libspotify_async(^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], false, NULL); });
+		SPDispatchAsync(^{ sp_session_login(self.session, [userName UTF8String], [password UTF8String], false, NULL); });
 	}];
 }
 
@@ -872,13 +872,13 @@ static SPSession *sharedSession;
 		return;
 	
 	[self logout:^{
-		dispatch_libspotify_async(^{ sp_session_login(self.session, [userName UTF8String], NULL, false, [credential UTF8String]); });
+		SPDispatchAsync(^{ sp_session_login(self.session, [userName UTF8String], NULL, false, [credential UTF8String]); });
 	}];
 }
 
 -(void)fetchLoginUserName:(void (^)(NSString *loginUserName))block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		if (self.session == NULL)
 			return;
@@ -891,7 +891,7 @@ static SPSession *sharedSession;
 }
 
 -(void)flushCaches:(void (^)())completionBlock {
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		if (self.session) sp_session_flush_caches(self.session); 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			if (completionBlock) completionBlock();
@@ -922,7 +922,7 @@ static SPSession *sharedSession;
 					if (playlistItem.itemClass == [SPTrack class]) {
 						
 						SPTrack *track = playlistItem.item;
-						dispatch_libspotify_async(^() { 
+						SPDispatchAsync(^() { 
 							BOOL starred = sp_track_is_starred(self.session, track.track);
 							dispatch_async(dispatch_get_main_queue(), ^() { [track setStarredFromLibSpotifyUpdate:starred]; });
 						});
@@ -936,7 +936,7 @@ static SPSession *sharedSession;
             
             if (self.connectionState == SP_CONNECTION_STATE_LOGGED_IN || self.connectionState == SP_CONNECTION_STATE_OFFLINE) {
 
-				dispatch_libspotify_async(^() {
+				SPDispatchAsync(^() {
 					sp_playlist *pl = sp_session_inbox_create(self.session);
 					if (pl == NULL) return;
 					SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
@@ -948,7 +948,7 @@ static SPSession *sharedSession;
 					sp_playlist_release(pl);
 				});
 
-				dispatch_libspotify_async(^() {
+				SPDispatchAsync(^() {
 					sp_playlist *pl = sp_session_starred_create(self.session);
 					if (pl == NULL) return;
 					SPPlaylist *playlist = [self playlistForPlaylistStruct:pl];
@@ -960,7 +960,7 @@ static SPSession *sharedSession;
 					sp_playlist_release(pl);
 				});
 
-				dispatch_libspotify_async(^() {
+				SPDispatchAsync(^() {
 					sp_playlistcontainer *plc = sp_session_playlistcontainer(self.session);
 					if (plc == NULL) return;
 					SPPlaylistContainer *container = [[SPPlaylistContainer alloc] initWithContainerStruct:plc inSession:self];
@@ -971,13 +971,13 @@ static SPSession *sharedSession;
 					});
 				});
 
-				dispatch_libspotify_async(^() {
+				SPDispatchAsync(^() {
 					sp_user *userStruct = sp_session_user(self.session);
 					SPUser *newUser = [SPUser userWithUserStruct:userStruct inSession:self];
 					dispatch_async(dispatch_get_main_queue(), ^() { self.user = newUser; });
 				});
 				
-				dispatch_libspotify_async(^() {
+				SPDispatchAsync(^() {
 					int encodedLocale = sp_session_user_country(self.session);
 					char localeId[3];
 					localeId[0] = encodedLocale >> 8 & 0xFF;
@@ -1022,7 +1022,7 @@ static SPSession *sharedSession;
 	
 	self.logoutCompletionBlock = completionBlock;
 	
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		
 		[self.playlistCache removeAllObjects];
 		sp_connectionstate state = sp_session_connectionstate(outgoing_session);
@@ -1074,7 +1074,7 @@ static SPSession *sharedSession;
 
 -(void)setPrivateSession:(BOOL)privateSession {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		sp_session_set_private_session(self.session, privateSession);
 	});
 	
@@ -1089,7 +1089,7 @@ static SPSession *sharedSession;
 
 -(void)setScrobblingState:(sp_scrobbling_state)state forService:(sp_social_provider)service callback:(SPErrorableOperationCallback)block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		sp_error errorCode = sp_session_set_scrobbling(self.session, service, state);
 		NSError *error = nil;
 		if (errorCode != SP_ERROR_OK)
@@ -1106,7 +1106,7 @@ static SPSession *sharedSession;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		sp_session_set_social_credentials(self.session, service, userName.UTF8String, password.UTF8String);
 		dispatch_async(dispatch_get_main_queue(), ^{ if (block) block(nil); });
 	});
@@ -1114,7 +1114,7 @@ static SPSession *sharedSession;
 
 -(void)fetchScrobblingStateForService:(sp_social_provider)service callback:(void (^)(sp_scrobbling_state state, NSError *error))block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		sp_scrobbling_state out_state;
 		sp_error errorCode = sp_session_is_scrobbling(self.session, service, &out_state);
@@ -1129,7 +1129,7 @@ static SPSession *sharedSession;
 
 -(void)fetchScrobblingAllowedForService:(sp_social_provider)service callback:(void (^)(BOOL scrobblingAllowed, NSError *error))block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		bool out_state = NO;
 		sp_error errorCode = sp_session_is_scrobbling_possible(self.session, service, &out_state);
@@ -1145,7 +1145,7 @@ static SPSession *sharedSession;
 #pragma mark - Block Getters
 
 -(SPTrack *)trackForTrackStruct:(sp_track *)spTrack {
-    // WARNING: This MUST be called on the LibSpotify worker queue.
+    // WARNING: This MUST be called on the LibSpotify worker thread.
 	
 	SPAssertOnLibSpotifyThread();
 	
@@ -1169,7 +1169,7 @@ static SPSession *sharedSession;
 }
 
 -(SPUser *)userForUserStruct:(sp_user *)spUser {
-    // WARNING: This MUST be called on the LibSpotify worker queue.
+    // WARNING: This MUST be called on the LibSpotify worker thread.
     
 	SPAssertOnLibSpotifyThread();
 	
@@ -1190,7 +1190,7 @@ static SPSession *sharedSession;
 }
 
 -(SPPlaylist *)playlistForPlaylistStruct:(sp_playlist *)playlist {
-    // WARNING: This MUST be called on the LibSpotify worker queue.
+    // WARNING: This MUST be called on the LibSpotify worker thread.
 	
 	SPAssertOnLibSpotifyThread();
 	
@@ -1240,7 +1240,7 @@ static SPSession *sharedSession;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		SPTrack *trackObj = nil;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
@@ -1262,7 +1262,7 @@ static SPSession *sharedSession;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		SPUser *userObj = nil;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
@@ -1284,7 +1284,7 @@ static SPSession *sharedSession;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		SPPlaylist *playlist = nil;
 		sp_link *link = [url createSpotifyLink];
 		if (link != NULL) {
@@ -1410,7 +1410,7 @@ static SPSession *sharedSession;
 
 -(void)addLoadingObject:(id)object;
 {
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		[self.loadingObjects addObject:object];
 	});
 }
@@ -1435,15 +1435,15 @@ static SPSession *sharedSession;
 #pragma mark Properties
 
 -(void)setPreferredBitrate:(sp_bitrate)bitrate {
-    dispatch_libspotify_async(^() { if (self.session) sp_session_preferred_bitrate(self.session, bitrate); });
+    SPDispatchAsync(^() { if (self.session) sp_session_preferred_bitrate(self.session, bitrate); });
 }
 
 -(void)setMaximumCacheSizeMB:(size_t)maximumCacheSizeMB {
-    dispatch_libspotify_async(^() { if (self.session) sp_session_set_cache_size(self.session, maximumCacheSizeMB); });
+    SPDispatchAsync(^() { if (self.session) sp_session_set_cache_size(self.session, maximumCacheSizeMB); });
 }
 
 -(void)fetchOfflineKeyTimeRemaining:(void (^)(NSTimeInterval remainingTime))block {
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		NSTimeInterval interval = 0.0;
 		if (self.session) interval = sp_offline_time_left(self.session);
 		
@@ -1475,7 +1475,7 @@ static SPSession *sharedSession;
 
 -(void)preloadTrackForPlayback:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block {
 	
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		
 		sp_error errorCode = SP_ERROR_TRACK_NOT_PLAYABLE;
 		NSError *error = nil;
@@ -1492,7 +1492,7 @@ static SPSession *sharedSession;
 
 -(void)playTrack:(SPTrack *)aTrack callback:(SPErrorableOperationCallback)block {
 	
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		
 		sp_error errorCode = SP_ERROR_TRACK_NOT_PLAYABLE;
 		NSError *error = nil;
@@ -1511,11 +1511,11 @@ static SPSession *sharedSession;
 }
 
 -(void)seekPlaybackToOffset:(NSTimeInterval)offset {
-	dispatch_libspotify_async(^() { if (self.session != NULL) sp_session_player_seek(self.session, (int)offset * 1000); });
+	SPDispatchAsync(^() { if (self.session != NULL) sp_session_player_seek(self.session, (int)offset * 1000); });
 }
 
 -(void)setPlaying:(BOOL)nowPlaying {
-	dispatch_libspotify_async(^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
+	SPDispatchAsync(^() { if (self.session) sp_session_player_play(self.session, nowPlaying); });
 	_playing = nowPlaying;
 }
 
@@ -1529,7 +1529,7 @@ static SPSession *sharedSession;
 	usingVolumeNormalization = NO;
 #endif
 	_cachedIsUsingNormalization = usingVolumeNormalization;
-	dispatch_libspotify_async(^() { sp_session_set_volume_normalization(self.session, usingVolumeNormalization); });
+	SPDispatchAsync(^() { sp_session_set_volume_normalization(self.session, usingVolumeNormalization); });
 }
 
 -(BOOL)isUsingVolumeNormalization {
@@ -1538,7 +1538,7 @@ static SPSession *sharedSession;
 
 -(void)unloadPlayback {
 	self.playing = NO;
-	dispatch_libspotify_async(^() { if (self.session) sp_session_player_unload(self.session); });
+	SPDispatchAsync(^() { if (self.session) sp_session_player_unload(self.session); });
 }
 
 
@@ -1561,7 +1561,7 @@ static SPSession *sharedSession;
 
 -(void)resetProdTimerWithTimeout:(NSTimeInterval)timeout {
 
-	NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"Not on main queue!");
+	NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"Not on main thread!");
 
 	[self.prodTimeoutTimer invalidate];
 	self.prodTimeoutTimer = nil;
@@ -1573,7 +1573,7 @@ static SPSession *sharedSession;
 }
 
 -(void)prodSessionAfterTimeout:(NSTimer *)aTimer {
-    dispatch_libspotify_async(^{
+    SPDispatchAsync(^{
 		[self prodSessionForcefully];
 	});
 }
@@ -1735,7 +1735,7 @@ static SPSession *sharedSession;
 
 	sp_session *outgoing_session = _session;
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		if (!outgoing_session) return;
 		sp_session_player_unload(outgoing_session);
 		sp_session_logout(outgoing_session);

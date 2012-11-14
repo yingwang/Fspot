@@ -315,7 +315,7 @@ __attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: in
 
 /** Returns the opaque structure used by the C LibSpotify API. 
  
- @warning This method *must* be called on the libSpotify queue. See the
+ @warning This method *must* be called on the libSpotify thread. See the
  "Threading" section of the library's readme for more information.
  
  @warning This should only be used if you plan to directly use the 
@@ -512,7 +512,7 @@ __attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: in
 
 /** Returns an object representation of the given Spotify URL.
  
-@warning This method *must* be called on the libSpotify queue. See the
+@warning This method *must* be called on the libSpotify thread. See the
  "Threading" section of the library's readme for more information.
 
  @param aSpotifyUrlOfSomeKind A Spotify URL (starting `spotify:`).
@@ -540,7 +540,7 @@ __attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: in
  This method caches SPPlaylist objects using the same cache the +[SPPlaylist playlist...] 
  convenience methods use.
  
- @warning This method *must* be called on the libSpotify queue. See the
+ @warning This method *must* be called on the libSpotify thread. See the
  "Threading" section of the library's readme for more information.
  
  @param playlist The sp_playlist struct.
@@ -552,7 +552,7 @@ __attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: in
  
  This method caches SPPlaylistFolder objects by ID.
  
- @warning This method *must* be called on the libSpotify queue. See the
+ @warning This method *must* be called on the libSpotify thread. See the
  "Threading" section of the library's readme for more information.
  
  @param playlistId The folder ID.
@@ -576,7 +576,7 @@ __attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: in
  This method caches SPTrack objects using the same cache the +[SPTrack track...] 
  convenience methods use.
  
- @warning This method *must* be called on the libSpotify queue. See the
+ @warning This method *must* be called on the libSpotify thread. See the
  "Threading" section of the library's readme for more information.
  
  @param track The sp_track struct.
@@ -589,7 +589,7 @@ __attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: in
  This method caches SPUser objects using the same cache the +[SPUser user...] 
  convenience methods use.
  
- @warning This method *must* be called on the libSpotify queue. See the
+ @warning This method *must* be called on the libSpotify thread. See the
  "Threading" section of the library's readme for more information.
  
  @param user The sp_user struct.

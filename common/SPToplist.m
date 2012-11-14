@@ -191,7 +191,7 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 		self.username = nil;
 		self.session = aSession;
 		
-		dispatch_libspotify_async(^{
+		SPDispatchAsync(^{
 			
 			sp_toplistregion region = SP_TOPLIST_REGION_EVERYWHERE;
 			
@@ -240,7 +240,7 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 		self.username = user;
 		self.session = aSession;
 		
-		dispatch_libspotify_async(^{
+		SPDispatchAsync(^{
 			
 			sp_toplistregion region = SP_TOPLIST_REGION_USER;
 			
@@ -334,7 +334,7 @@ void toplistbrowse_albums_complete(sp_toplistbrowse *result, void *userdata) {
 	sp_toplistbrowse *outgoing_trackbrowse = _trackBrowseOperation;
 	_trackBrowseOperation = NULL;
 	
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		if (outgoing_artistbrowse) sp_toplistbrowse_release(outgoing_artistbrowse);
 		if (outgoing_albumbrowse) sp_toplistbrowse_release(outgoing_albumbrowse);
 		if (outgoing_trackbrowse) sp_toplistbrowse_release(outgoing_trackbrowse);

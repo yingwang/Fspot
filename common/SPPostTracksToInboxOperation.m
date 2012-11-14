@@ -101,7 +101,7 @@ void inboxpost_complete(sp_inbox *result, void *userdata) {
 			self.tracks = tracksToSend;
 			self.completionBlock = block;
 			
-			dispatch_libspotify_async(^{
+			SPDispatchAsync(^{
 				
 				int trackCount = (int)self.tracks.count;
 				sp_track *trackArray[trackCount];

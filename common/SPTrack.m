@@ -206,7 +206,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)sessionUpdatedMetadata:(NSNotification *)notification {
 
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 
 		BOOL newLocal = sp_track_is_local(self.session.session, self.track);
 		NSUInteger newPopularity = sp_track_popularity(self.track);
@@ -280,7 +280,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 -(void)setStarred:(BOOL)starred {
-    dispatch_libspotify_async(^() {
+    SPDispatchAsync(^() {
 		sp_track *track = self.track;
 		sp_track_set_starred([session session], (sp_track *const *)&track, 1, starred);
 	});
@@ -291,7 +291,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	sp_track *outgoing_track = _track;
 	_track = NULL;
-    dispatch_libspotify_async(^() { if (outgoing_track) sp_track_release(outgoing_track); });
+    SPDispatchAsync(^() { if (outgoing_track) sp_track_release(outgoing_track); });
     session = nil;
 }
 

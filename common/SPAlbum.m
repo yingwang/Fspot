@@ -89,7 +89,7 @@ static NSMutableDictionary *albumCache;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		SPAlbum *newAlbum = nil;
 		sp_link *link = [aURL createSpotifyLink];
 		if (link != NULL) {
@@ -193,7 +193,7 @@ static NSMutableDictionary *albumCache;
 }
 
 -(void)albumBrowseDidLoad {
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		if (self.album) {
 			int aYear = sp_album_year(self.album);
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -252,7 +252,7 @@ static NSMutableDictionary *albumCache;
 -(void)dealloc {
 	sp_album *outgoing_album = _album;
 	_album = NULL;
-	dispatch_libspotify_async(^() { if (outgoing_album) sp_album_release(outgoing_album); });
+	SPDispatchAsync(^() { if (outgoing_album) sp_album_release(outgoing_album); });
 }
 
 @end

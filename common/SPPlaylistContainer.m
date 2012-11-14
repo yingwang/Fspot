@@ -172,7 +172,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 
 -(void)startLoading {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		if (self.callbackProxy != nil) return;
 		
@@ -368,7 +368,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 
 -(void)createPlaylistWithName:(NSString *)name callback:(void (^)(SPPlaylist *))block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		if ([[name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0 ||
 			[name length] > 255) {
@@ -389,7 +389,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 
 -(void)createFolderWithName:(NSString *)name callback:(void (^)(SPPlaylistFolder *, NSError *))block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		sp_error errorCode = sp_playlistcontainer_add_folder(self.container, 0, [name UTF8String]);
 		
@@ -424,7 +424,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	if (aPlaylist == nil)
 		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]); });
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		NSUInteger playlistCount = sp_playlistcontainer_num_playlists(self.container);
 		
@@ -457,7 +457,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	if (aFolder == nil)
 		if (block) dispatch_async(dispatch_get_main_queue(), ^{ block([NSError spotifyErrorWithCode:SP_ERROR_INVALID_INDATA]); });
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		// Remove callbacks, since we have to remove two playlists and reacting to list change notifications halfway through would be bad.
 		self.callbackProxy.container = nil;
@@ -492,7 +492,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	
 	if ([playlistOrFolder isKindOfClass:[SPPlaylist class]]) {
 		
-		dispatch_libspotify_async(^{
+		SPDispatchAsync(^{
 			
 			NSInteger sourceIndex = NSNotFound;
 			SPPlaylist *sourcePlaylist = playlistOrFolder;
@@ -531,7 +531,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		
 	} else if ([playlistOrFolder isKindOfClass:[SPPlaylistFolder class]]) {
 		
-		dispatch_libspotify_async(^{
+		SPDispatchAsync(^{
 			
 			self.callbackProxy.container = nil;
 			sp_playlistcontainer_remove_callbacks(self.container, &playlistcontainer_callbacks, (__bridge void *)(self.callbackProxy));
@@ -595,7 +595,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 		return;
 	}
 
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 
 		sp_link *link = sp_link_create_from_playlist(playlist.playlist);
 		sp_playlist *subbedPlaylist = sp_playlistcontainer_add_playlist(self.container, link);
@@ -622,7 +622,7 @@ static sp_playlistcontainer_callbacks playlistcontainer_callbacks = {
 	self.callbackProxy.container = nil;
 	self.callbackProxy = nil;
 	
-    dispatch_libspotify_async(^() {
+    SPDispatchAsync(^() {
 		if (outgoing_container) sp_playlistcontainer_remove_callbacks(outgoing_container, &playlistcontainer_callbacks, (__bridge void *)outgoingProxy);
 		if (outgoing_container) sp_playlistcontainer_release(outgoing_container);
     });

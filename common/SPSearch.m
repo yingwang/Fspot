@@ -446,7 +446,7 @@ void search_complete(sp_search *result, void *userdata) {
 	if (artistCount == 0 && albumCount == 0 && trackCount == 0 && playlistCount == 0)
 		return NO;
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		NSMutableDictionary *userData = [[NSMutableDictionary alloc] initWithCapacity:5];
 		
@@ -497,7 +497,7 @@ void search_complete(sp_search *result, void *userdata) {
 -(void)dealloc {
 	sp_search *outgoing_search = _activeSearch;
 	_activeSearch = NULL;
-	dispatch_libspotify_async(^() { if (outgoing_search) sp_search_release(outgoing_search); });
+	SPDispatchAsync(^() { if (outgoing_search) sp_search_release(outgoing_search); });
 }
 
 @end

@@ -120,7 +120,7 @@ static NSMutableDictionary *imageCache;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		SPImage *spImage = nil;
 		sp_link *link = [imageURL createSpotifyLink];
@@ -214,7 +214,7 @@ static NSMutableDictionary *imageCache;
 	if (hasStartedLoading) return;
 	hasStartedLoading = YES;
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		if (self.spImage != NULL)
 			return;
@@ -261,7 +261,7 @@ static NSMutableDictionary *imageCache;
 	self.callbackProxy.image = nil;
 	self.callbackProxy = nil;
     
-    dispatch_libspotify_async(^() {
+    SPDispatchAsync(^() {
 		if (outgoing_image) sp_image_remove_load_callback(outgoing_image, &image_loaded, (__bridge void *)outgoingProxy);
 		if (outgoing_image) sp_image_release(outgoing_image);
 	});
@@ -269,7 +269,7 @@ static NSMutableDictionary *imageCache;
 
 -(void)cacheSpotifyURL {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 
 		if (self.spotifyURL != NULL)
 			return;

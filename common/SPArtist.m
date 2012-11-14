@@ -78,7 +78,7 @@ static NSMutableDictionary *artistCache;
 		return;
 	}
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		SPArtist *newArtist = nil;
 		sp_link *link = [aURL createSpotifyLink];
 		if (link != NULL) {
@@ -170,7 +170,7 @@ static NSMutableDictionary *artistCache;
 -(void)dealloc {
 	sp_artist *outgoing_artist = _artist;
 	_artist = NULL;
-	dispatch_libspotify_async(^() { if (outgoing_artist) sp_artist_release(outgoing_artist); });
+	SPDispatchAsync(^() { if (outgoing_artist) sp_artist_release(outgoing_artist); });
 }
 
 @end

@@ -366,7 +366,7 @@ static void	playlist_metadata_updated(sp_playlist *pl, void *userdata) {
 				if (playlistItem.itemClass == [SPTrack class]) {
 					SPTrack *track = playlistItem.item;
 					// This is so bad it makes my head hurt
-					dispatch_libspotify_async(^{
+					SPDispatchAsync(^{
 						sp_track_offline_status status = sp_track_offline_get_status(track.track);
 						dispatch_async(dispatch_get_main_queue(), ^() { [track setOfflineStatusFromLibSpotifyUpdate:status]; });
 					});
@@ -580,7 +580,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 @synthesize removeCallbackStack;
 
 -(void)setMarkedForOfflinePlayback:(BOOL)isMarkedForOfflinePlayback {
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		sp_playlist_set_offline_mode(self.session.session, self.playlist, isMarkedForOfflinePlayback);
 	});
 }
@@ -597,7 +597,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 
 -(void)loadPlaylistData {
 	
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 
 		if (self.playlist == NULL)
 			return;
@@ -659,7 +659,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 
 -(void)startLoading {
 	
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		
 		if (self.callbackProxy != nil) return;
 	
@@ -669,7 +669,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			self.items = newItems;
-			dispatch_libspotify_async(^() {
+			SPDispatchAsync(^() {
 
 				if (self.callbackProxy == nil) {
 					// We do this check earlier on, but there's a race condition that causes a nasty crash
@@ -694,10 +694,10 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
     
     if (context == (__bridge void *)kSPPlaylistKVOContext) {
         if ([keyPath isEqualToString:@"name"]) {
-            dispatch_libspotify_async(^() { sp_playlist_rename(self.playlist, [self.name UTF8String]); });
+            SPDispatchAsync(^() { sp_playlist_rename(self.playlist, [self.name UTF8String]); });
             return;
         } else if ([keyPath isEqualToString:@"collaborative"]) {
-            dispatch_libspotify_async(^() { sp_playlist_set_collaborative(self.playlist, self.isCollaborative); });
+            SPDispatchAsync(^() { sp_playlist_set_collaborative(self.playlist, self.isCollaborative); });
             return;
         }
     } 
@@ -804,7 +804,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 
 -(void)addItems:(NSArray *)newItems atIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		if (newItems.count == 0) {
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -852,7 +852,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 
 -(void)removeItemAtIndex:(NSUInteger)index callback:(SPErrorableOperationCallback)block {
 
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		if (block)
 			[self.removeCallbackStack addObject:block];
@@ -875,7 +875,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 
 -(void)moveItemsAtIndexes:(NSIndexSet *)indexes toIndex:(NSUInteger)newLocation callback:(SPErrorableOperationCallback)block {
 	
-	dispatch_libspotify_async(^{
+	SPDispatchAsync(^{
 		
 		int count = (int)[indexes count];
 		int indexArray[count];
@@ -919,7 +919,7 @@ static NSString * const kSPPlaylistKVOContext = @"kSPPlaylistKVOContext";
 	SPPlaylistCallbackProxy *outgoingProxy = self.callbackProxy;
 	self.callbackProxy = nil;
     
-	dispatch_libspotify_async(^() {
+	SPDispatchAsync(^() {
 		if (outgoing_playlist != NULL) {
 			sp_playlist_remove_callbacks(outgoing_playlist, &_playlistCallbacks, (__bridge void *)outgoingProxy);
 			sp_playlist_release(outgoing_playlist);

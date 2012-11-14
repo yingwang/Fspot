@@ -138,7 +138,7 @@
 @synthesize unread = _unread;
 
 -(void)setUnread:(BOOL)unread {
-	dispatch_libspotify_async(^() { sp_playlist_track_set_seen(self.playlist.playlist, self.itemIndex, !unread); });
+	SPDispatchAsync(^() { sp_playlist_track_set_seen(self.playlist.playlist, self.itemIndex, !unread); });
 	_unread = unread;
 }
 

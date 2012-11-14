@@ -151,7 +151,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(void)dealloc {
 	sp_user *outgoing_user = _user;
 	_user = NULL;
-	dispatch_libspotify_async(^() {if (outgoing_user) sp_user_release(outgoing_user); });
+	SPDispatchAsync(^() {if (outgoing_user) sp_user_release(outgoing_user); });
 }
 
 @end
