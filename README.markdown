@@ -12,7 +12,7 @@ You can find the latest release notes in the [CHANGELOG.markdown](https://github
 
 As of CocoaLibSpotify 2.0, the framework uses an internal threading model to run the libSpotify library on a background thread, allowing your application to remain responsive when libSpotify is experiencing heavy load.
 
-However, libSpotify is **not** thread-safe, and all methods in CocoaLibSpotify that provide access to libSpotify types are guarded to prevent access from the wrong thread. If you must access libSpotify types directly, first file an issue so we can make a thread-aware API in CocoaLibSpotify for your use case, then make sure you use libDispatch to call the relevant API on the correct queue, which `SPSession` provides an accessor for.
+However, libSpotify is **not** thread-safe, and all methods in CocoaLibSpotify that provide access to libSpotify types are guarded to prevent access from the wrong thread. If you must access libSpotify types directly, first file an issue so we can make a thread-aware API in CocoaLibSpotify for your use case, then make sure you call the relevant API on the correct thread, which `SPSession` provides various helper macros for.
 
 Bad:
 
