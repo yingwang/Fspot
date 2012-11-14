@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3755E24316440C440050348E /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 3755E24216440C440050348E /* NSData+Base64.m */; };
 		503D631013258041007772CA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5028EC8B13092B7C00BF0B22 /* Cocoa.framework */; };
 		503D631B13258062007772CA /* SPErrorExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5028ECBE130947B800BF0B22 /* SPErrorExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		503D631D1325806E007772CA /* SPUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 50AB044C1312D00400357CD2 /* SPUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -32,8 +33,7 @@
 		504E493C155AA85500E1C0F7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 504E493A155AA85500E1C0F7 /* InfoPlist.strings */; };
 		504E493E155AA85500E1C0F7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E493D155AA85500E1C0F7 /* main.m */; };
 		504E4942155AA85500E1C0F7 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 504E4940155AA85500E1C0F7 /* Credits.rtf */; };
-		504E4945155AA85500E1C0F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E4944155AA85500E1C0F7 /* AppDelegate.m */; };
-		504E4948155AA85500E1C0F7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 504E4946155AA85500E1C0F7 /* MainMenu.xib */; };
+		504E4945155AA85500E1C0F7 /* TestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 504E4944155AA85500E1C0F7 /* TestRunner.m */; };
 		504E494F155AA87A00E1C0F7 /* CocoaLibSpotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 503D630F13258041007772CA /* CocoaLibSpotify.framework */; };
 		504E4951155AA88900E1C0F7 /* CocoaLibSpotify.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 503D630F13258041007772CA /* CocoaLibSpotify.framework */; };
 		504E4952155AA8A300E1C0F7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50BED5A715220712000D0919 /* AudioUnit.framework */; };
@@ -132,6 +132,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3755E24116440C440050348E /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "../../common/Tests/NSData+Base64.h"; sourceTree = "<group>"; };
+		3755E24216440C440050348E /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "../../common/Tests/NSData+Base64.m"; sourceTree = "<group>"; };
 		5028EC8B13092B7C00BF0B22 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		5028EC8E13092B7C00BF0B22 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		5028EC8F13092B7C00BF0B22 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -149,15 +151,14 @@
 		504379011370564C001DD605 /* SPPlaylistContainerInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistContainerInternal.h; path = ../common/SPPlaylistContainerInternal.h; sourceTree = "<group>"; };
 		50437906137057D7001DD605 /* SPPlaylistFolderInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistFolderInternal.h; path = ../common/SPPlaylistFolderInternal.h; sourceTree = "<group>"; };
 		504CBECD150F74F800067170 /* libspotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libspotify.framework; path = "libspotify-12.1.45-Darwin-universal/libspotify.framework"; sourceTree = "<group>"; };
-		504E4934155AA85400E1C0F7 /* CocoaLibSpotify Test Container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "CocoaLibSpotify Test Container.app"; path = CocoaLSTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		504E4934155AA85400E1C0F7 /* CocoaLSTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CocoaLSTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504E4939155AA85500E1C0F7 /* CocoaLibSpotify Test Container-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CocoaLibSpotify Test Container-Info.plist"; sourceTree = "<group>"; };
 		504E493B155AA85500E1C0F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		504E493D155AA85500E1C0F7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		504E493F155AA85500E1C0F7 /* CocoaLibSpotify Test Container-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CocoaLibSpotify Test Container-Prefix.pch"; sourceTree = "<group>"; };
 		504E4941155AA85500E1C0F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		504E4943155AA85500E1C0F7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		504E4944155AA85500E1C0F7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		504E4947155AA85500E1C0F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		504E4943155AA85500E1C0F7 /* TestRunner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestRunner.h; sourceTree = "<group>"; };
+		504E4944155AA85500E1C0F7 /* TestRunner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestRunner.m; sourceTree = "<group>"; };
 		504E4955155AB29100E1C0F7 /* SPSessionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPSessionTests.h; path = ../../common/Tests/SPSessionTests.h; sourceTree = "<group>"; };
 		504E4956155AB29100E1C0F7 /* SPSessionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPSessionTests.m; path = ../../common/Tests/SPSessionTests.m; sourceTree = "<group>"; };
 		50632D5C145E9AF100A51AC8 /* SPPlaylistItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPPlaylistItem.h; path = ../common/SPPlaylistItem.h; sourceTree = "<group>"; };
@@ -264,7 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				503D630F13258041007772CA /* CocoaLibSpotify.framework */,
-				504E4934155AA85400E1C0F7 /* CocoaLibSpotify Test Container.app */,
+				504E4934155AA85400E1C0F7 /* CocoaLSTests.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -365,9 +366,8 @@
 			isa = PBXGroup;
 			children = (
 				50A9F400161B2D5F0009ECA2 /* TestConstants.h */,
-				504E4943155AA85500E1C0F7 /* AppDelegate.h */,
-				504E4944155AA85500E1C0F7 /* AppDelegate.m */,
-				504E4946155AA85500E1C0F7 /* MainMenu.xib */,
+				504E4943155AA85500E1C0F7 /* TestRunner.h */,
+				504E4944155AA85500E1C0F7 /* TestRunner.m */,
 				504E4954155AB26C00E1C0F7 /* Tests */,
 				504E4938155AA85500E1C0F7 /* Supporting Files */,
 			);
@@ -390,6 +390,8 @@
 		504E4954155AB26C00E1C0F7 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				3755E24116440C440050348E /* NSData+Base64.h */,
+				3755E24216440C440050348E /* NSData+Base64.m */,
 				50E8ED49155BB55900F14186 /* SPTests.h */,
 				50E8ED4A155BB55900F14186 /* SPTests.m */,
 				5063553B156CD93400E1C8D1 /* SPConcurrencyTests.h */,
@@ -536,7 +538,7 @@
 			);
 			name = CocoaLSTests;
 			productName = "CocoaLibSpotify Test Container";
-			productReference = 504E4934155AA85400E1C0F7 /* CocoaLibSpotify Test Container.app */;
+			productReference = 504E4934155AA85400E1C0F7 /* CocoaLSTests.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -581,7 +583,6 @@
 			files = (
 				504E493C155AA85500E1C0F7 /* InfoPlist.strings in Resources */,
 				504E4942155AA85500E1C0F7 /* Credits.rtf in Resources */,
-				504E4948155AA85500E1C0F7 /* MainMenu.xib in Resources */,
 				50DEFADB156136630009E492 /* RunTests.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -653,7 +654,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				504E493E155AA85500E1C0F7 /* main.m in Sources */,
-				504E4945155AA85500E1C0F7 /* AppDelegate.m in Sources */,
+				504E4945155AA85500E1C0F7 /* TestRunner.m in Sources */,
 				504E4957155AB29100E1C0F7 /* SPSessionTests.m in Sources */,
 				50E8ED4B155BB55900F14186 /* SPTests.m in Sources */,
 				50E8ED56155BE46500F14186 /* SPMetadataTests.m in Sources */,
@@ -663,6 +664,7 @@
 				50DB8436155D138500608BFB /* SPSessionTeardownTests.m in Sources */,
 				50DB843B155D296E00608BFB /* SPPlaylistTests.m in Sources */,
 				5063553D156CD93400E1C8D1 /* SPConcurrencyTests.m in Sources */,
+				3755E24316440C440050348E /* NSData+Base64.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -691,14 +693,6 @@
 				504E4941155AA85500E1C0F7 /* en */,
 			);
 			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
-		504E4946155AA85500E1C0F7 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				504E4947155AA85500E1C0F7 /* en */,
-			);
-			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -804,7 +798,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = $CONFIGURATION_BUILD_DIR/CocoaLibSpotify.framework/Versions/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = "\"$CONFIGURATION_BUILD_DIR/CocoaLibSpotify.framework/Versions/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -828,7 +822,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = $CONFIGURATION_BUILD_DIR/CocoaLibSpotify.framework/Versions/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = "\"$CONFIGURATION_BUILD_DIR/CocoaLibSpotify.framework/Versions/Frameworks\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CocoaLibSpotify Test Container/CocoaLibSpotify Test Container-Prefix.pch";
