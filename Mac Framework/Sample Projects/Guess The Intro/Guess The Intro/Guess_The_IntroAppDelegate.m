@@ -80,14 +80,19 @@ static NSTimeInterval const kGameCountdownThreshold = 30.0;
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
 
-	[SPSession createSharedSessionWithKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
-								userAgent:@"com.spotify.GuessTheIntro"
-							loadingPolicy:SPAsyncLoadingImmediate
-								 callback:^(SPSession *sharedSession, NSError *error) {
-									 [[SPSession sharedSession] setDelegate:self];
-									 self.playbackManager = [[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]];
-									 self.playbackManager.delegate = self;
-								 }];
+	NSError *error = nil;
+	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
+											   userAgent:@"com.spotify.GuessTheIntro"
+										   loadingPolicy:SPAsyncLoadingImmediate
+												   error:&error];
+	if (error != nil) {
+		NSLog(@"CocoaLibSpotify init failed: %@", error);
+		abort();
+	}
+
+	[[SPSession sharedSession] setDelegate:self];
+	self.playbackManager = [[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]];
+	self.playbackManager.delegate = self;
 
 	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSNumber numberWithBool:YES], @"CreatePlaylist",

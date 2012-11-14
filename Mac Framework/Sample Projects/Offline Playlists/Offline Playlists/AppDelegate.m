@@ -45,13 +45,19 @@
 -(void)applicationWillFinishLaunching:(NSNotification *)notification {
 
 	[self willChangeValueForKey:@"session"];
-	[SPSession createSharedSessionWithKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
-								userAgent:@"com.spotify.OfflinePlaylists"
-							loadingPolicy:SPAsyncLoadingImmediate
-								 callback:^(SPSession *sharedSession, NSError *error) {
-									 [[SPSession sharedSession] setDelegate:self];
-									 self.playbackManager = [[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]];
-								 }];
+	NSError *error = nil;
+	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
+											   userAgent:@"com.spotify.OfflinePlaylists"
+										   loadingPolicy:SPAsyncLoadingImmediate
+												   error:&error];
+	if (error != nil) {
+		NSLog(@"CocoaLibSpotify init failed: %@", error);
+		abort();
+	}
+
+	[[SPSession sharedSession] setDelegate:self];
+	self.playbackManager = [[SPPlaybackManager alloc] initWithPlaybackSession:[SPSession sharedSession]];
+
 	[self didChangeValueForKey:@"session"];
 	[self.window center];
 	[self.window orderFront:nil];

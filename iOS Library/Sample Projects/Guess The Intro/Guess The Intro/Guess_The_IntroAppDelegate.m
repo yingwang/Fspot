@@ -22,16 +22,20 @@
 {
 	// Override point for customization after application launch.
 
-	[SPSession createSharedSessionWithKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
-								userAgent:@"com.spotify.GuessTheIntro"
-							loadingPolicy:SPAsyncLoadingImmediate
-								 callback:^(SPSession *sharedSession, NSError *error) {
-									 [SPSession sharedSession].delegate = (id)self.viewController;
-									 self.viewController.playbackManager = [[SPPlaybackManager alloc]
-																			initWithPlaybackSession:[SPSession sharedSession]];
-									 self.viewController.playbackManager.delegate = self.viewController;
+	NSError *error = nil;
+	[SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey length:g_appkey_size]
+											   userAgent:@"com.spotify.GuessTheIntro"
+										   loadingPolicy:SPAsyncLoadingManual
+												   error:&error];
+	if (error != nil) {
+		NSLog(@"CocoaLibSpotify init failed: %@", error);
+		abort();
+	}
 
-								 }];
+	[SPSession sharedSession].delegate = (id)self.viewController;
+	self.viewController.playbackManager = [[SPPlaybackManager alloc]
+										   initWithPlaybackSession:[SPSession sharedSession]];
+	self.viewController.playbackManager.delegate = self.viewController;
 
 	self.window.rootViewController = self.viewController;
 	[self.window makeKeyAndVisible];

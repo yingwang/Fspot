@@ -124,37 +124,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  store your SPSession object using this convenience method or yourself using -[SPSession init],
  make sure you only have _one_ instance of SPSession active in your process at a time.
 
- @warning This will return `nil` until +[SPSession createSharedSessionWithKey:userAgent:loadingPolicy:callback:] is
+ @warning This will return `nil` until +[SPSession initializeSharedSessionWithApplicationKey:userAgent:loadingPolicy:error:] is
  successfully called.
  */
 +(SPSession *)sharedSession;
 
-/** Creates the shared SPSession object.
- 
- Your application key and user agent must be valid to create an SPSession object.
- 
- @warning The C API that CocoaLibSpotify uses (LibSpotify) doesn't 
- support using multiple sessions in the same process. While you can either create and 
- store your SPSession object using this convenience method or yourself using -[SPSession initWithKey:userAgent:loadingPolicy:callback:],
- make sure you only have _one_ instance of SPSession active in your process at a time.
- 
- @param appKey Your application key as an NSData.
- @param userAgent Your application's user agent (for example, com.yourcompany.MyGreatApp).
- @param policy The loading policy to use.
- @param block The block to be invoked when the session is created (or not).
- @return The shared `SPSession` object, which won't be useable until the `block` callback is fired.
- */
-+(SPSession *)createSharedSessionWithKey:(NSData *)appKey
-							   userAgent:(NSString *)userAgent
-						   loadingPolicy:(SPAsyncLoadingPolicy)policy
-								callback:(void (^)(SPSession *sharedSession, NSError *error))block;
-
-/** DEPRECATED: Initializes the shared SPSession object.
+/** Initializes the shared SPSession object.
 
  Your application key and user agent must be valid to create an SPSession object.
  
- @warning This method has been deprecated. Use -[SPSession createSharedSessionWithKey:userAgent:loadingPolicy:callback:] instead.
-
  @warning The C API that CocoaLibSpotify uses (LibSpotify) doesn't
  support using multiple sessions in the same process. While you can either create and
  store your SPSession object using this convenience method or yourself using +[SPSession initWithApplicationKey:userAgent:loadingPolicy:error:],
@@ -169,8 +147,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 +(BOOL)initializeSharedSessionWithApplicationKey:(NSData *)appKey
 									   userAgent:(NSString *)userAgent
 								   loadingPolicy:(SPAsyncLoadingPolicy)policy
-										   error:(NSError **)error
-__attribute__((deprecated("Use +createSharedSessionWithKey:userAgent:loadingPolicy:callback: instead")));
+										   error:(NSError **)error;
 
 /** The "debug" build ID of libspotify.
 
@@ -188,23 +165,6 @@ __attribute__((deprecated("Use +createSharedSessionWithKey:userAgent:loadingPoli
 /** Initialize a new SPSession object.
  
  Your application key and user agent must be valid to create an SPSession object. This is SPSession's designated initializer.
- 
-@param appKey Your application key as an NSData.
-@param userAgent Your application's user agent (for example, com.yourcompany.MyGreatApp).
-@param policy The loading policy to use.
-@param block The block to be invoked when the session is ready for use (or not).
-@return Returns a newly initialised SPSession object.
- */
--(id)initWithKey:(NSData *)appKey
-	   userAgent:(NSString *)userAgent
-   loadingPolicy:(SPAsyncLoadingPolicy)policy
-		callback:(void (^)(SPSession *session, NSError *error))block;
-
-/** DEPRECATED: Initialize a new SPSession object.
- 
- @warning This method has been deprecated. Use -[SPSession initWithKey:userAgent:loadingPolicy:callback:] instead.
-
- Your application key and user agent must be valid to create an SPSession object. This is SPSession's designated initializer.
 
  @param appKey Your application key as an NSData.
  @param userAgent Your application's user agent (for example, com.yourcompany.MyGreatApp).
@@ -215,8 +175,7 @@ __attribute__((deprecated("Use +createSharedSessionWithKey:userAgent:loadingPoli
 -(id)initWithApplicationKey:(NSData *)appKey
 				  userAgent:(NSString *)userAgent
 			  loadingPolicy:(SPAsyncLoadingPolicy)policy
-					  error:(NSError **)error
-__attribute__((deprecated("Use -initWithKey:userAgent:loadingPolicy:callback: instead")));
+					  error:(NSError **)error;
 
 /** Attempt to login to the Spotify service.
  
