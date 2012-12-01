@@ -1051,6 +1051,7 @@ static SPSession *sharedSession;
 @synthesize loadingPolicy;
 @synthesize loadingObjects;
 @synthesize logoutCompletionBlock;
+@synthesize prodTimeoutTimer;
 
 +(NSSet *)keyPathsForValuesAffectingLoaded {
 	return [NSSet setWithObjects:@"inboxPlaylist", @"starredPlaylist", @"user", @"locale", @"userPlaylists", nil];
